@@ -1,0 +1,129 @@
+{% extends "guide_base.html" %}
+
+{% block guide_content %}
+<h1>16S Visualization Pipeline</h1>
+<nav id="TOC">
+<ul>
+<li><a href="#ampvis2-and-plotly">ampvis2 and Plotly</a></li>
+<li><a href="#plots">Plots</a></li>
+<li><a href="#output-files">Output Files</a></li>
+<li><a href="#tools-and-references">Tools and References</a></li>
+</ul>
+</nav>
+<style>
+code > span.kw { color: #152166; font-weight: bold; } /* Keyword^ */
+code > span.dt { color: #152166; } /* DataType^ */
+code > span.fl { color: #099; } /* Float^ */
+code > span.st { color: #d14; } /* String^ */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #990073; } /* Other^ */
+code > span.op { color: #006666; font-weight: bold; } /* Operator^ */
+</style>
+
+
+
+
+	<div class="mt-5 mb-5">
+		<h5 id="ampvis2-and-plotly">ampvis2 and Plotly</h5>
+<p>Nephele uses the <a href="https://madsalbertsen.github.io/ampvis2/" target="_blank" rel="noopener noreferrer">ampvis2 R package</a> v2.3.2 for statistical computation. We also make use of the <a href="https://plot.ly/r/" target="_blank" rel="noopener noreferrer">Plotly R interface</a> for the <a href="https://plot.ly" target="_blank" rel="noopener noreferrer">plotly.js</a> charting library. The plots can be minimally edited interactively. However, they also have a link to export the data to the <a href="https://plot.ly/online-chart-maker/" target="_blank" rel="noopener noreferrer">Plotly Chart Studio</a> which allows for <a href="https://help.plot.ly/tutorials/" target="_blank" rel="noopener noreferrer">making a variety of charts</a>. We have a tutorial for <a href="{{ url_for('show_tutorials') }}">making simple edits to the plots here</a>.</p>
+	</div>
+
+
+
+	<div class="mt-5 mb-5">
+		<h5 id="plots">Plots</h5>
+<h3 id="rarefaction-curve">Rarefaction Curve</h3>
+<p>The rarefaction curves are made with the <a href="https://madsalbertsen.github.io/ampvis2/reference/amp_rarecurve.html" target="_blank" rel="noopener noreferrer">amp_rarecurve</a> function. The table is written to <em>rarecurve.txt</em> and the plot to <em>rarecurve.html</em>.</p>
+
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rarecurve &lt;- <span class="kw">amp_rarecurve</span>(amp, <span class="dt">color_by =</span> <span class="st">"TreatmentGroup"</span>)</code></pre></div>
+
+
+<h3 id="filtering-and-rarefyingsubsampling-otu-table">Filtering and rarefying/subsampling OTU table</h3>
+<p>The <strong><code>sampling depth</code></strong> is used to filter out samples with few counts. Samples with counts which fall below the <code>sampling depth</code> are removed from the OTU table using <a href="https://madsalbertsen.github.io/ampvis2/reference/amp_subset_samples.html" target="_blank" rel="noopener noreferrer">amp_subset_samples</a>. The names of samples that are removed are output to <em>samples_being_ignored.txt</em>.</p>
+<p>Additionally, the <code>sampling depth</code> is used to rarefy the counts for the Bray-Curtis PCoA and the alpha diversity plots. The OTU table is rarefied using <a href="https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/rarefy" target="_blank" rel="noopener noreferrer">rrarefy</a> from the vegan R package. The table of the filtered, rarefied counts is saved as <em>rarefied_OTU_table.txt</em>.</p>
+<p>If you do not provide a <code>sampling depth</code>, please see <a href="{{ url_for('show_FAQ', _anchor='collapse18') }}">FAQ:How is the sampling depth calculated?</a> for more information.</p>
+
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">amp &lt;- <span class="kw">amp_subset_samples</span>(amp, <span class="dt">minreads =</span> sampdepth)
+otu &lt;- <span class="kw">rrarefy</span>(<span class="kw">t</span>(amp<span class="op">$</span>abund), sampdepth)
+amprare &lt;- </span>ampsub
+amprare<span class="op">$</span>abund &lt;- <span class="kw">t</span>(otu)</code></pre></div>
+
+
+<h3 id="pcoa">PCoA</h3>
+<p>Principal coordinates analysis using binomial and Bray-Curtis distances is carried out using <a href="https://madsalbertsen.github.io/ampvis2/reference/amp_ordinate.html" target="_blank" rel="noopener noreferrer">amp_ordinate</a>. For more information on the formulae for the distance measures, see <a href="https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/vegdist" target="_blank" rel="noopener noreferrer"><code>vegdist</code></a>.</p>
+<p>The binomial distance is able to handle varying sample sizes, so the raw counts from the OTU table are used. For the Bray-Curtis distance, the rarefied counts are used. The coordinates from the plots are written to <em>pcoa_binomial.txt</em> and <em>pcoa_bray.txt</em> and the plots to <em>pcoa_binomial.html</em> and <em>pcoa_bray.html</em>. At least 3 samples are needed for these plots.</p>
+
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pcoa_binomial &lt;- <span class="kw">amp_ordinate</span>(amp, <span class="dt">filter_species =</span> <span class="fl">0.01</span>, <span class="dt">type =</span> <span class="st">"PCOA"</span>,
+    <span class="dt">distmeasure =</span> <span class="st">"binomial"</span>, <span class="dt">sample_color_by =</span> <span class="st">"TreatmentGroup"</span>,
+    <span class="dt">detailed_output =</span> <span class="ot">TRUE</span>, <span class="dt">transform =</span> <span class="st">"none"</span>)
+
+pcoa_bray &lt;- <span class="kw">amp_ordinate</span>(amprare, <span class="dt">filter_species =</span> <span class="fl">0.01</span>, <span class="dt">type =</span> <span class="st">"PCOA"</span>,
+    <span class="dt">distmeasure =</span> <span class="st">"bray"</span>, <span class="dt">sample_color_by =</span> <span class="st">"TreatmentGroup"</span>,
+    <span class="dt">detailed_output =</span> <span class="ot">TRUE</span>, <span class="dt">transform =</span> <span class="st">"none"</span>)</code></pre></div>
+
+<h3 id="alpha-diversity">Alpha diversity</h3>
+<p>The Shannon diversity and Chao species richness are computed using <a href="https://madsalbertsen.github.io/ampvis2/reference/amp_alphadiv.html" target="_blank" rel="noopener noreferrer">amp_alphadiv</a>. The rarefied counts are used for this computation. The diversity values are saved in <em>alphadiv.txt</em>, and boxplots are output to <em>alphadiv.html</em>. At least 3 samples are needed to produce these plots.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">alphadiv &lt;- <span class="kw">amp_alphadiv</span>(amprare, <span class="dt">measure =</span> <span class="st">"shannon"</span>, <span class="dt">richness =</span> <span class="ot">TRUE</span>, <span class="dt">rarefy =</span> sampdepth)</code></pre></div>
+
+<h3 id="heatmap">Heatmap</h3>
+<p>The interactive heatmap is implemented using the <a href="https://github.com/cmap/morpheus.R" target="_blank" rel="noopener noreferrer">morpheus R API</a> developed at the Broad Institute. <a href="https://software.broadinstitute.org/morpheus/documentation.html" target="_blank" rel="noopener noreferrer">Documentation</a> for how to use the heatmap can be found on the <a href="https://software.broadinstitute.org/morpheus/" target="_blank" rel="noopener noreferrer">morpheus website</a>.</p>
+<p>The heatmap, <em>seq_heatmap.html</em>, is made from the raw OTU table with the counts normalized to 100 to represent the relative abundances using <a href="https://madsalbertsen.github.io/ampvis2/reference/amp_subset_samples.html" target="_blank" rel="noopener noreferrer">amp_subset_samples</a> before the heatmap is made with morpheus. If there are too many OTUs or sequence variants, then the heatmap is made at the species level instead. A heatmap is also made from the rarefied counts, <em>seq_heatmap_rarefied.html</em>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">amptax &lt;-<span class="kw">amp_subset_samples</span>(amp, <span class="dt">normalise =</span> <span class="ot">TRUE</span>)
+heatmap &lt;- <span class="kw">morpheus</span>(amp<span class="op">$</span>abund, <span class="dt">columns =</span> columns, <span class="dt">rows =</span> rows,
+    <span class="dt">columnColorModel =</span> <span class="kw">list</span>(<span class="dt">type =</span> <span class="kw">as.list</span>(colors)),
+    <span class="dt">colorScheme =</span> <span class="kw">list</span>(<span class="dt">scalingMode =</span> <span class="st">"fixed"</span>, <span class="dt">stepped =</span> <span class="ot">FALSE</span>),
+    <span class="dt">columnAnnotations =</span> amptax<span class="op">$</span>metadata, <span class="dt">rowAnnotations =</span> amptax<span class="op">$</span>tax)</code></pre></div>
+	</div>
+
+
+
+
+
+
+<div class="mt-5 mb-5">
+		<h5 id="output-files">Output Files</h5>
+<p>Complete descriptions of the output files can be found in the <a href="#plots">Plots section above</a>. To learn how to edit the plots, see the <a href="{{ url_for('show_tutorials') }}">visualization tutorial</a>.</p>
+<ul>
+<li><em>rarecurve.html</em>: rarefaction curve plot</li>
+<li><em>rarecurve.txt</em>: tabular data used to make the rarefaction curve plot</li>
+<li><em>samples_being_ignored.txt</em>: list of samples removed from the analysis</li>
+<li><em>pcoa_*.html</em>: PCoA plots</li>
+<li><em>pcoa_*.txt</em>: tabular data used to make the PCoA plots</li>
+<li><em>rarefied_OTU_table.txt</em>: rarefied OTU table used for Bray-Curtis PCoA and alpha diversity plots</li>
+<li><em>alphadiv.html</em>: alpha diversity boxplots</li>
+<li><em>alphadiv.txt</em>: tabular data used to make the alpha diversity plots</li>
+<li><em>seq_heatmap.html</em>: heatmap of OTU/sequence variant abundances</li>
+</ul>
+	</div>
+
+
+
+
+
+
+
+
+
+
+
+	<div class="mt-5 mb-5">
+		<h5 id="tools-and-references">Tools and References</h5>
+<ol>
+    <li>M A, SM K, AS Z, RH K and PH N (2015). "Back to Basics - The Influence of DNA Extraction and Primer Choice on Phylogenetic Analysis of Activated Sludge Communities." <em>PLoS ONE</em>, <b>10</b>(7), pp. e0132783. <a href="http://dx.plos.org/10.1371/journal.pone.0132783" target="_blank" rel="noopener noreferrer">http://dx.plos.org/10.1371/journal.pone.0132783</a>.</li>
+    <li>Gould J (2018). <em>morpheus: Interactive heat maps using 'morpheus.js' and 'htmlwidgets'</em>. R package version 0.1.1.1, <a href="https://github.com/cmap/morpheus.R" target="_blank" rel="noopener noreferrer">https://github.com/cmap/morpheus.R</a>.</li>
+    <li>Sievert C, Parmer C, Hocking T, Chamberlain S, Ram K, Corvellec M and Despouy P (2017). <em>plotly: Create Interactive Web Graphics via 'plotly.js'</em>. R package version 4.7.1, <a href="https://CRAN.R-project.org/package=plotly" target="_blank" rel="noopener noreferrer">https://CRAN.R-project.org/package=plotly</a>.</li>
+    <li>McMurdie PJ and Paulson JN (2016). <em>biomformat: An interface package for the BIOM file format</em>. <a href="https://github.com/joey711/biomformat/" target="_blank" rel="noopener noreferrer">https://github.com/joey711/biomformat/</a>.</li>
+    <li>Oksanen J, Blanchet FG, Friendly M, Kindt R, Legendre P, McGlinn D, Minchin PR, O'Hara RB, Simpson GL, Solymos P, Stevens MHH, Szoecs E, Wagner H (2019). <em>vegan: Community Ecology Package</em>. R package version 2.5-4, <a href="https://CRAN.R-project.org/package=vegan" target="_blank" rel="noopener noreferrer">https://CRAN.R-project.org/package=vegan</a>.</li>
+</ol>
+	</div>
+
+
+
+
+
+
+
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "options_base.html" %}
+
+{% block form_content %}
+
+<ul class="nav nav-tabs" role="tablist">
+  <li class="nav-item"><a class="nav-link active show" href="#t1" role="tab" data-toggle="tab">Job Details</a></li>
+  <li class="nav-item"><a class="nav-link" href="#t2" role="tab" data-toggle="tab">Analysis</a></li>
+</ul>
+
+<div class="container-fluid connected-pane" style="height: 100%;">
+  <div class="row" style="height: 100%;">
+    <div class="col-sm-8 tab-content" style="height: 100%;">
+
+      <div class="tab-pane fade show active" id="t1">
+        {# { d_group.render([form.job_desc, form.instance_type], group['Title']) } #}
+        {{ d_group.render([form.job_desc], "Job Details") }}
+      </div>
+
+      <div class="tab-pane fade" id="t2">
+          <div id="adapter">
+    	        {{ d_group.render([form.sampling_depth, form.alpha_group_sig], "Options") }}
+	        </div>
+ 	    </div>
+
+
+    </div>
+
+    <div class="col-sm-4 pre-scrollable" style="height: calc(100%); overflow-y: auto;">
+      <div class="well raised-segment" id="help-container"></div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}

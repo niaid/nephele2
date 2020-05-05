@@ -1,0 +1,15 @@
+QIIME PE with zip in command
+
+/usr/local/src/nephele2/pipelines/QIIME/qiime.py --map_file map.txt --analysis_type OPEN_REFERENCE --name MISEQ_PAIR-END  --reads_zip MiSeq.zip --compressed_inputs --perc_max_diff 25 --min_qual_score 19 --max_ambiguous 0 --max_bad_run_length 3 --reverse_complement --min_overlap_length 10 --reference_database SILVA_99 --fraction_of_sample_size 0.2 --core_diversity_analysis --params_file otus_params.txt --chimera
+
+QIIME SE Multiplexed
+
+/usr/local/src/nephele2/pipelines/QIIME/qiime.py --fastq_file SRR057663.fastq --map_file SRR057663_Map.txt --analysis_type OPEN_REFERENCE --reference_database Greengenes_97 --name FASTQ_SINGLE-END --chimera --reverse_complement --core_diversity_analysis --params_file otus_params.txt --max_ambiguous 6 --min_seq_length 200 --max_seq_length 1000 --min_qual_score 25 --max_homopolymer 6 --max_primer_mismatch 0 --max_barcode_errors 1.5 --quality_score_window 50 --barcode_type LEN_FROM_MAPPING_FILE --fraction_of_sample_size 0.2
+
+QIIME SE Demultiplexed
+
+/usr/local/src/nephele2/pipelines/QIIME/qiime.py --reads_zip HMP_test_reads.zip --compressed_inputs --is_demultiplex --map_file HMP_test_mapping.txt --analysis_type OPEN_REFERENCE --reference_database Greengenes_97 --name FASTQ_SINGLE-END --chimera --reverse_complement --core_diversity_analysis --params_file otus_params.txt --max_ambiguous 6 --min_seq_length 200 --max_seq_length 1000 --min_qual_score 25 --max_homopolymer 6 --max_primer_mismatch 0 --max_barcode_errors 1.5 --quality_score_window 50 --barcode_type LEN_FROM_MAPPING_FILE --fraction_of_sample_size 0.2
+
+QIIME MISEQ_MULTIPLEX
+
+/usr/local/src/nephele2/pipelines/QIIME/qiime.py --params_file otus_params.txt --map_file map.txt --barcode_file Nephele_test_I1.fastq --forward_reads Nephele_test_200K_R1.fastq --reverse_reads Nephele_test_200K_R2.fastq --barcode_length 12 --min_qual_score 19 --max_ambiguous 0 --max_bad_run_length 3 --min_overlap_length 10 --perc_max_diff 25 --analysis_type OPEN_REFERENCE --reference_database SILVA_97 --name MISEQ_MULTIPLEX --reverse_complement --chimera --fraction_of_sample_size 0.2 --core_diversity_analysis

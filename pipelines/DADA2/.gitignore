@@ -1,0 +1,10 @@
+*.fastq
+*.fasta
+*.pdf
+*.gz
+*.zip
+*.RData
+*.Rhistory
+*testdata/*
+*/check/*
+*/testdata/*

@@ -1,0 +1,10 @@
+#dropbox {
+    border: 2px dashed #000000;
+    padding: 50px;
+    text-align: center;
+    line-height: 180%;
+}
+
+#dropbox.active {
+    border: 4px dashed #FF0000;
+}

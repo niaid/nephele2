@@ -1,0 +1,38 @@
+{% extends "base_with_help.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/radio_group.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<h2>Please select the type of data you are uploading:</h2>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <table style="margin-top: 30px;">
+    {% for subfield in form.data_type %}
+    <tr>
+        <td>{{ subfield }}</td>
+        <td>{{ subfield.label(class_="my-auto") }}</td>
+    </tr>
+{% endfor %}
+ </table>
+
+{% for error in form.data_type.errors %}
+   <div class="error">{{ error }}</div>
+{% endfor %}
+
+    <button class="btn btn-primary" style="margin-top: 20px;" type=submit>
+    	<i class="glyphicon glyphicon-chevron-right"></i>
+    	<span>Next</span>
+    </button>
+  </form>
+{% endblock %}
+
+{% block info_content %}
+  {% if type=="16s" %}
+  	{% include 'datatype_selection_16s_help.html' %}
+  {% elif type=="WGS" %}
+    {% include 'datatype_selection_WGS_help.html' %}
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "options_base.html" %}
+
+{% block form_content %}
+<ul class="nav nav-tabs" role="tablist">
+   <li class="nav-item"><a class="nav-link active show" href="#t1" role="tab" data-toggle="tab">Job Details</a></li>
+   <li class="nav-item"><a class="nav-link" href="#t2" role="tab" data-toggle="tab">Pre-processing</a></li>
+   <li class="nav-item"><a class="nav-link" href="#t3" role="tab" data-toggle="tab">Analysis</a></li>
+ </ul>
+ <!-- create the two main cols here?, one for active-pane one for help-text -->
+ <div class="container-fluid connected-pane" style="height: 100%;">
+   <div class="row" style="height: 100%;">
+     <div class="col-sm-8 tab-content" style="height: 100%;">
+       <div class="tab-pane fade show active" id="t1">
+        {# { d_group.render([form.job_desc, form.instance_type], group['Title']) } #}
+        {{ d_group.render([form.job_desc], "Job Details") }}
+       </div>
+       <div class="tab-pane fade" id="t2">
+         {{ d_group.render([form.ion_torrent], "Ion Torrent Data <font
+           color=red><sup><small><em>(Beta)</em></small></sup></font>"|safe) }}
+         {{ d_group.render([
+         form.trimleft_fwd,
+         form.truncQ,
+         form.truncLen_fwd,
+         form.maxEE], "Filter and Trim") }}
+       </div>
+ 	 <div class="tab-pane fade" id="t3">
+    	{{ d_group.render([form.chimera, form.taxmethod, form.ref_db, form.sampling_depth], "Analysis") }}
+ 	 </div>
+     </div>
+     <div class="col-sm-4 pre-scrollable" style="height: calc(100%); overflow-y: auto;">
+       <div class="well raised-segment" id="help-container"></div>
+     </div>
+   </div>
+ </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$(function(){
+	//If IDTAXA is selected, only Silva can be used
+	//for the database, so disable the other options. Re-enable if something
+	//else is selected for the taxmethod.
+	$('#taxmethod').on('change', function () {
+		if(this.value === "idtaxa") {
+			$("#ref_db").val('sv99').change();
+			$("#ref_db option[value!='sv99']").attr("disabled", true);
+		}
+		else{
+			$("#ref_db option:disabled").removeAttr('disabled');
+		}
+	});
+
+});
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "pipeline_selection_base.html" %}
+
+{% block selection_list %}
+  {{ super() }}
+  <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Pipeline Features</th>
+            <th class="psi-content">bioBakery</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Trim and filter reads for quality with kneadData</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Filter contaminant sequences (human and ribosomal RNA) with kneadData</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Taxonomic assignment with MetaPhlAn2</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Functional profiling with HUMAnN2</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Strain profiling with StrainPhlAn</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Summary visualizations of species and functional gene abundance</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>PCoA ordination of species composition</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Plots of functional feature detection vs sequencing depth</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr class="psi">
+            <td></td>
+            <td class="psi-content"><button type="submit" class="btn btn-primary nbtn-primary" name="job_type" value="WGS Paired End FASTQ">Select</button>
+              <p><a href="{{ url_for('show_biobakery_details') }}" target="_blank" rel="noopener noreferrer" class="extra-info">See details</a></p></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+{% endblock %}
+
+{% block info_content %}
+  {{ super() }}
+  {% include 'WGS_jobs_help.html' %}
+{% endblock %}

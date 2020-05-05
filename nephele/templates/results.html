@@ -1,0 +1,71 @@
+{% extends "base_with_help.html" %}
+
+{% block head %}
+{{ super() }}
+<!-- Generic page styles -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<h2>Analysis Results for Job ID: {{ jobid }} </h2>
+
+<!-- Generate divs for the graph(s) at appropriate sizes -->
+{% if urls %}
+{% for url in urls %}
+{% if urls|length > 1 %}
+<div class="col-xs-12 col-md-6">
+    {% else %}
+    <div class="col-xs-12 col-md-12">
+        {% endif %}
+        <h2>{{ url.title }}</h2>
+        <img class="graph" src="{{ url.tmp_url|e }}"/>
+    </div>
+    {% endfor %}
+    {% elif errmsg %}
+    <p>{{ errmsg }}
+    {% elif download or logfile %}
+      <p>Please download your job data below.
+    {% else %}
+      <p>We encountered an unexplained error while retrieving your job.
+    {% endif %}
+    
+    {% if download %}
+    <div class="row">
+    <div class="col-md-3" style="margin-top:10px;">
+        <a class="btn btn-primary" href="{{ download }}" role="button"><i class="glyphicon glyphicon-download"></i><span>Download Results ({{ download_size }})</span></a>
+    </div>
+    </div>
+    {% endif %}
+
+    {% if logfile %}
+    <div class="row">
+    <div class="col-md-12" style="margin-top: 20px;">
+        View <a href="{{ logfile }}" target="_blank" rel="noopener noreferrer">log file</a>
+    </div>
+    </div>
+    {% endif %}
+
+    {% endblock %}
+
+    {% block info_content %}
+      <ul>
+        {% if download and expiration %}
+         <li><strong>These results will only be available until {{ expiration }}. Download your results if you want to keep them.</strong></li>
+        {% elif download and not expiration %}
+         <li><strong>We couldn't find the expiration date for your job data, but data is typically deleted 90 days after job completion. Please download your results if you want to keep them.</strong></li>
+        {% else %}
+         <li>No job results found.</li>
+        {% endif %}
+      </ul>
+        {% if work_folder %}
+         <p>You can also download everything, including your input files, the intermediate files and folders created by the pipeline, etc. Nephele pipeline analyzes the samples and generates results in the following categories:</p>
+         <ul>
+           <li>Taxonomic assignment: identify origins of the sequences on the Genus level based on the selected reference databases, Greengenes or SILVA</li>
+           <li>Alpha diversity: estimates the species richness in each sample</li>
+           <li>Rarefaction curve: assesses species richness from the results of sampling</li>
+           <li>Beta diversity: measures the differences in species composition among samples</li>
+           <li>Principal Coordinate Analysis (PCoA): explore and visualize compositional similarities or dissimilarities in the samples</li>
+         </ul>
+         <p>For detailed descriptions on the analysis results, please visit <a href="{{ url_for('show_result_details') }}" target="_blank" rel="noopener noreferrer">this page</a>.</p>
+        {% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block page_content %}
+    <h1>Success!</h1>
+    <p>
+    We'll be sending an email to {{ email }} shortly to confirm your registration.  Please follow the instructions in the email to confirm your registration.
+    </p>
+{% endblock %}

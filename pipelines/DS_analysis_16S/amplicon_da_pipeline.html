@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<div>
+    <h1>Amplicon Downstream Analysis Pipeline</h1>
+    <p class="author"></p>
+    <nav id="TOC">
+        <ul>
+            <li><a href="#input-files-and-parameters">Input Files and Parameters</a></li>
+            <li><a href="#qiime-2">QIIME 2</a></li>
+            <li><a href="#output-files">Pipeline Steps &amp; Output files</a></li>
+            <li><a href="#tools-and-references">Tools and References</a></li>
+        </ul>
+    </nav>
+    <p>The Downstream Analysis pipeline provides sample observation and taxonomic summaries and diversity analyses of an OTU table using <a href="https://qiime2.org" target="_blank" rel="noopener noreferrer">QIIME 2</a>.</p>
+    <h2 id="input-files-and-parameters">Input Files and Parameters</h2>
+    <ul>
+        <li>
+            <p><strong>BIOM File:</strong> The biom file contains the OTU and taxonomy tables to be analyzed. This pipeline accepts <a href="http://biom-format.org/documentation/format_versions/biom-1.0.html" target="_blank" rel="noopener noreferrer">BIOM V1</a> or QIIME's BIOM V2 format. All biom files produced by Nephele's amplicon pipelines should work.</p>
+        </li>
+        <li>
+            <p><strong>Mapping File:</strong> The mapping file contains the metadata about the samples which will be used in the analysis. The mapping file format is the same as that used by the amplicon pipelines (<a href="{{ se_map_url }}" target="_blank" rel="noopener noreferrer">SE</a> or <a href="{{ pe_map_url }}" target="_blank" rel="noopener noreferrer">PE templates</a>). The FASTQ file columns will be ignored. Only samples listed in the mapping file will be included in the pipeline results. So, if you want to analyze only a subset of the samples in your biom file, you can submit the mapping file with only those samples, and the others will be excluded from the analysis.</p>
+        </li>
+        <li>
+            <p><strong>Sampling depth:</strong> The total frequency that each sample should be rarefied to prior to computing diversity metrics. Samples with counts below this value will be removed from the analysis. If you are using the output of a Nephele amplicon pipeline, you may find it useful to consult <em>otu_summary_table.txt</em> which lists the sample counts.</p>
+        </li>
+        <li>
+            <p><strong>Alpha group significance:</strong> Run alpha diversity statistical comparisons between groups, and produce alpha diversity plots. This step runs after samples with counts below your sampling depth are filtered from your biom and mapping files. It requires the filtered mapping file's Treatment Group column to contain at least 2 groups, and each group to contain at least 2 samples.</p>
+            <p>If you are not sure which samples and groups will remain after the sampling depth filtering, run the job first with this option unchecked, and review the <em>summary.qzv</em> file. If you are using the output of a Nephele amplicon pipeline, you may find it useful to consult <em>otu_summary_table.txt</em> which lists the sample counts.</p>
+        </li>
+    </ul>
+    <h2 id="qiime-2">QIIME 2</h2>
+    <p>Nephele uses the <a href="https://docs.qiime2.org/2018.6/" target="_blank" rel="noopener noreferrer">QIIME 2 v2018.6</a> Artifact <a href="https://docs.qiime2.org/2018.6/interfaces/artifact-api/" target="_blank" rel="noopener noreferrer">API</a>.</p>
+    <h2 id="output-files">Pipeline Steps &amp; Output files</h2>
+    <p>The output <code>.qza</code> and <code>.qzv</code> files can be viewed on QIIME 2's <a href="https://view.qiime2.org" target="_blank" rel="noopener noreferrer">view page</a>. See QIIME 2's information about <a href="https://docs.qiime2.org/2018.6/concepts/#data-files-visualizations" target="_blank" rel="noopener noreferrer">the output formats</a> and for <a href="https://view.qiime2.org/about" target="_blank" rel="noopener noreferrer">help</a> with the view page. Where possible, the <code>.qza</code> artifacts are also exported to their native format in directories of the same name. The following plugin methods are used:</p>
+    <ol style="list-style-type: decimal">
+        <li><a href="https://docs.qiime2.org/2018.6/plugins/available/feature-table/summarize/" target="_blank" rel="noopener noreferrer"><strong>feature-table summarize</strong></a> which produces a summary of the counts along with the sample metadata.
+            <ul>
+                <li><em>summary.qzv</em>: summary visualization</li>
+            </ul>
+        </li>
+        <li><a href="https://docs.qiime2.org/2018.6/plugins/available/taxa/barplot/" target="_blank" rel="noopener noreferrer"><strong>taxa barplot</strong></a> which produces barplots of the taxonomies of the samples with counts above the sampling depth. <a href="https://docs.qiime2.org/2018.6/plugins/available/feature-table/filter-samples/" target="_blank" rel="noopener noreferrer">filter-samples</a> is used to filter these samples.
+            <ul>
+                <li><em>barplot.qzv</em></li>
+            </ul>
+        </li>
+        <li><a href="https://docs.qiime2.org/2018.6/plugins/available/diversity/core-metrics/" target="_blank" rel="noopener noreferrer"><strong>diversity core-metrics</strong></a> which applies a set of non-phylogenetic diversity metrics to the count data after rarefaction.
+            <ul>
+                <li><em>rarefied_table.qza, rarefied_table/feature-table.biom</em>: rarefied feature table</li>
+                <li><em>observed_otus_vector.qza</em>: vector of observed OTU/ASV values by sample</li>
+                <li><em>shannon_vector.qza</em>: vector of Shannon diversity values by sample</li>
+                <li><em>evenness_vector.qza</em>: vector of Pielou's evenness values by sample</li>
+                <li><em>jaccard_distance_matrix.qza, jaccard_pcoa_results.qza, jaccard_emperor.qzv</em>: Jaccard distance matrix and coordinates for the resulting PCoA ordination. The graph is plotted using <a href="https://biocore.github.io/emperor/" target="_blank" rel="noopener noreferrer">Emperor</a>.</li>
+                <li><em>bray_curtis_distance_matrix.qza, bray_curtis_pcoa_results.qza, bray_curtis_emperor.qzv</em>: Bray-Curtis distance matrix and coordinates for the resulting PCoA ordination. The graph is plotted using <a href="https://biocore.github.io/emperor/" target="_blank" rel="noopener noreferrer">Emperor</a>.</li>
+            </ul>
+        </li>
+        <li><a href="https://docs.qiime2.org/2018.6/plugins/available/diversity/alpha-group-significance/" target="_blank" rel="noopener noreferrer"><strong>diversity alpha-group-significance</strong></a> which does statistical comparisons of the alpha diversity indexes based on the sample metadata groups.
+            <ul>
+                <li><em>alpha_group_significance_evenness.qzv</em>: comparison of Pielou (evenness) index between groups</li>
+                <li><em>alpha_group_significance_shannon.qzv</em>: comparison of Shannon index between groups</li>
+            </ul>
+        </li>
+    </ol>
+    <h2 id="tools-and-references">Tools and References</h2>
+    <ul>
+        <li>Bolyen, Evan, et al. "Reproducible, Interactive, Scalable and Extensible Microbiome Data Science Using QIIME 2." <em>Nature Biotechnology</em>, July 2019, doi:<a href="https://doi.org/10.1038/s41587-019-0209-9" target="_blank" rel="noopener noreferrer">10.1038/s41587-019-0209-9</a>.</li>
+        <li>McDonald, Daniel, et al. "The Biological Observation Matrix (BIOM) Format or: How I Learned to Stop Worrying and Love the Ome-Ome." <em>GigaScience</em>, vol. 1, July 2012, p. 7. <em>BioMed Central</em>, doi:<a href="https://doi.org/10.1186/2047-217X-1-7" target="_blank" rel="noopener noreferrer">10.1186/2047-217X-1-7</a>.</li>
+        <li>Kruskal, William H., and W. Allen Wallis. "Use of Ranks in One-Criterion Variance Analysis." <em>Journal of the American Statistical Association</em>, vol. 47, no. 260, 1952, pp. 583-621. <em>JSTOR</em>, doi:<a href="https://doi.org/10.2307/2280779" target="_blank" rel="noopener noreferrer">10.2307/2280779</a>.</li>
+        <li>Vázquez-Baeza, Yoshiki, Antonio Gonzalez, et al. "Bringing the Dynamic Microbiome to Life with Animations." <em>Cell Host &amp; Microbe</em>, vol. 21, no. 1, Jan. 2017, pp. 7-10. <em>ScienceDirect</em>, doi:<a href="https://doi.org/10.1016/j.chom.2016.12.009" target="_blank" rel="noopener noreferrer">10.1016/j.chom.2016.12.009</a>.</li>
+        <li>Vázquez-Baeza, Yoshiki, Meg Pirrung, et al. "EMPeror: A Tool for Visualizing High-Throughput Microbial Community Data." <em>GigaScience</em>, vol. 2, no. 1, Dec. 2013. <em>academic.oup.com</em>, doi:<a href="https://doi.org/10.1186/2047-217X-2-16" target="_blank" rel="noopener noreferrer">10.1186/2047-217X-2-16</a>.</li>
+        <li>Weiss, Sophie, et al. "Normalization and Microbial Differential Abundance Strategies Depend upon Data Characteristics." <em>Microbiome</em>, vol. 5, no. 1, Mar. 2017, p. 27. <em>Crossref</em>, doi:<a href="https://doi.org/10.1186/s40168-017-0237-y" target="_blank" rel="noopener noreferrer">10.1186/s40168-017-0237-y</a>.</li>
+    </ul>
+</div>
+{% endblock %}

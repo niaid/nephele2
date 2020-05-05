@@ -1,0 +1,14 @@
+{% extends "qiime_base_opts.html" %}
+
+{% block tablist %}
+  <li class="nav-item"><a class="nav-link" href="#t2" role="tab" data-toggle="tab">Pre-processing</a></li>
+  {{ super() }}
+{% endblock %}
+
+{% block tabcontent %}
+  <div class="tab-pane fade" id="t2">
+    {{ d_group.render([form.phred_quality, form.phred_offset, form.max_n], "Pre-processing") }}
+    {{ d_group.render([form.max_bad_run], "Join Reads") }}
+  </div>
+  {{ super() }}
+{% endblock %}

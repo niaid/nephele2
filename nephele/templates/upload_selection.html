@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block page_content %}
+	<!-- Hero section -->
+
+
+<div class="card">
+  <div class="card-header text-center nephele-analyses-title">
+    Upload sequence files in FASTQ format
+  </div>
+  <div class="card-body">
+     <form method="POST" >
+	    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <div class="row">
+          <div class="col-xs-12 col-sm-6 col-md-6 text-center">
+            <h4 class="">Upload files from Local Computer</h4>
+            <p>Select this option if the data you would like to analyze are on your local file system. </p>
+            <p>Limit 450MB per file.</p>
+            <br>
+            <br>
+            <button class="btn btn-primary" type="submit" name="input_from" value="local">Upload from local</button>
+          </div>
+          <div class="col-xs-12 col-sm-6 col-md-6 text-center">
+            <h4 class="">Upload files from publicly accessible FTP</h4>
+            <p>Select this option if the data you would like to analyze are available at a publicly accessible (no username or password required) FTP server.
+            This option is suitable for uploading large data files.</p>
+            <p><a href="/using_ftp" target="_blank">Please see how to use the Public Helix FTP.</a> </p>
+            <br>
+            <button class="btn btn-primary" type="submit" name="input_from" value="url">Upload via FTP</button>
+          </div>
+        </div>
+        </form>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

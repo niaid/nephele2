@@ -1,0 +1,95 @@
+{% extends "about_base.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/infopages.css') }}">
+{% endblock %}
+
+{% block about_content %}
+
+			<div class="mb-5">
+				<h1>What is Nephele?</h1>
+
+		  <p>
+		    Nephele is a web-based platform for microbiome data analysis. It was developed by scientists at the National 
+		    Institutes of Health to make microbiome analysis easier, streamlined, and more accessible for a variety of users.<br><br>
+
+			Microbiome analysis is a growing area of science and medicine. It generates an enormous amount of raw data and 
+			requires advanced quantitative analysis. Technical capacity to analyze microbiome data – namely, analyzing, 
+			transferring, and storing biomedical "big data"— is a major challenge in this type of research. Nephele 
+			addresses these challenges through cloud-based computing, integrating open source microbiome data analysis and 
+			visualization tools into an intuitive user interface.<br><br>
+                  
+            Like its namesake, a Greek mythological nymph who was molded from a cloud by Zeus, Nephele 
+            (pronounced <a href="https://www.youtube.com/watch?v=Qy3sSqWX7ds" target="_blank" rel="noopener noreferrer">ne-FEH-lee</a>) 
+            is a powerful scientific tool created from a cloud-based environment.<br><br>
+            
+            For more information on Nephele, please see <a href="https://academic.oup.com/bioinformatics/article/34/8/1411/4265458" target="_blank" rel="noopener noreferrer">our publication on Nephele version 1.8</a>. 
+            A publication of the current Nephele version 2 is coming soon. For changes from version 1.8 to version 2, please see the <a href="{{ url_for('show_release_notes') }}">Release Notes</a>.</p>
+          
+          
+		</div>
+          
+          
+			<div class="mb-5">
+				<h5>Who Uses Nephele</h5>
+
+		  <p>Nephele is targeted to researchers, sequencing facilities, students, and citizen scientists who would 
+			  like to perform standardized microbiome analyses on amplicon or shotgun sequencing data.<br></p>
+          
+</div>
+          
+
+
+		<div class="mb-5">
+			<h5>How Nephele Works</h5>
+          <p>
+          <ul>
+            <li><strong>Step 1: <a href="{{ url_for('register') }}">Sign up!</a></strong><br>
+            We would like to send you the analysis result via email. Once you've registered your email address with the site you'll be prompted to provide your email address on subsequent visits, so you'll only do this step the first time you use the system.
+            </li>
+            <li><strong>Step 2: Submit your analysis job</strong><br>
+            You will need sequence files and mapping file to submit a job. 
+            Please see <a href="{{ url_for('show_user_guide') }}">how to submit a job</a> and what <a href="{{ url_for('show_pipes_guide') }}">pipelines</a> we have.
+            </li>
+            <li><strong>Step 3: The pipeline job runs in the cloud:</strong><br>
+            preprocess the data, compute the analysis, and generate tables and visualization outputs.
+            </li>
+            <li><strong>Step 4: Download your results</strong><br>
+            We will email you when the job is complete. Output files are available for you to download for 90 days after the completion. 
+            </li>
+          </ul>
+			</p>
+          
+          <p>Nephele utilizes Amazon Web Services. If you are interested in system architecture, here is the overview of Nephele version 2.<br></p>
+          
+			  <div class="card">
+				  <div class="card-body">
+					<img class="img-responsive sample-images" src="{{ url_for('static', filename='images/N2_Topology.png') }}" alt="Nephele architecture diagram">
+				  </div>
+				</div>
+
+         
+          
+</div>
+          
+          
+
+
+			<div class="mb-5">
+				<h5>What does the output look like?</h5>
+          <p>For amplicon pipelines, i.e. 16S, ITS, Nephele generates Operational Taxonomic Unit (OTU) table with taxonomic 
+          associations for each OTU in standard biom format, plots for alpha and beta diversity, heatmaps, and tables of taxa counts of 
+          each taxonomic rank. For more detail, please see <a href="{{ url_for('show_pipes_guide', _anchor='output') }}">“how to make sense of output files”</a>.</p>
+			  
+			  <div class="card">
+				  <div class="card-body">
+					<img class="img-responsive sample-images" src="{{ url_for('static', filename='images/nephele_visualizations.png') }}" alt="images of example pipeline outputs">
+				  </div>
+				</div>
+</div>
+          
+          
+          
+
+{% endblock %}

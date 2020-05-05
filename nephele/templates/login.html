@@ -1,0 +1,28 @@
+{% extends "base_with_help.html" %}
+
+{% block page_content %}
+  <h2>User Email</h2>
+  {% from "_formhelpers.html" import render_field %}
+  <form action="" method="post" name="login">
+      {{ form.hidden_tag() }}
+      <div class="row">
+       <div class="col-sm-6">
+        {{ render_field(form.email_addr) }}
+        </div>
+      {# {{ render_field(form.remember_me) }} #}
+      <div class="clearfix"></div>
+      <div class="col-sm-12" style="margin-top: 10px;"><input class="btn btn-primary" type="submit" value="Sign In"></div>
+      </div>
+  </form>
+{% endblock %}
+
+{% block info_content %}
+Why do we want this information?  So we know where to send your results!<br/>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/Javascript">
+    $("input#email_addr").focus()
+</script>
+{% endblock %}

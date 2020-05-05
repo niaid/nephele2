@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+  <div class="pb-2 mt-5 mb-5 border-bottom">
+    <h1>Uploading Files to the Public Helix FTP Site</h1>
+  </div>
+  <div class="mt-5 mb-5">
+    <h5 id="overview">Step 1: Install an FTP Client</h5>
+    <ul>
+      <li>FTP client described below: <a href="https://filezilla-project.org">Filezilla</a></li>
+      <li>Other FTP clients:</li>
+      <ul>
+	<li><a href="https://addons.mozilla.org/en-US/firefox/addon/fireftp/">FireFTP</a> (A Firefox plug-in)</li>
+	<li><a href="https://cyberduck.io">Cyberduck</a></li>
+      </ul>
+  </div>
+
+  <div class="mt-5 mb-5">
+    <h5 id="overview">Step 2: Create a directory in ftp://helix.nih.gov/pub/</h5>
+    <ol>
+      <li>In Filezilla, enter <br> <code>ftp://helix.nih.gov/pub</code><br> in
+	the Host field.  Username and Password are not required. The
+	application will open the folder /pub automatically.</li>
+      <li>Click on "Quick Connect."</li>
+      <li>In the "Remote site" pane, right-click and select "Create directory."</li>
+    </ol>
+    <img src="/static/images/ftp_mkdir_sm.png" alt="ftp_make_dir">
+  </div>
+
+  <div class="mt-5 mb-5"><h5 id="overview">Step 3: Move Files To The FTP Server</h5>
+    <ul>
+      <li>Change to the directory just created, "N2_demo" in the picture below.</li>
+	<li>Drag files from "Local site" (your machine) to that remote directory.</li>
+    </ul>
+    <img src="/static/images/ftp_mv_files.png" alt="ftp_move_files">
+  </div>
+
+  <div class="mt-5 mb-5"><h5 id="overview">Step 4: Submit Files to Nephele Using a URL</h5>
+    <ol>
+      <li>Go to the Nephele website and select the pipeline you'd like to run.</li>
+      <li>On the page that asks you to "Upload Data Files" select the "Upload
+	via FTP" button.</li>
+      <li>Copy the URL created on the FTP server into the "Upload Data" field.
+	In this case the URL for would look like:<br>
+	<code>ftp://helix.nih.gov/pub/N2_demo/</code>
+    </ol>
+</div>
+
+{% endblock %}

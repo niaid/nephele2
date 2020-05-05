@@ -1,0 +1,59 @@
+{% extends "tutorials_base.html" %}
+
+{% block guide_content %}
+<style>
+</style>
+<h1 id="importing-nephele-outputs-into-qiime-2">Importing Nephele outputs into QIIME 2</h1>
+<p>Nephele uses various plugins from QIIME 2 for our pipelines, but you may also want to do your own analysis using QIIME 2. This tutorial is using QIIME 2 v2019.7. It assumes you have already <a href="https://docs.qiime2.org/2019.7/install/" target="_blank" rel="noopener noreferrer">installed QIIME 2 and have activated the conda environment</a>.</p>
+<h4 id="dada2-pipeline">DADA2 pipeline</h4>
+<ul>
+    <li>
+        <p>Import ASV count data from BIOM file.</p>
+        <pre class="bash"><code>qiime tools import --type FeatureTable[Frequency] --input-path \
+taxa_species.biom --output-path frequency_table.qza --input-format BIOMV100Format</code></pre>
+    </li>
+    <li>
+        <p>Import taxonomy from taxonomy table.</p>
+        <pre class="bash"><code>qiime tools import --type FeatureData[Taxonomy] --input-path \
+taxonomy_table.txt --output-path taxonomy_table.qza  --input-format TSVTaxonomyFormat</code></pre>
+    </li>
+</ul>
+<h4 id="mothur-pipeline">mothur pipeline</h4>
+<ul>
+    <li>
+        <p>Import OTU count data from BIOM file.</p>
+        <pre class="bash"><code>qiime tools import --type FeatureTable[Frequency] --input-path \
+combo.trim.contigs.good.unique.good.filter.unique.precluster.pick.opti_mcc.0.03.biom \
+--output-path frequency_table.qza --input-format BIOMV100Format</code></pre>
+    </li>
+    <li>
+        <p>For the taxonomy, you will first need to modify the <em>combo.trim.contigs.good.unique.good.filter.unique.precluster.pick.opti_mcc.0.03.cons.taxonomy</em> file as follows:</p>
+        <ul>
+            <li>Remove the second column "Size."</li>
+            <li>Rename the remaining columns to "Feature ID" and "Taxon."</li>
+        </ul>
+        <p>Then you can import the taxonomy from this modified file.</p>
+        <pre class="bash"><code>qiime tools import --type FeatureData[Taxonomy] --input-path \
+modified.taxonomy --output-path taxonomy_table.qza --input-format TSVTaxonomyFormat</code></pre>
+    </li>
+</ul>
+<h4 id="qiime-1-pipeline">QIIME 1 pipeline</h4>
+<ul>
+    <li>
+        <p>Import OTU count data from BIOM file. Here, we are using <em>otus/otu_table_mc2_w_tax_no_pynast_failures.biom</em> which is the final output of the 16S open reference OTU picking step in QIIME 1. For 16S closed or <em>de novo</em> OTU picking, you may want to use <em>otus/otu_table.biom</em>, and for ITS, <em>otus/otu_table_mc2_w_tax.biom</em>.</p>
+        <pre class="bash"><code>qiime tools import --type FeatureTable[Frequency] --input-path \
+otus/otu_table_mc2_w_tax_no_pynast_failures.biom --output-path frequency_table.qza \
+--input-format BIOMV210Format</code></pre>
+    </li>
+    <li>
+        <p>Import taxonomy from BIOM file.</p>
+        <pre class="bash"><code>qiime tools import --type FeatureData[Taxonomy] --input-path \
+otus/otu_table_mc2_w_tax_no_pynast_failures.biom --output-path taxonomy_table.qza \
+--input-format BIOMV210Format</code></pre>
+    </li>
+</ul>
+<h4 id="downstream-analysis-pipeline">Downstream analysis pipeline</h4>
+<ul>
+    <li>The outputs of the downstream analysis pipeline with extension <em>.qza</em> are already in QIIME 2 artifact format. See the QIIME 2 plugin help linked from the pipeline <a href="{{ url_for('show_da_details', _anchor='output-files') }}" target="_blank" rel="noopener noreferrer">output files section</a> for their artifact types.</li>
+</ul>
+{% endblock %}

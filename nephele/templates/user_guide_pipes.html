@@ -1,0 +1,411 @@
+{% extends "guide_base.html" %}
+
+{% block guide_content %}
+<h1>Nephele Pipelines</h1>
+<nav id="TOC">
+  <ul>
+    <li><a href="#overview">Pipelines</a></li>
+    <li><a href="#data_types">Data Types</a></li>
+    <li><a href="#qc_pipes">Pre-processing Quality Check (QC) Pipeline</a></li>
+    <li><a href="#amplicon_pipes">Amplicon Pipelines</a></li>
+    <li><a href="#wgs_pipes">Metagenome Pipelines</a></li>
+    <li><a href="#da_pipes">Downstream Analysis Pipeline</a></li>
+    <li><a href="#output">Nephele Output Folders</a></li>
+  </ul>
+</nav>
+
+
+<div class="mt-5 mb-5">
+  <h5 id="overview">Pipelines</h5>
+  <p>Nephele provides QIIME1, mothur and DADA2 pipelines for amplicon data and the bioBakery pipeline for metagenome shotgun data.
+  In addition, we have added a sequence data quality check pipeline so that you can inspect and control for your data quality before analysis.</p>
+  <p>We also like learning about new and different pipelines that could better serve your research and educational needs. If you have a suggestion of a tool or analysis for Nephele, please fill out this <a href="https://goo.gl/forms/FoNIPILlR9ss0hUL2" target="_blank" rel="noopener noreferrer">form.</a>
+  <br/>&#42;Note: your request will be considered in planning new features, but it doesn’t guarantee implementation.</p>
+
+</div>
+
+
+<div class="mt-5 mb-5">
+
+  <h5 id="data_types">Data Types</h5>
+
+  <p>Nephele v2 supports demultiplexed paired-end and single-end FASTQ files. Please see the supported data type per pipeline below.</p>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+	<tr>
+	  <th></th>
+    <th class="psi-content text-center"><a href="{{ url_for('show_qc_details') }}">Pre-processing QC</a></th>
+    <th class="psi-content text-center"><a href="{{ url_for('show_qiime_details') }}">QIIME v1.9.1</a></th>
+	  <th class="psi-content text-center"><a href="{{ url_for('show_mothur_details') }}">mothur v1.40.5</a></th>
+	  <th class="psi-content text-center"><a href="{{ url_for('show_dada2_details') }}">DADA2 v1.10</a></th>
+	  <th class="psi-content text-center"><a href="{{ url_for('show_biobakery_details') }}">bioBakery</a></th>
+	  <th class="psi-content text-center" style="width:10em;"><a href="{{ url_for('show_da_details') }}">Downstream Analysis (amplicon only)</a></th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td>Paired End FASTQ</td>
+    <td class="psi-content text-center"><div><i class="fas fa-check fa-lg check-pipeline text-success"></i></div><div><a href="{{ qc_pe_map_url }}" target="_blank" rel="noopener noreferrer">Mapping file template</a></div></td>
+    <td class="psi-content text-center"><div><i class="fas fa-check fa-lg check-pipeline text-success"></i></div><div><a href="{{ pe_map_url }}" target="_blank" rel="noopener noreferrer">Mapping file template</a></div></td>
+	  <td class="psi-content text-center"><div><i class="fas fa-check fa-lg check-pipeline text-success"></i></div><div><a href="{{ pe_map_url }}" target="_blank" rel="noopener noreferrer">Mapping file template</a></div></td>
+	  <td class="psi-content text-center"><div><i class="fas fa-check fa-lg check-pipeline text-success"></i></div><div><a href="{{ pe_map_url }}" target="_blank" rel="noopener noreferrer">Mapping file template</a></div></td>
+	  <td class="psi-content text-center"><div><i class="fas fa-check fa-lg check-pipeline text-success"></i></div><div><a href="{{ wgs_pe_map_url }}" target="_blank" rel="noopener noreferrer">Mapping file template</a></div></td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td>Single End FASTQ</td>
+    <td class="psi-content text-center"><div><i class="fas fa-check fa-lg check-pipeline text-success"></i></div><div><a href="{{ qc_se_map_url }}" target="_blank" rel="noopener noreferrer">Mapping file template</a></div></td>
+    <td class="psi-content text-center"><div><i class="fas fa-check fa-lg check-pipeline text-success"></i></div><div><a href="{{ se_map_url }}" target="_blank" rel="noopener noreferrer">Mapping file template</a></div></td>
+	  <td></td>
+	  <td class="psi-content text-center"><div><i class="fas fa-check fa-lg check-pipeline text-success"></i></div><div><a href="{{ se_map_url }}" target="_blank" rel="noopener noreferrer">Mapping file template</a></div></td>
+	  <td class="psi-content text-center"><div><i class="fas fa-check fa-lg check-pipeline text-success"></i></div><div><a href="{{ wgs_se_map_url }}" target="_blank" rel="noopener noreferrer">Mapping file template</a></div></td>
+	  <td></td>
+	</tr>
+  <tr>
+	  <td>BIOM</td>
+    <td></td>
+    <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td class="psi-content text-center"><div><i class="fas fa-check fa-lg check-pipeline text-success"></i></div><div>Mapping file from your 16S or ITS pipeline output</div></td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>If you need help figuring out what type of data you have, please see the <a href="{{ url_for('show_FAQ', _anchor='collapse1') }}">FAQ</a>.</p>
+
+</div>
+
+
+
+<div class="mt-5 mb-5">
+  <h5 id="qc_pipes">Pre-processing Quality Check (QC) Pipeline</h5>
+
+  <p>Nephele provides a pre-processing quality check pipeline for demultiplexed paired-end and single-end FASTQ files.
+  Please see <a href="{{ url_for('show_FAQ', _anchor='collapse7A') }}">this FAQ</a> on why you may want to run QC pipeline before you run a microbiome analysis.
+  The Nephele QC pipeline can run a quality control check (FastQC),
+  Trim primers and&#47;or adapters, Trim and&#47;or Filter reads based on quality scores, Merge read pairs, and provides summary graphs of the QC steps.</p>
+  <p>The features list below is a summary of the Nephele QC pipeline workflow.</p>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+	<tr>
+	  <th>Pipeline Features</th>
+	  <th class="psi-content">Pre-processing Quality Check</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td>FastQC sequence quality check</td>
+	  <td class="psi-content"><div class="check-pipeline text-success">Always run</div></td>
+	</tr>
+	<tr>
+	  <td>Trim primers and/or adapters</td>
+	  <td class="psi-content"><div class="question-pipeline text-warning">Run if selected</div></td>
+	</tr>
+	<tr>
+	  <td>Trim reads based on quality scores</td>
+	  <td class="psi-content"><div class="question-pipeline text-warning">Run if selected</div></td>
+	</tr>
+	<tr>
+	  <td>Filter reads based on quality scores</td>
+	  <td class="psi-content"><div class="question-pipeline text-warning">Run if selected</div></td>
+	</tr>
+	<tr>
+	  <td>Merge read pairs</td>
+	  <td class="psi-content"><div class="question-pipeline text-warning">Run if selected</div></td>
+	</tr>
+	<tr>
+	  <td>Summary graphs of QC steps</td>
+	  <td class="psi-content"><div class="check-pipeline text-success">Always run</div></td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>&#42;</strong> Please note that Trim primers and&#47;or adapters, Trim reads based on quality scores, Filter reads based on quality scores, Merge read pairs options will be executed ONLY IF the option is selected.
+  <br><strong>&#42;&#42;</strong>Merge read pairs is Paired End only.</p>
+  <p>More information about the pipeline, including output files and user options, can be found on the Pre-processing QC Pipeline <a href="{{ url_for('show_qc_details') }}">help page</a></p>
+
+  <h6><strong>Try it out</strong></h6>
+  <p>You can use either our <a href="{{ url_for('show_user_guide') }}">16S example files</a> or <a href="#wgs_pipes">WGS examples files</a> above to try out this pipeline.</p>
+
+
+</div>
+
+<div class="mt-5 mb-5">
+  <h5 id="amplicon_pipes">Amplicon Pipelines</h5>
+  <p>Nephele is currently running QIIME v1.9.1, mothur v1.40.5. and DADA2 v1.10. You can use any of these pipelines to run 16S analysis. For ITS, QIIME1 is available.</p>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+	<tr>
+	  <th>Amplicon</th>
+	  <th class="psi-content text-center"><a href="{{ url_for('show_qiime_details') }}">QIIME v1.9.1</a></th>
+	  <th class="psi-content text-center"><a href="{{ url_for('show_mothur_details') }}">mothur v1.40.5</a></th>
+	  <th class="psi-content text-center"><a href="{{ url_for('show_dada2_details') }}">DADA2 v1.10</a></th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td>16S</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>ITS</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td></td>
+	  <td></td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Each pipeline has different features and steps. Please see the table below to see the different features each 16S pipeline provides in Nephele.</p>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+	<tr>
+	  <th>Pipeline Features</th>
+	  <th class="psi-content text-center">mothur</th>
+	  <th class="psi-content text-center">QIIME1</th>
+	  <th class="psi-content text-center">DADA2</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td>Join forward and reverse short reads as contigs</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Screen contigs to reduce sequencing errors</td>
+	  <td></td>
+	  <td></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Dereplicate contig sequences</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Taxonomic assignment based on selected database</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Remove sequences likely due to sequencing errors</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Identify and remove chimeric sequences</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Classify sequences based on k-nearest neighbor</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td></td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td>Remove sequences belonging to undesirable lineages</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td></td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td>Remove rare OTUs in the samples</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td>Detect differentially abundant features in samples</td>
+	  <td></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td>Construct phylogenetic tree</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td>Calculate various measures of diversity</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+          <tr>
+            <td><font color=red>Ion Torrent Processing - Beta</font></td>
+            <td></td>
+            <td></td>
+            <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>More detailed information about each step can be found on the individual pipeline help pages:</p>
+  <ul>
+    <li><a href="{{ url_for('show_mothur_details') }}">mothur</a></li>
+    <li><a href="{{ url_for('show_dada2_details') }}">DADA2</a></li>
+    <li><a href="{{ url_for('show_qiime_details') }}">QIIME1</a></li>
+  </ul>
+
+  <p>Follow our <a href="{{ url_for('show_user_guide') }}">tutorial</a> to try it out.</p>
+
+
+</div>
+
+<div class="mt-5 mb-5">
+  <h5 id="wgs_pipes">Metagenome Pipelines</h5>
+
+  <p>Nephele’s metagenome shotgun pipeline runs the <a href="https://bitbucket.org/biobakery/biobakery/wiki/Home" target="_blank" rel="noopener noreferrer">bioBakery Workflows</a> developed by <a href="http://huttenhower.sph.harvard.edu/" target="_blank" rel="noopener noreferrer">The Hutterhower Lab</a>.</p>
+  <p>The pipeline runs the <a href="https://bitbucket.org/biobakery/biobakery_workflows/wiki/Home#!whole-metagenome-shotgun-wmgx" target="_blank" rel="noopener noreferrer">Whole Metagenome Shotgun (wmgx)</a> and <a href="https://bitbucket.org/biobakery/biobakery_workflows/wiki/Home#!visualization-for-whole-metagenome-shotgun-wmgx_vis" target="_blank" rel="noopener noreferrer">Visualization for Whole Metagenome Shotgun (wmgx_vis)</a> bioBakery workflows. The features list below are a summary of the Nephele bioBakery pipeline workflow.</p>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+	<tr>
+	  <th>Pipeline Features</th>
+	  <th class="psi-content text-center">bioBakery</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td>Trim and filter reads for quality with kneadData</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Filter contaminant sequences (human and ribosomal RNA) with kneadData</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Taxonomic assignment with MetaPhlAn2</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Functional profiling with HUMAnN2</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Strain profiling with StrainPhlAn</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Summary visualizations of species and functional gene abundance</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>PCoA ordination of species composition</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+	<tr>
+	  <td>Plots of functional feature detection vs sequencing depth</td>
+	  <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>More information about the pipeline, including output files can be found on the <a href="{{ url_for('show_biobakery_details') }}">bioBakery pipeline help page</a>.</p>
+
+  <h6>Try it out</h6>
+  <p>Note: These data are from <a href="https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows#rst-header-input-files" target="_blank" rel="noopener noreferrer">bioBakery Workflows Tutorial</a>. These files were generated using reads obtained from a set of six healthy and diseased samples (<a href="https://www.ncbi.nlm.nih.gov/pubmed/25079328" target="_blank" rel="noopener noreferrer">Alterations of the human gut microbiome in liver cirrhosis. Nature. 2014 Sep 4;513(7516):59-64.</a>)</p>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+	<tr>
+	  <th>File (Type)</th>
+	  <th>Size</th>
+	  <th>Description</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td><a href="{{ wgs_test_seqs_url }}" target="_blank" rel="noopener noreferrer">Sequences</a></td>
+	  <td>30MB</td>
+	  <td>Contains 6 single-end samples sequenced on the Illumina MiSeq platform</td>
+	</tr>
+	<tr>
+	  <td><a href="{{ wgs_test_map_url }}" target="_blank" rel="noopener noreferrer">Mapping File (Excel)</a></td>
+	  <td>11KB</td>
+	  <td>Metadata file used in Nephele submissions that describes samples, treatments, etc. for analysis</td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+  &#42;Note: please unzip the file and upload individual fastq.gz files when submitting. See the <a href="{{ url_for('show_user_guide') }}">tutorial</a> for help on submitting a job.
+
+</div>
+
+<div class="mt-5 mb-5">
+  <h5 id="da_pipes">Downstream Analysis Pipeline</h5>
+
+  <p>You can use biom files from your 16S or ITS pipeline outputs to run the downstream analysis (DA) pipeline. Nephele's DA pipeline uses QIIME 2 to provide sample observation and taxonomic summaries and diversity analyses of an OTU table </p>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+  <tr>
+    <th>Pipeline Features</th>
+    <th class="psi-content">Downstream Analysis</th>
+  </tr>
+      </thead>
+      <tbody>
+  <tr>
+    <td>Summarize sample metadata</td>
+    <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+  </tr>
+  <tr>
+    <td>Calculate alpha diversity measures</td>
+    <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+  </tr>
+  <tr>
+    <td>Plot PCoA ordination of beta diversity </td>
+    <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+  </tr>
+  <tr>
+    <td>Plot bar graphs of taxonomic abundance</td>
+    <td class="psi-content text-center"><i class="fas fa-check fa-lg check-pipeline text-success"></i></td>
+  </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>More detailed information about each step can be found on the <a href="{{ url_for('show_da_details') }}">Downstream Analysis pipeline help page</a>.</p>
+</div>
+
+<div class="mt-5 mb-5">
+  <h5 id="output">Nephele Output Folders</h5>
+  <ul>
+    <li><a href="{{ url_for('show_qc_details', _anchor='output-files') }}">Nephele Pre-processing QC pipeline output</a> <a href="{{ qc_output_url }}" target="_blank" rel="noopener noreferrer">(download example)</a></li>
+    <li><a href="{{ url_for('show_qiime_details', _anchor='output-files') }}" target="_blank" rel="noopener noreferrer">Nephele 16S QIIME1 (FASTQ) pipeline output</a> <a href="{{ qiime_output_url }}" target="_blank" rel="noopener noreferrer">(download example)</a></li>
+    <li><a href="{{ url_for('show_mothur_details', _anchor='output-files') }}" target="_blank" rel="noopener noreferrer">Nephele 16S mothur (FASTQ) pipeline output</a> <a href="{{ mothur_output_url }}" target="_blank" rel="noopener noreferrer">(download example)</a></li>
+    <li><a href="{{ url_for('show_dada2_details', _anchor='output-files') }}">Nephele 16S DADA2 (FASTQ) pipeline output</a> <a href="{{ dada_output_url }}" target="_blank" rel="noopener noreferrer">(download example)</a></li>
+    <li><a href="{{ url_for('show_biobakery_details', _anchor='output-files') }}">Nephele WGS bioBakery (FASTQ) pipeline output</a> <a href="{{ wgs_output_url }}" target="_blank" rel="noopener noreferrer">(download example)</a></li>
+    <li><a href="{{ url_for('show_da_details', _anchor='output-files') }}">Nephele Downstream Analysis pipeline output</a> <a href="{{ da_output_url }}" target="_blank" rel="noopener noreferrer">(download example)</a></li>
+  </ul>
+</div>
+
+
+{% endblock %}

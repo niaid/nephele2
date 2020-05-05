@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+
+<div class="pb-2 mt-5 mb-5 border-bottom">
+			<h1>Re-use file?</h1>
+    <p>{{ title }}</p>
+    <form method="POST" >
+	    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    		<button class="btn btn-primary"  type="submit" name="input_from" value="old">
+    			 <i class="glyphicon glyphicon-chevron-right"></i>
+    			 <span>Run With Original</span>
+    		   </button>
+    		<button class="btn btn-primary btn-success"  type="submit" name="input_from" value="new">
+    			 <i class="glyphicon glyphicon-upload"></i>
+    			 <span>Upload New</span>
+    		   </button>
+     </form>
+		</div>
+
+{% endblock %}
+
+
+

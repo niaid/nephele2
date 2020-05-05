@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block page_content %}
+    <p>
+    Job {{ job_id }} has been submitted to the system.
+    We'll be sending an email to {{ email }} shortly with more information.
+    </p>
+    <p><strong><em>Did you know?</em></strong></p>
+    <ul>
+      <li>Once this job has completed, you can use this ID with our "re-run previous
+    job" option on our <a href="/index">home page</a> for up to 90 days. This allows you to easily submit another job with
+    different pipeline parameters or mapping file using the same input data!</li>
+     <li>You can submit your biom file and mapping file from any amplicon pipeline to our <a href="/user_guide_pipes/#da_pipes">Downstream analysis pipeline</a>
+      to get taxonomy bar plots and diversity analysis!</li>
+    </ul>
+
+{% endblock %}

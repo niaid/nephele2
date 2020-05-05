@@ -1,0 +1,152 @@
+{% extends "base_with_help.html" %}
+{% import "_render_dynamic_group.html" as d_group %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/advopts.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<form action="" method="post" name="options">
+  {{ form.hidden_tag() }}
+  <h2>Submit your {{ job_name }} job to Nephele:</h2>
+  {% block form_content %}
+  {% endblock %}
+  
+ <div>
+   <button class="btn btn-primary"  type="submit">
+     <span class="glyphicon glyphicon-play"></span> Validate and Submit
+   </button>
+   <button type="button" class="btn btn-primary btn-warning" data-toggle="modal" data-target="#nephele" onclick="getArgs( '#nephele' );">
+    <span class="glyphicon glyphicon-info-sign"></span>  View Selections
+   </button>
+ </div>
+</form>
+
+<!-- modal code starts here -->
+        <div class="modal fade"  role="dialog" id="nephele">
+            <div class="modal-dialog">
+                <!-- modal contents -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                        <h4 class="modal-title">Parameters for Job Submission</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table id="args" class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Number</th><th>Name</th><th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>  OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block info_content %}
+      <ul>
+        <li>Nephele provides additional options to fine tune your analysis.</li>
+        <li>If you wish to modify the options, please select each tab to view additional options. Otherwise, the pipeline will run with the default values.</li>
+        <li>For more information about each option, click on the option in the form, and the help text will appear on the right.</li>
+        <li>Any required arugments are denoted with an asterisk (*).</li>
+      </ul>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$(function(){
+	//Displays the help text for the currently focused input element
+	//Safari doesn't register focus events on checkboxes, so this is a work around (sort of)
+	$("form :input:checkbox").click(function() {
+		displayHelp($(this).attr('data-desc'));
+	});
+	
+	//Displays the help text for the currently focused input element
+	$("form :input").focus(function() {
+		displayHelp($(this).attr('data-desc'));
+	});
+	
+	//Set focus on the first visible input element
+	$("form :input:visible:first").focus();
+	
+	//These must be done here because the functions must execute in this order.
+	//hide the conditional elements for the HMP tab (input, label, and errors)
+	if (!$('#comp_with_dacc').is(':checked')) {
+		$("#region_dacc,#hmp_database,#body_site,#nearest_n_samples,label[for=region_dacc],label[for=hmp_database],label[for=body_site],label[for=nearest_n_samples],ul[for=region_dacc],ul[for=hmp_database],ul[for=body_site],ul[for=nearest_n_samples]").hide();
+	}
+	
+	//Set focus to the first visible input element on tab change
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		$("form :input:visible:first").focus();
+	});
+	
+	//Color the error messages red
+	$.each( $('.error').parents('div[class^="tab-pane"]'), function( index, value ){
+		$("a[href='#"+value.id+"']").addClass("errs");
+	});
+	
+	//These must be done here because the functions must execute in this order.
+	//display the conditional elements for the HMP tab if run HMP is selected
+	$('#comp_with_dacc').click(function(){
+		this.checked?$('#region_dacc,#hmp_database,#body_site,#nearest_n_samples,label[for=region_dacc],label[for=hmp_database],label[for=body_site],label[for=nearest_n_samples],ul[for=region_dacc],ul[for=hmp_database],ul[for=body_site],ul[for=nearest_n_samples]').show():$('#region_dacc,#hmp_database,#body_site,#nearest_n_samples,label[for=region_dacc],label[for=hmp_database],label[for=body_site],label[for=nearest_n_samples],ul[for=region_dacc],ul[for=hmp_database],ul[for=body_site],ul[for=nearest_n_samples]').hide();
+	});
+
+});
+
+/**
+ * Set the value of the help-container to the help text for the current focus element.
+ */
+function displayHelp(help_text) {
+	$('#help-container').html(help_text);
+}
+
+/**
+ * Gets the input elements for display in the modal
+ */
+function getArgs( _id ) {
+    var param = {};
+    //make this only grab the visible ones
+    $( 'input[type=radio]:checked:not([style*="display: none"])' ).each( function() { // all radio buttons
+        param[ ( $( this ).attr( "name" ) ).trim() ] = ( $( this ).val() ).trim(); });
+    
+    $( 'input[type=checkbox]:not([style*="display: none"]):not(.form-check-input)' ).each( function() { // all checkboxes buttons
+        param[ ( $( this ).attr( "name" ) ).trim() ] = ( $( this ).is(":checked") ); });
+    
+    $( 'input.form-check-input[type=checkbox]:not([style*="display: none"])' ).each( function() { // all checkbox groups
+    	if( $( this ).is(":checked") ){
+    		if( ( $( this ).attr( "name" ) ).trim() in param ){
+    			param[ ( $( this ).attr( "name" ) ).trim() ] += "-"+( $( this ).val() );
+    		}else{
+    			param[ ( $( this ).attr( "name" ) ).trim() ] = ( $( this ).val() );
+    		}
+         
+        } });
+
+    $( 'select:not([style*="display: none"])' ).each( function() {                    // all select options
+        param[ ( $( this ).attr( "name" ) ).trim() ] =
+            ( ( $( this ).find( "option:selected" ) ).val() ).trim(); });
+
+    $( 'input[type=text]:not([style*="display: none"])' ).each( function() {          // all text input
+        param[ ( $( this ).attr( "name" ) ).trim() ] = ( $( this ).val() ).trim(); });
+
+    $( "#args > tbody" ).html( "" );                    // empty the table
+
+    $.each( ( Object.keys( param ) ).sort(), function( i, v ) {
+        $( "#args > tbody" ).append( "<tr><td>" + ( i + 1 ) + "</td><td>" + v +
+            "</td><td>" + param[ v ] + "</td></tr>" ); });
+}
+</script>
+{% endblock %}

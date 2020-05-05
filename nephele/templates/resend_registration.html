@@ -1,0 +1,12 @@
+
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block page_content %}
+<h2>Resend an email to {{ email }}?</h2>
+{{ wtf.quick_form(form) }}
+{% endblock %}
+

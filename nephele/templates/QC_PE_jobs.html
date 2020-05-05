@@ -1,0 +1,51 @@
+{% extends "pipeline_selection_base.html" %}
+
+{% block selection_list %}
+  {{ super() }}
+  <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Pipeline Features</th>
+            <th class="psi-content">Pre-processing Quality Check</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>FastQC sequence quality check</td>
+            <td class="psi-content"><div class="check-pipeline">Always run</div></td>
+          </tr>
+          <tr>
+            <td>Trim primers and/or adapters</td>
+            <td class="psi-content"><div class="question-pipeline">Run if selected</div></td>
+          </tr>
+          <tr>
+            <td>Trim reads based on quality scores</td>
+            <td class="psi-content"><div class="question-pipeline">Run if selected</div></td>
+          </tr>
+          <tr>
+            <td>Filter reads based on quality scores</td>
+            <td class="psi-content"><div class="question-pipeline">Run if selected</div></td>
+          </tr>
+          <tr>
+            <td>Merge read pairs</td>
+            <td class="psi-content"><div class="question-pipeline">Run if selected</div></td>
+          </tr>
+          <tr>
+            <td>Summary graphs of QC steps</td>
+            <td class="psi-content"><div class="check-pipeline">Always run</div></td>
+          </tr>
+          <tr class="psi">
+            <td></td>
+            <td class="psi-content"><button type="submit" class="btn btn-primary nbtn-primary" name="job_type" value="Paired End QC">Select</button>
+              <p><a href="{{ url_for('show_qc_details') }}" target="_blank" rel="noopener noreferrer" class="extra-info">See details</a></p></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+{% endblock %}
+
+{% block info_content %}
+  {{ super() }}
+  {% include 'QC_jobs_help.html' %}
+{% endblock %}

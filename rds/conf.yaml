@@ -1,0 +1,86 @@
+default_worker: &default_ami ami-003eed27e5bf2ef91
+docker_worker: &docker_ami ami-0a2efb1f196e0c1f2
+qiime2_worker: &qiime2_ami ami-0e996778648e9b707
+
+default_instance: &default_instance m5.4xlarge
+m5_12x: &m5_12x m5.12xlarge
+
+
+job_types: [{name: QIIME 16S FASTQ Paired End,
+             script_name: qiime_pe.py,
+             package : QIIME,
+             data_type: PE,
+             ami_id : *default_ami,
+             default_instance_type : *default_instance},
+
+             {name: QIIME 16S FASTQ Single End,
+             script_name: qiime_se.py,
+             package : QIIME,
+             data_type: SE,
+             ami_id : *default_ami,
+             default_instance_type : *default_instance},
+
+             {name: mothur 16S FASTQ Paired End,
+             script_name: m2.py,
+             package : MOTHUR_MiSeq,
+             data_type: PE,
+             ami_id : *default_ami,
+             default_instance_type : *default_instance},
+
+             {name: DADA2 16S FASTQ Paired End,
+             script_name: dada2nephele.py,
+             package: DADA2,
+             data_type: PE,
+             ami_id : *default_ami,
+             default_instance_type : *default_instance},
+
+             {name: DADA2 16S FASTQ Single End,
+             script_name: dada2nephele.py,
+             package: DADA2,
+             data_type: SE,
+             ami_id : *default_ami,
+             default_instance_type : *default_instance},
+
+             {name: QIIME ITS FASTQ Paired End,
+             script_name: qiime_its.py,
+             package : QIIME,
+             data_type: ITS_PE,
+             ami_id : *default_ami,
+             default_instance_type : *default_instance},
+
+             {name: WGS Paired End FASTQ,
+             script_name: biobakery.py,
+             package : bioBakery,
+             data_type: WGS_PE,
+             ami_id : *docker_ami,
+             default_instance_type : *m5_12x},
+
+             {name: WGS Single End FASTQ,
+             script_name: biobakery.py,
+             package : bioBakery,
+             data_type: WGS_SE,
+             ami_id : *docker_ami,
+             default_instance_type : *m5_12x},
+
+             {name: Single End QC,
+             script_name: qc_reads.sh,
+             package : QC_reads,
+             data_type: QC_SE,
+             ami_id : *qiime2_ami,
+             default_instance_type : *default_instance},
+
+             {name: Paired End QC,
+             script_name: qc_reads.sh,
+             package : QC_reads,
+             data_type: QC_PE,
+             ami_id : *qiime2_ami,
+             default_instance_type : *default_instance},
+
+             {name: Downstream Analysis,
+             script_name: downstream_16S.sh,
+             package : DS_analysis_16S,
+             data_type: DS_Analysis,
+             ami_id : *qiime2_ami,
+             default_instance_type : *default_instance}
+
+            ]

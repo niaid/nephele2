@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nephele.css') }}">
+{% endblock %}
+
+{% block page_content %}
+
+<h2>Nephele Privacy Policy</h2>
+<ol style="list-style-type: decimal">
+    <li>
+        <strong>Introduction</strong><br>
+        Protecting your privacy is very important to us. Nephele site links to other National Institutes of Health (NIH) sites, federal agency sites and occasionally, to private organizations. Once you leave the NEPHELE.NIAID.NIH.gov site, you are subject to the privacy policy for the site(s) you are visiting. We do not collect any personally identifiable information (PII) about you during your visit to NIH Web sites unless you choose to provide it to us. We do, however, collect some data about your visit to our web site to help us better understand how the public uses the site and how to make it more helpful. We collect information from visitors who read, browse, and/or download information from our web site. Nephele never collects information for commercial marketing or any purpose unrelated to the NIH mission and goals.
+    </li>
+    <li>
+        <strong>What information does Nephele collect?</strong>
+        <ul>
+            <li><strong>Personal information</strong><br>
+                Nephele is an NIH resource online platform where you are required to validate your email address so that we can send you the analysis result to a valid email. We request certain information that is identifiable to you, such as your name and organizational affiliation. Also, we ask how you hear about Nephele and a brief explanation of the analysis you plan to conduct using Nephele. The purpose of this data collection is to better understand its visitors and how we can improve the site and services.</li>
+            <li><strong>Google Analytics</strong><br>
+                Nephele.niaid.nih.gov uses Google Analytics to collect the information. Google Analytics gathers information automatically and continuously. No Personally Identifiable Information (PII) is collected. NIH staff conducts analyses and reports on the aggregated data from Google Analytics and those reports are only available to NIH.gov managers, members of the NIH.gov communications and web teams, and other designated staff who require this information to perform their duties.
+                Every time you access a page from this web site, we collect certain information from your computer about your visit. This information is used in summary format to identify items such as the date, time, origin, specific pages accessed, and the type of browser and computer operating system being used. Summary reports are only available to selected NIH staff who have a need for the information, in an effort to help us understand overall trends of site users and to implement changes that will make our site more useful to visitors. You can learn about Google’s practices by going to <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">www.google.com/policies/privacy/partners</a>.</li>
+            <li><strong>Browser cookies</strong><br>
+                In an effort to make this web site more usable, we sometimes use cookies to store information about your browsing preferences. These "cookies" do not report any other information about you or your computer, nor do they communicate with any other site or service. A "cookie" is a small file that a Web site transfers to your computer's hard disk allowing our server to "remember" specific information about your session while you are connected to our web site. These "cookies" do not collect or maintain any personal information about you. If you are concerned about the potential use of information gathered from your computer by cookies, you can set your browser to prompt you before it accepts a cookie. Most Internet browsers also have settings that let you identify and/or reject cookies.</li>
+            <li><strong>Log file information</strong><br>
+                Every pipeline job will automatically report the log file information each time you submit a job. These server logs include information such as user’s email, pipeline type, analysis type, job submitted time, job started time, job completed time, job description that you entered, all optional parameters you selected. These information helps us to troubleshoot in case of errors and understand and improve how you interact with pipelines on the website.</li>
+        </ul>
+    </li>
+
+    <li><strong>How do we use your personal information?</strong><br>
+        We use your personal information to respond to your requests. If you have subscribed to our mailing list, we will send you relevant information, updates about pipeline products, events as well as our newsletter. If you choose to join our email newsletter, the email address that you submit to us will be forwarded to <a href="https://mailchimp.com/" target="_blank" rel="noopener noreferrer">MailChimp</a> who provide us with email marketing services. We consider MailChimp to be a third-party data processor (see section 7.0 below).<br>
+        Your email address will remain within MailChimp’s database for as long as we continue to use MailChimp’s services for email marketing or until you specifically request removal from the list. You can do this by unsubscribing using the unsubscribe links contained in any email newsletters that we send you or by <a href="mailto:nephelesupport@nih@@gov?subject=Nephele%20newsletter%20unsubscribe" onmouseover="this.href=this.href.replace('@@','.')" onclick="this.href=this.href.replace('@@','.')">requesting removal via email</a>. When requesting removal via email, please send your email to us using the email account that is subscribed to the mailing list.<br>
+        When inquiries are emailed to us regarding pipeline supports or others, we store the question and the email address information so that we can respond electronically. Unless otherwise required by statute, we do not identify publicly who sends questions or comments to our web site. We will not obtain information that will allow us to personally identify you when you visit our site, unless you choose to provide such information to us if desiring to trouble pipeline errors or ask questions regarding analysis results.<br>
+        Emails sent to NIH staff may be seen by a number of people who are responsible for answering questions. If you send us an email, you are advised that email is not necessarily secure against interception.</li>
+
+    <li><strong>With whom do we share your personal information?</strong><br>
+        We do not share your personal information with any third parties for them to use for a commercial or marketing purpose. We do not share your input and output files with anyone outside of Nephele development team at NIH. We may use your input files to test the quality of our pipelines internal only.</li>
+
+    <li><strong>Links to other websites</strong><br>
+        Our website may contain links to other websites of interest and relevant to our work. However, once you have used these links to leave our site, we cannot be responsible for the protection and privacy of any information you provide when visiting such sites and this privacy statement does not govern such sites. You should exercise caution and look at the privacy statement applicable to the website in question.</li>
+
+    <li><strong>Security and protection of your data</strong><br>
+        Nephele stores input file (such as sequence files, mapping file) that you uploaded, output files (analysis results) and interim data for 90 days after each time you submit a job. We securely store your input and output data. Nephele employs a range of technologies to protect the information maintained on our systems from loss, misuse, unauthorized access or disclosure, alteration or destruction. After 90 days, all input files, output files related to the job will be automatically deleted.</li>
+
+    <li><strong>Our third-party data processors</strong><br>
+        We use a number of third parties to process personal data on our behalf. All 3 of these third parties are based in the USA and are <a href="https://www.privacyshield.gov/welcome" target="_blank" rel="noopener noreferrer">EU-U.S Privacy Shield</a> compliant.
+        <ul>
+            <li>Google <a href="https://policies.google.com/privacy?hl=en-GB" target="_blank" rel="noopener noreferrer">(Privacy policy)</a>.</li>
+            <li>Mailchimp <a href="https://mailchimp.com/legal/privacy/" target="_blank" rel="noopener noreferrer">(Privacy policy)</a>.</li>
+        </ul>
+    </li>
+
+    <li><strong>How does the European Union’s new General Data Protection Regulation (GDPR) affect you?</strong><br>
+        GDPR is a new data protection and privacy regulation that applies to organizations located within the European Union (EU) as well as some that are outside the EU that offer goods or services or monitor the behavior of persons in the EU and process the personal data of those persons in connection with such activities.
+        If you are located in the EU, in adherence to this law, we must seek your consent to ensure that you continue to be a part of our mailing lists, and we will not send you further email updates unless you opt in to receive them by joining our mailing list by <a href="mailto:nephelesupport@nih@@gov?subject=Subscribe%20to%20Nephele%20newsletter" onmouseover="this.href=this.href.replace('@@','.')" onclick="this.href=this.href.replace('@@','.')">emailing us</a>.</li>
+
+
+    <li><strong>Data breaches</strong><br>
+        We will report any unlawful data breach of this website’s database or the database(s) of any of our third-party data processors to any and all relevant persons and authorities within 72 hours of the breach if it is apparent that personal data stored in an identifiable manner has been stolen.</li>
+
+    <li><strong>Changes to our privacy policy</strong><br>
+        Nephele may modify or update this Privacy Policy from time to time to reflect the changes in our work and practices. Please review this page periodically.</li>
+    <li><strong>How to contact us</strong><br>
+        If you have any questions or concerns about the Nephele Privacy Policy, please <a href="mailto:nephelesupport@nih@@gov?subject=Nephele Privacy Policy" onmouseover="this.href=this.href.replace('@@','.')" onclick="this.href=this.href.replace('@@','.')">email us</a>.</li>
+
+{% endblock %}

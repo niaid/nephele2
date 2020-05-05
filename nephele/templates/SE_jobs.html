@@ -1,0 +1,80 @@
+{% extends "pipeline_selection_base.html" %}
+
+{% block selection_list %}
+  {{ super() }}
+  <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Pipeline Features</th>
+            <th class="psi-content">QIIME1</th>
+            <th class="psi-content">DADA2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Filter and trim reads</td>
+            <td></td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Denoise read sequences to reduce sequencing errors</td>
+            <td></td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Dereplicate read sequences</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Taxonomic assignment based on selected database</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Identify and remove chimeric sequences</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td>Remove rare OTUs in the samples</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Detect differentially abundant features in samples</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Construct phylogenetic tree</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Calculate various measures of diversity</td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr>
+            <td><font color=red>Ion Torrent Processing - Beta</font></td>
+            <td></td>
+            <td class="psi-content"><i class="fas fa-check fa-lg check-pipeline"></i></td>
+          </tr>
+          <tr class="psi">
+            <td></td>
+            <td class="psi-content"><button type="submit" class="btn btn-primary nbtn-primary" name="job_type" value="QIIME 16S FASTQ Single End">Select</button>
+              <p><a href="{{ url_for('show_qiime_details') }}" target="_blank" rel="noopener noreferrer" class="extra-info">See details</a></p></td>
+              <td class="psi-content"><button type="submit" class="btn btn-primary nbtn-primary" name="job_type" value="DADA2 16S FASTQ Single End">Select</button>
+              <p><a href="{{ url_for('show_dada2_details') }}" target="_blank" rel="noopener noreferrer" class="extra-info">See details</a></p></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+{% endblock %}
+
+{% block info_content %}
+  {{ super() }}
+  {% include 'SE_jobs_help.html' %}
+{% endblock %}

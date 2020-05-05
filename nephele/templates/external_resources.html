@@ -1,0 +1,39 @@
+{% extends "tutorials_base.html" %}
+
+{% block guide_content %}
+<h1>Useful External Resources</h1>
+<p>This page contains links to other websites or educational materials related to the microbiome that users may find helpful.</p>
+<h3 id="web-apps">Web Apps</h3>
+<ul>
+    <li><a href="https://microbiomedb.org" target="_blank" rel="noopener noreferrer">MicrobiomeDB</a> is a data-mining platform for interrogating microbiome experiments.  It is part of the <a href="https://eupathdb.org/eupathdb/wdkCustomization/jsp/questions/XmlQuestions.About.jsp" target="_blank" rel="noopener noreferrer">EuPathDB</a> family of NIAID-funded <a href="https://www.niaid.nih.gov/research/bioinformatics-resource-centers-infectious-diseases" target="_blank" rel="noopener noreferrer">bioinformatics resource centers</a>.</li>
+    <li><a href="http://cgenome.net/wiki/index.php/Calypso" target="_blank" rel="noopener noreferrer">Calypso</a> is for amplicon downstream analysis.</li>
+    <li><a href="https://www.metaboanalyst.ca/" target="_blank" rel="noopener noreferrer">MetaboAnalyst</a> is for metabolomics analysis and can integrate microbiome data, including results from their sister tool <a href="https://www.microbiomeanalyst.ca" target="_blank" rel="noopener noreferrer">MicrobiomeAnalyst</a>.</li>
+    <li>EBI has <a href="https://www.ebi.ac.uk/Tools/msa/" target="_blank" rel="noopener noreferrer">tools for multiple sequence alignment</a>, some of which work with up to 4mb files for MSA and can be used with their <a href="https://www.ebi.ac.uk/Tools/phylogeny/simple_phylogeny/" target="_blank" rel="noopener noreferrer">phylogeny tools</a> for tree construction.</li>
+    <li><a href="https://www.mg-rast.org" target="_blank" rel="noopener noreferrer">MG-RAST</a> is a (WGS) metagenomics analysis server.</li>
+    <li><a href="https://view.qiime2.org" target="_blank" rel="noopener noreferrer">QIIME 2 View page</a> is for viewing .qza and .qzv files output by QIIME 2.</li>
+    <li><a href="http://taxonomer.iobio.io" target="_blank" rel="noopener noreferrer">Taxonomer metagenomics app</a> is for taxonomic assignment.</li>
+    <li><a href="http://huttenhower.sph.harvard.edu/galaxy" target="_blank" rel="noopener noreferrer">Huttenhower Lab's Galaxy server</a> has tools specifically for microbiome analysis.</li>
+    <li><a href="https://www.ebi.ac.uk/metagenomics" target="_blank" rel="noopener noreferrer">MGnify</a> from EMBL-EBI has tools for searching their databases of publicly available microbiome data, as well as for analyzing the public data or your own datasets.</li>
+    <li><a href="https://www.arb-silva.de" target="_blank" rel="noopener noreferrer">SILVA</a> provides databases for 16S/18S and 23S/28S rRNA sequences, and <a href="https://www.arb-silva.de/ngs/" target="_blank" rel="noopener noreferrer">SILVAngs</a> for analysis of amplicon NGS data.</li>
+    <li><a href="http://www.homd.org/index.php" target="_blank" rel="noopener noreferrer">eHOMD</a> provides databases and tools for analysis of the Human Oral Microbiome.</li>
+    <li><a href="https://metagenote.niaid.nih.gov" target="_blank" rel="noopener noreferrer">METAGENOTE</a> is for organizing and annotating data from genomics studies, including microbiome. It also allows for easy submission of the data and metadata to <a href="https://www.ncbi.nlm.nih.gov/sra/" target="_blank" rel="noopener noreferrer">SRA</a>.</li>
+    <li><a href="http://piphillin.secondgenome.com" target="_blank" rel="noopener noreferrer">Piphillin</a> is a webserver from Second Genome which provides prediction of metagenomic content by direct inference from 16S results using KEGG and BioCyc databases.</li>
+</ul>
+<h3 id="software-tools">Software tools and downloads</h3>
+<ul>
+    <li><a href="https://github.com/fbreitwieser/pavian" target="_blank" rel="noopener noreferrer">Pavian</a> is an R shiny app for visualizing and comparing metagenomics results. To use with MetaPhlAn2/bioBakery results, you will need to edit the header of the taxonomic profile to remove the comment character <code>#</code>.</li>
+    <li><a href="http://microbiome-tools.embl.de" target="_blank" rel="noopener noreferrer">Microbiome analysis software developed by EMBL</a></li>
+    <li>Second Genome's archive of the <a href="http://greengenes.secondgenome.com" target="_blank" rel="noopener noreferrer">Greengenes database</a></li>
+    <li><a href="https://huttenhower.sph.harvard.edu/maaslin2" target="_blank" rel="noopener noreferrer">MaAsLin2</a> is a <a href="http://bioconductor.org/packages/release/bioc/html/Maaslin2.html" target="_blank" rel="noopener noreferrer"><em>Bioconductor</em> package</a> for determining multivariate associations between metadata and meta'omic datasets using linear models.</li>
+</ul>
+<h3 id="tutorials-external">Tutorials</h3>
+<ul>
+    <li><a href="https://joey711.github.io/phyloseq/index.html" target="_blank" rel="noopener noreferrer">phyloseq</a> is an R meta-package for analysis of microbiome data which ties together other R packages for ease of use. They have many tutorials on their site, in particular:
+        <ul>
+            <li><a href="http://joey711.github.io/phyloseq-extensions/DESeq2.html" target="_blank" rel="noopener noreferrer">DESeq2</a> and <a href="http://joey711.github.io/phyloseq-extensions/edgeR.html" target="_blank" rel="noopener noreferrer">edgeR</a> for assessing differential abundance</li>
+            <li><a href="https://joey711.github.io/phyloseq/plot_bar-examples.html" target="_blank" rel="noopener noreferrer">Bar plots</a> using ggplot2</li>
+        </ul>
+    </li>
+    <li><a href="https://docs.qiime2.org/2019.10/tutorials/" target="_blank" rel="noopener noreferrer">QIIME 2 Tutorials</a></li>
+</ul>
+{% endblock %}

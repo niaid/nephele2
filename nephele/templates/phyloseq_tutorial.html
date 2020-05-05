@@ -1,0 +1,84 @@
+{% extends "tutorials_base.html" %}
+
+{% block guide_content %}
+<h1>Importing Nephele Results into Phyloseq</h1>
+<style>
+.routput { background-color: transparent;}
+code > span.kw { color: #152166; font-weight: bold; } /* Keyword^ */
+code > span.dt { color: #152166; } /* DataType^ */
+code > span.dv { color: #099; } /* Value^ */
+code > span.fl { color: #099; } /* Float^ */
+code > span.st { color: #d14; } /* String^ */
+code > span.co { color: #008b00; font-style: italic; } /* Comment */
+code > span.ot { color: #990073; } /* Other^ */
+code > span.op { color: #006666; font-weight: bold; } /* Operator^ */
+</style>
+<p>These are some general instructions for how to import the outputs from Nephele into <a href="https://joey711.github.io/phyloseq/" target="_blank" rel="noopener noreferrer">phyloseq</a>.</p>
+<h3 id="software-requirements">Software requirements</h3>
+<p>Please refer to the websites linked here for installation and usage instructions:</p>
+<ul>
+<li><a href="https://cran.r-project.org/" target="_blank" rel="noopener noreferrer">R</a></li>
+<li><a href="https://joey711.github.io/phyloseq/install.html" target="_blank" rel="noopener noreferrer">phyloseq</a> - installing phyloseq will also install the other packages used in this tutorial.</li>
+<li><a href="https://www.rstudio.com/products/rstudio/download/#download" target="_blank" rel="noopener noreferrer">RStudio</a> - not required, but helpful if you are new to R.</li>
+</ul>
+<h3 id="tutorial">Tutorial</h3>
+<ol class="example" style="list-style-type: decimal">
+<li>Download and unzip the PipelineResults folder from your Nephele job. This folder contains all of the data and files used in processing your job.</li>
+<li><p>In the files pane of RStudio, navigate to the <em>outputs</em> directory inside your unzipped folder. Under the "More" dropdown, choose <code>Set As Working Directory</code>.</p>
+<div>
+<img class="img-responsive" src="{{ url_for('static', filename='images/rstudio_screenshot.png') }}" alt="Screenshot with RStudio Set As Working Directory" width="50%">
+</div></li>
+<li><p>In the Console, enter the following</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(phyloseq)</code></pre></li>
+<li>To import the data as a phyloseq object, use phyloseq's <code>import_biom</code> or <code>import_mothur</code> commands.
+<ul>
+<li><p><strong>DADA2</strong></p>
+<pre class="sourceCode r"><code class="sourceCode r">mydata &lt;-<span class="st"> </span><span class="kw">import_biom</span>(<span class="dt">BIOMfilename =</span> <span class="st">"taxa_species.biom"</span>)</code></pre></li>
+<li><p><strong>mothur</strong></p>
+<pre class="sourceCode r"><code class="sourceCode r">mydata &lt;-<span class="st"> </span><span class="kw">import_mothur</span>(<span class="dt">mothur_shared_file =</span> <span class="st">"combo.trim.contigs.good.unique.good.filter.unique.precluster.pick.opti_mcc.shared"</span>, 
+    <span class="dt">mothur_constaxonomy =</span> <span class="st">"combo.trim.contigs.good.unique.good.filter.unique.precluster.pick.opti_mcc.0.03.cons.taxonomy"</span>)</code></pre></li>
+<li><p><strong>QIIME1</strong><br />
+You may see a warning message when importing the biom file from QIIME1.</p>
+<pre class="sourceCode r"><code class="sourceCode r">mydata &lt;-<span class="st"> </span><span class="kw">import_biom</span>(<span class="dt">BIOMfilename =</span> <span class="st">"otus/otu_table_mc2_w_tax_no_pynast_failures.biom"</span>)</code></pre>
+<pre class="routput"><code>## Warning in strsplit(conditionMessage(e), "\n"): input string 1 is invalid
+## in this locale</code></pre></li>
+</ul></li>
+<li><p>Import the sample metadata with <code>import_qiime_sample_data</code> and merge it with the phyloseq object. Subsititute the name of your mapping file for <em>map_file.txt</em> inside the quotes.</p>
+<pre class="sourceCode r"><code class="sourceCode r">mapfile &lt;-<span class="st"> </span><span class="kw">import_qiime_sample_data</span>(<span class="st">"map_file.txt"</span>)
+mydata &lt;-<span class="st"> </span><span class="kw">merge_phyloseq</span>(mydata, mapfile)
+mydata</code></pre>
+<pre class="routput"><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 6084 taxa and 10 samples ]
+## sample_data() Sample Data:       [ 10 samples by 7 sample variables ]
+## tax_table()   Taxonomy Table:    [ 6084 taxa by 7 taxonomic ranks ]</code></pre></li>
+<li><p>(Optional) By default, phyloseq will name the taxonomy levels "Rank1" up to "Rank7". To rename the levels, you can access the taxonomy table column names. Here is an example:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ncol</span>(<span class="kw">tax_table</span>(mydata))  <span class="co">## check if taxonomy is 6 or 7-level and give the names accordingly</span></code></pre>
+<pre class="routput"><code>## [1] 7</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colnames</span>(<span class="kw">tax_table</span>(mydata)) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"Kingdom"</span>, <span class="st">"Phylum"</span>, <span class="st">"Class"</span>, <span class="st">"Order"</span>, <span class="st">"Family"</span>, 
+    <span class="st">"Genus"</span>, <span class="st">"Species"</span>)</code></pre></li>
+<li><p>(Optional) To add a tree to the phyloseq object, use the <a href="https://cran.rstudio.com/web/packages/ape/index.html" target="_blank" rel="noopener noreferrer">ape package</a>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ape)</code></pre></li>
+<li><p>To read in QIIME1's tree file, use <code>read.tree</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">tree &lt;-<span class="st"> </span><span class="kw">read.tree</span>(<span class="st">"otus/rep_set.tre"</span>)
+tree</code></pre>
+<pre class="routput"><code>## 
+## Phylogenetic tree with 6084 tips and 6082 internal nodes.
+## 
+## Tip labels:
+##  New.CleanUp.ReferenceOTU24147, New.CleanUp.ReferenceOTU580, N
+## ew.CleanUp.ReferenceOTU23996, New.CleanUp.ReferenceOTU12876, New.
+## CleanUp.ReferenceOTU12823, New.CleanUp.ReferenceOTU12877, ...
+## Node labels:
+##  , 0.987, 0.886, 0.738, 0.829, 0.743, ...
+## 
+## Unrooted; includes branch lengths.</code></pre></li>
+<li><p>To add the tree to the <code>mydata</code> phyloseq object, use <code>phy_tree</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">phy_tree</span>(mydata) &lt;-<span class="st"> </span>tree
+mydata</code></pre>
+<pre class="routput"><code>## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 6084 taxa and 10 samples ]
+## sample_data() Sample Data:       [ 10 samples by 7 sample variables ]
+## tax_table()   Taxonomy Table:    [ 6084 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 6084 tips and 6082 internal nodes ]</code></pre></li>
+</ol>
+{% endblock %}

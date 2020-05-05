@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<div>
+    <h1>Pre-processing QC Pipeline</h1>
+    <p class="author"></p>
+    <nav id="TOC">
+        <ul>
+            <li><a href="#pipeline-steps-and-tools">Pipeline Steps and Tools</a></li>
+            <li><a href="#user-options">User Options</a></li>
+            <li><a href="#output-files">Output Files</a></li>
+            <li><a href="#references">References</a></li>
+        </ul>
+    </nav>
+    <style>
+        p {
+            margin-bottom: 10px !important;
+        }
+
+        dl {
+            margin-bottom: 5px;
+        }
+
+        dt {
+            font-weight: normal !important;
+        }
+
+    </style>
+    <h2 id="pipeline-steps-and-tools">Pipeline Steps and Tools</h2>
+    <ul>
+        <li>You can choose which of the steps in the pipeline you would like to run, with the exception of FastQC which is always the first step.</li>
+        <li>If you do not know very much about your data quality, we recommend that you run the pipeline without choosing any of the steps. This will run only FastQC and give you a summary report of your data quality.</li>
+    </ul>
+    <h3 id="fastqc">1. FastQC</h3>
+    <ul>
+        <li>FastQC is <em>always run</em> first in the pipeline with default parameters.</li>
+        <li>FastQC analyzes the input FASTQ files and reports summary statistics about each file in both tabular and graphical format, including number of reads, average per base quality score, etc.</li>
+        <li>Nephele uses <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/" target="_blank" rel="noopener noreferrer">FastQC</a> v0.11.7.</li>
+    </ul>
+    <h3 id="adapterprimer-trimming">2. Adapter/Primer trimming</h3>
+    <ul>
+        <li>Adapter and/or primer trimming is <em>optional</em>.</li>
+        <li>Nephele uses the <a href="https://docs.qiime2.org/2018.6/plugins/available/cutadapt/" target="_blank" rel="noopener noreferrer">cutadapt plugin</a> from QIIME 2 version 2018.6 for primer and adapter trimming.<br />
+        </li>
+        <li>cutadapt trims the sequences specified by the user from either the 5' or 3' ends of reads.</li>
+        <li>To trim primers for amplicon sequence data, the primer sequence should be specified as the Forward and/or Reverse front 5' adapter.</li>
+        <li>More information on adapter and primer trimming can be found in the <a href="https://docs.qiime2.org/2018.6/plugins/available/cutadapt/" target="_blank" rel="noopener noreferrer">QIIME 2 docs</a>, and on <a href="https://cutadapt.readthedocs.io/en/stable/" target="_blank" rel="noopener noreferrer">cutadapt's help page</a>.</li>
+    </ul>
+    <h3 id="quality-trimming">3. Quality trimming</h3>
+    <ul>
+        <li>Quality trimming is <em>optional</em>.</li>
+        <li><a href="http://www.usadellab.org/cms/?page=trimmomatic" target="_blank" rel="noopener noreferrer">Trimmomatic</a> v0.38 is used for quality trimming.</li>
+        <li>Trimmomatic uses a sliding window from the 5' to the 3' end of the read. When the average quality in the window drops below the required quality score, the read is trimmed to remove the 3' low quality end of the read.</li>
+        <li>Poor quality sequence can also be trimmed at the start of a read using the <a href="#quality-trimming-1"><code>Leading quality</code></a> trim option.</li>
+        <li>Further help can be found in the <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf" target="_blank" rel="noopener noreferrer">Trimmomatic manual</a>.</li>
+    </ul>
+    <h3 id="paired-end-read-merging">4. Paired-end read merging</h3>
+    <ul>
+        <li>Read merging is only for paired-end data sets and is <em>optional</em>.</li>
+        <li>For merging read pairs, Nephele uses <a href="https://github.com/dstreett/FLASH2" target="_blank" rel="noopener noreferrer">FLASH2</a> v2.2.00 which is based on the <a href="https://ccb.jhu.edu/software/FLASH/" target="_blank" rel="noopener noreferrer">FLASH</a> read merger.</li>
+        <li>FLASH is designed to merge pairs of reads when the original fragment length is shorter than twice the length of reads. It merges read pairs if the rate of mismatches in the overlapping region is less than the user-specified <a href="#merge-read-pairs"><code>Maximum mismatch density</code></a>. See user options below for more information.</li>
+    </ul>
+    <h3 id="summary-graphs">5. Summary graphs</h3>
+    <ul>
+        <li>Summary graphs are <em>always made</em> as the final step of the pipeline.</li>
+        <li>Nephele uses <a href="http://multiqc.info/" target="_blank" rel="noopener noreferrer">MultiQC</a> v1.8dev.<br />
+        </li>
+        <li>MultiQC summarizes the output of FastQC, cutadapt, Trimmomatic, and FLASh (if any of those steps are chosen by the user) and produces a single html report with graphs.</li>
+    </ul>
+    <h2 id="user-options">User Options</h2>
+    <h3 id="adapterprimer-trimming-1">Adapter/Primer trimming</h3>
+    <ul>
+        <li>At least one of the following options for the adapter/primer sequences must be specified:
+            <ul>
+                <li><strong>3' adapter</strong>: Sequence of an adapter ligated to the 3' end. The adapter and any subsequent bases are trimmed. If a <code>$</code> is appended, the adapter is only found if it is at the end of the read. Maximum 250bp.</li>
+                <li><strong>Front 5' adapter</strong>: Sequence of an adapter or primer ligated to the 5' end. The adapter and any preceding bases are trimmed. Partial matches at the 5' end are allowed. If a <code>^</code> character is prepended, the adapter is only found if it is at the beginning of the read. Maximum 250bp.</li>
+                <li><strong>Anywhere adapter</strong>: Sequence of an adapter that may be ligated to the 5' or 3' end. Both types of matches as described under <code>3' adapter</code> and <code>Front 5' adapter</code> are allowed. If the first base of the read is part of the match, the behavior is as with <code>Front 5'</code>, otherwise as with <code>3' adapter</code>. This option is mostly for rescuing failed library preparations - do not use if you know which end your adapter was ligated to. Maximum 250bp.</li>
+            </ul>
+        </li>
+        <li><strong>Error rate</strong>: Maximum allowed error rate. (default: 0.1)</li>
+        <li><strong>Indels</strong>: Allow insertions or deletions of bases when matching adapters. (default: True)</li>
+        <li><strong>Adapter overlap</strong>: Require at least this many bases of overlap between read and adapter for an adapter to be found. (default: 3)</li>
+        <li><strong>Match read wildcards</strong>: Interpret IUPAC wildcards (e.g., N) in reads. (default: False)</li>
+        <li><strong>Match adapter wildcards</strong>: Interpret IUPAC wildcards (e.g., N) in adapters. (default: True)</li>
+    </ul>
+    <h3 id="quality-trimming-1">Quality trimming</h3>
+    <ul>
+        <li><strong>Window size</strong>: Sliding window size for quality trimming, cutting once the average quality within the window falls below the <code>required quality</code>. Specifies the number of bases to average across. (default: 4)</li>
+        <li><strong>Required quality</strong>: Specifies the average quality required in the sliding window. (default: 12)</li>
+        <li><strong>Leading quality</strong>: Remove low quality bases from the beginning (5' end) of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated. (default: 0)</li>
+        <li><strong>Trailing quality</strong>: Remove low quality bases from the end of the read. As long as a base has a value below this threshold the base is removed and the next base (which as Trimmomatic is starting from the 3' end would be base preceding the just removed base) will be investigated. (default: 0)</li>
+        <li><strong>Minimum length</strong>: Remove reads that fall below the specified minimal length. (default: 60)</li>
+        <li><strong>Average quality</strong>: Drop the read if the average quality across the entire read is below the specified level. (default: 0)</li>
+    </ul>
+    <h3 id="merge-read-pairs">Merge Read Pairs</h3>
+    <ul>
+        <li>
+            <p><strong>Minimum overlap</strong>: The minimum required overlap length between two reads to provide a confident overlap. (default: 10)</p>
+        </li>
+        <li>
+            <p><strong>Maximum overlap</strong>: Maximum overlap length expected in approximately 90% of read pairs. Overlaps longer than the maximum overlap parameter are still considered as good overlaps, but the <code>mismatch density</code> (explained below) is <em>only calculated over the first <code>max_overlap</code> bases in the overlapped region</em> rather than the entire overlap. (default: 315)</p>
+        </li>
+        <li>
+            <p><strong>Minimum outie overlap</strong>: The minimum required overlap length between two reads to provide a confident overlap in an "outie" scenario. (default: 35)</p>
+            <div>
+                <p><img class="img-responsive" src="{{ url_for('static', filename='images/outie.svg') }}" alt="outie orientation" width="30%"></p>
+            </div>
+        </li>
+        <li>
+            <p><strong>Maximum mismatch density</strong>: Maximum allowed ratio between the number of mismatched base pairs and the overlap length. (default: 0.25)</p>
+        </li>
+    </ul>
+    <h2 id="output-files">Output Files</h2>
+    <ul>
+        <li>
+            <dl>
+                <dt><em>logfile.txt</em></dt>
+                <dd>log file containing messages from running the pipeline.
+                </dd>
+            </dl>
+        </li>
+        <li>
+            <dl>
+                <dt><strong>cutadapt_trimmed</strong></dt>
+                <dd>adapter/primer trimmed FASTQ files output by q2-cutadapt.
+                </dd>
+            </dl>
+        </li>
+        <li>
+            <dl>
+                <dt><strong>merged</strong></dt>
+                <dd>merged FASTQ files and other output from FLASH2
+                    <ul>
+                        <li><em>_merged.extendedFrags.fastq.gz</em>: FASTQ file of merged reads.</li>
+                        <li><em>_merged.notCombined_1/2.fastq.gz</em>: FASTQ files of reads that were not able to be merged.</li>
+                        <li><em>_merged.hist</em>: numeric histogram of merged read lengths.</li>
+                        <li><em>_merged.histogram</em>: visual histogram of merged read lengths.</li>
+                    </ul>
+                </dd>
+            </dl>
+        </li>
+        <li>
+            <dl>
+                <dt><strong>multiqc_input</strong></dt>
+                <dd>contains log files and FastQC output used by MultiQC.
+                    <ul>
+                        <li><em>*fastqc.html/.zip</em>: FastQC reports. See the <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/" target="_blank" rel="noopener noreferrer">FastQC Analysis module docs</a> for more information.</li>
+                    </ul>
+                </dd>
+            </dl>
+        </li>
+        <li>
+            <dl>
+                <dt><em>multiqc_report.html</em></dt>
+                <dd><a href="http://multiqc.info/docs/#using-multiqc-reports" target="_blank" rel="noopener noreferrer">MultiQC HTML report</a> with summary graphs.
+                </dd>
+            </dl>
+        </li>
+        <li>
+            <dl>
+                <dt><strong>multiqc_data</strong></dt>
+                <dd>files containing <a href="http://multiqc.info/docs/#parsed-data-directory" target="_blank" rel="noopener noreferrer">parsed data</a> output by MultiQC.
+                </dd>
+            </dl>
+        </li>
+        <li>
+            <dl>
+                <dt><strong>qtrimmed_seqs</strong></dt>
+                <dd>quality trimmed FASTQ files output by Trimmomatic. For paired-end data, there will be 4 files:
+                    <ul>
+                        <li><em>.trimmed_1/2P.fastq.gz</em>: paired-end output where both reads survived processing.</li>
+                        <li><em>.trimmed_1/2U.fastq.gz</em>: corresponding unpaired output where a read survived, but the partner read did not.</li>
+                    </ul>
+                </dd>
+            </dl>
+        </li>
+    </ul>
+    <h2 id="references">References</h2>
+    <ol class="example" style="list-style-type: decimal">
+        <li>Andrews, S. Babraham Bioinformatics - FastQC A Quality Control tool for High Throughput Sequence Data. (n.d.). Retrieved September 11, 2018, from <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/" target="_blank" rel="noopener noreferrer">https://www.bioinformatics.babraham.ac.uk/projects/fastqc/</a>.</li>
+        <li>Martin, M. (2011). Cutadapt removes adapter sequences from high-throughput sequencing reads. <em>EMBnet.Journal</em>, <em>17</em>(1), 10-12. doi: <a href="https://doi.org/10.14806/ej.17.1.200" target="_blank" rel="noopener noreferrer">10.14806/ej.17.1.200</a>.</li>
+        <li>Bolyen, Evan, et al. "Reproducible, Interactive, Scalable and Extensible Microbiome Data Science Using QIIME 2." <em>Nature Biotechnology</em>, July 2019, <a href="doi:%5B10.1038/s41587-019-0209-9" class="uri">doi:[10.1038/s41587-019-0209-9</a>](<a href="https://doi.org/10.1038/s41587-019-0209-9" class="uri">https://doi.org/10.1038/s41587-019-0209-9</a>).</li>
+        <li>Bolger, A. M., Lohse, M., &amp; Usadel, B. (2014). Trimmomatic: a flexible trimmer for Illumina sequence data. <em>Bioinformatics</em>, <em>30</em>(15), 2114. doi: <a href="https://doi.org/10.1093/bioinformatics/btu170" target="_blank" rel="noopener noreferrer">10.1093/bioinformatics/btu170</a>.</li>
+        <li>Magoc, T., &amp; Salzberg, S. L. (2011). FLASH: fast length adjustment of short reads to improve genome assemblies. <em>Bioinformatics</em>, <em>27</em>(21), 2957-2963. doi: <a href="https://doi.org/10.1093/bioinformatics/btr507">10.1093/bioinformatics/btr507</a>.</li>
+        <li>Streett, D. (2018). <em>Flash2 has some improvements from flash_1 including new logic from innie and outie overlaps as well as some initial steps for flash for amplicons: dstreett/FLASH2</em>. C. Retrieved from <a href="https://github.com/dstreett/FLASH2" target="_blank" rel="noopener noreferrer">https://github.com/dstreett/FLASH2</a> (Original work published 2015).</li>
+        <li>Ewels, P., Magnusson, M., Lundin, S., &amp; K&#228;ller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. <em>Bioinformatics</em>, <em>32</em>(19), 3047-3048. doi: <a href="https://doi.org/10.1093/bioinformatics/btw354" target="_blank" rel="noopener noreferrer">10.1093/bioinformatics/btw354</a>.</li>
+    </ol>
+</div>
+{% endblock %}

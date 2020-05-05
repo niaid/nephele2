@@ -1,0 +1,26 @@
+{% extends "base_with_help.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pipeline_selection.css') }}">
+{% endblock %}
+
+{% block page_content %}
+  <div class="pb-2 mt-5 mb-5 border-bottom">
+			<h2>Pipeline Selection</h2>
+		</div>
+  <form method="POST" >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% block selection_list %}{% endblock %}
+  </form>
+{% endblock %}
+
+{% block info_content %}
+  {{ super() }}
+	<p>Based on your input data, these are the pipelines that we have available:
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+{% endblock %}

@@ -1,0 +1,12 @@
+/* .select-item:hover { */
+/* 	background-color: white; */
+/* } */
+
+.icon-success {
+	color: green;
+    opacity: 1.0;
+}
+
+.icon-hidden {
+	opacity: 0.0;
+}

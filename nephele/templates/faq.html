@@ -1,0 +1,443 @@
+{% extends "guide_base.html" %}
+
+{% block guide_content %}
+    <h1>Frequently Asked Questions</h1>
+
+<div class="mt-5 mb-5">
+	<h5>Pipeline Submission Tips</h5>
+
+  <div class="accordion" id="submission_accordion">
+    <div class="card">
+      <div class="card-header" id="headingOne">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse1">How do I know if my data is paired-end or single-end?</a>
+        </p>
+      </div>
+
+      <div id="collapse1" class="collapse show" data-parent="#submission_accordion">
+        <div class="card-body">
+          <ul>
+            <li><strong>Paired End:</strong> Paired-end sequencing involves sequencing DNA from both ends of a fragment. Choose this option if your sequence files are paired and have been demultiplexed. For example, Illumina MiSeq Paired End FASTQ files consist of two files for each sample with names ending on &quot;R1_001.fastq&quot; and &quot;R2_001.fastq&quot;</li>
+            <li><strong>Single End:</strong> Single-end sequencing involves sequencing DNA from only one end. Choose this option if your samples were only sequenced from one end or if you don’t want to use the reverse FASTQ file.</li>
+            <li>If you need further information to help you decide what type of file you have, see the <a href="https://www.ncbi.nlm.nih.gov/sra/docs/submitformats/" target="_blank" rel="noopener noreferrer">SRA file type information</a> page.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingTwo">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse2">How I know if my data is demultiplexed?</a>
+        </p>
+      </div>
+      <div id="collapse2" class="collapse" data-parent="#submission_accordion">
+        <div class="card-body">
+          Each sequence file should only contain data from a single sample.  For paired-end data, you should have 2 files per sample, and for single-end, just one file per sample.  Nephele only accepts demultiplexed data at this time.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingThree">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse3">Is it possible to submit 16S amplicon data to the WGS pipeline?</a>
+        </p>
+      </div>
+      <div id="collapse3" class="collapse" data-parent="#submission_accordion">
+        <div class="card-body">
+          The WGS pipeline uses whole genome shotgun data for taxonomic and functional characterization.  It is not designed to work with amplicon data from a single region, but rather makes use of marker sequences from along the entire genome. Furthermore, the QC step of the bioBakery pipeline removes many 16S (and other amplicon) sequences, as these are often over-abundant in samples due to contamination. For more information, see the <a href="https://bitbucket.org/biobakery/kneaddata/wiki/Home" target="_blank" rel="noopener noreferrer">bioBakery kneadData QC</a> and <a href="https://bitbucket.org/biobakery/biobakery/wiki/metaphlan2" target="_blank" rel="noopener noreferrer">MetaPhlAn2 tutorial</a> wiki pages.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingFour">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse4">Can I submit already merged read pairs to Nephele?</a>
+        </p>
+      </div>
+      <div id="collapse4" class="collapse" data-parent="#submission_accordion">
+        <div class="card-body">
+          If you have reads that are already joined, submit the dataset as single-end samples.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingFive">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse5">How should I choose the values for the optional parameters?</a>
+        </p>
+      </div>
+      <div id="collapse5" class="collapse" data-parent="#submission_accordion">
+        <div class="card-body">
+          <p>The optional parameters were carefully chosen based on (1) the most common scenarios of NGS data analysis, (2) the suggestions from the developers, and (3) published results. The different pipelines available on Nephele target different kinds of NGS studies, such as whole genome shotgun sequencing, 16S microbiome survey, and functional annotation of microbial community.
+          <p>Most users submit their jobs with default values of the optional parameters. In our experience, more experienced bioinformaticians change the parameters to optimize their input data. We also have received feedback from novice microbiome researchers or students that they study the optional parameters (reading help text and testing different values-even if it fails) as a part of learning microbiome analysis.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingSix">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse6">How can I upload data to Nephele more efficiently?</a>
+        </p>
+      </div>
+      <div id="collapse6" class="collapse" data-parent="#submission_accordion">
+        <div class="card-body">
+          Rather than uploading large sequence files from your computer (and potentially over long distances or slow/wireless networks), you can likely save time by first uploading your files to a publicly-accessible FTP server, such as <a href="ftp://helix.nih.gov/pub" target="_blank" rel="noopener noreferrer">NIH Helix FTP server</a>, and then supplying the URL as your input. Nephele will verify that it can access the files, and then it will retrieve them after you click submit. Please see <a href="{{ url_for('show_user_guide', _anchor='ftp_howto') }}">'how to upload via ftp'</a> in Step 3.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingSixA">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse6A">Can I use Google Drive or Dropbox to upload my data to Nephele?</a>
+        </p>
+      </div>
+      <div id="collapse6A" class="collapse" data-parent="#submission_accordion">
+        <div class="card-body">
+          Yes, you can, but you will need to use your mobile device to do so. Below are the steps you can try.  Here we use Google Drive on an iOS device as an example, but the steps are pretty much the same for Dropbox and/or Android.
+          <ol>
+            <li>Make sure your files (fastq or fastq.gz) are already stored in your Google Drive account.</li>
+            <li>Download the <a href="https://www.google.com/mobile/drive/#drive" target="_blank" rel="noopener noreferrer">Google Drive app</a> to your device.</li>
+            <li>Once the download is completed, log into Google Drive with your account.</li>
+            <li>Go to <a href="{{ url_for('index') }}">https://nephele.niaid.nih.gov</a> in your browser.</li>
+            <li>Tap on analysis type, for example, 16S, enter your email address and tap on <strong>Upload from Local</strong>.</li>
+            <li>Tap the <strong>Add files</strong> button.</li>
+            <li>In the menu that pops up, tap on <strong>Browse</strong>.</li>
+            <li>You might see &quot;iCloud Drive&quot; as an option. But you should tap on <strong>Locations</strong> on the top left, and enable <strong>Google Drive/Drive</strong> under <strong>Locations</strong> (for Android, it may say <strong>Documents</strong> instead).
+              <li>Once you enable &quot;Drive,&quot; you can navigate to your Google Drive account and select a file.</li>
+              <li>Once you select a file, tap <strong>Start Upload</strong>. <em>**Please note that you will need to upload one file at a time. <span style="text-decoration: underline;">Selecting all files from Drive and uploading them in a batch will not work.</span></em></li>
+              <li>Once you upload all the files from Drive, you can submit your job to the pipeline!</li>
+          </ol>
+          Please <a href="mailto:nephelesupport@nih@@gov" onmouseover="this.href=this.href.replace('@@','.')" onclick="this.href=this.href.replace('@@','.')">let us know</a> if this works for your device or other cloud-based storage or any other tips!
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingSeven">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse7">How long does a typical analysis take? Is this normal?</a>
+        </p>
+      </div>
+      <div id="collapse7" class="collapse" data-parent="#submission_accordion">
+        <div class="card-body">
+          On average, it takes about 1.4 hours to process 1G of compressed data. Nephele uses multiple processor cores to speed up the analysis pipelines.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingSevenA">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse7A">Why would you want to run Nephele's Pre-processing QC pipeline before you run a microbiome analysis?</a>
+        </p>
+      </div>
+      <div id="collapse7A" class="collapse" data-parent="#submission_accordion">
+        <div class="card-body">
+          <p><a href="https://www.ncbi.nlm.nih.gov/pubmed/23202435" target="_blank" rel="noopener noreferrer">Studies</a> <a href="https://www.ncbi.nlm.nih.gov/pubmed/25586220" target="_blank" rel="noopener noreferrer">show</a> that quality filtering can greatly improve microbiome analysis results.
+          Best practices on working with sequencing data include doing a series of QC steps to verify and even improve the quality of the data. Our <a href="{{ url_for('show_pipes_guide', _anchor='qc_pipes') }}">Pre-processing QC pipeline</a>
+          was designed to run a quality check by default, so the user can run it without choosing any options and receive FastQC  tables and graphs providing information on the quality of individual samples.
+          After evaluating these results, the user can submit their files to an analysis pipeline or return to the QC pipeline to trim reads and merge read pairs as needed.
+          <p>Even though our 16S and WGS pipelines include quality filtering, trimming and merging steps, it may be best to run those processing steps separately ahead of time.
+          We have incorporated the tools cutadapt and Trimmomatic in our Pre-processing QC pipeline steps to give users more control for modifying parameters, which can be helpful
+          for some datasets, especially if the amplicon region is variable length. For the read merging step, we have integrated the FLASH merger,
+          which <a href="https://www.researchgate.net/publication/303288211_Evaluating_Paired-End_Read_Mergers" target="_blank" rel="noopener noreferrer">some results</a> show
+          might provide better precision and recall than the native tools used by QIIME1 and mothur. For longer amplicon regions with a short overlap between paired reads,
+          FLASH may perform better than the DADA2 merger. So, we designed the QC pipeline to provide these programs for our users as well to help them get better results.
+          For, more information about the tools we use see the <a href="{{ url_for('show_qc_details') }}">details page</a>.</p>
+          <p>Some usage examples:</p>
+          <ul>
+            <li>Run paired-end data through this pipeline, choosing to merge the reads, and then submit the resulting FASTQ files to the DADA2 or QIIME1 Single End pipelines.</li>
+            <li>Examine the average per-base quality scores from the FastQC results of the pipeline, and use that information to set the <code>Truncation length</code> parameter in DADA2 or the <code>Minimum Phred quality score</code> parameter in QIIME1.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingSevenB">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse7B">How long do we keep your uploaded data and result files?</a>
+        </p>
+      </div>
+      <div id="collapse7B" class="collapse" data-parent="#submission_accordion">
+        <div class="card-body">
+          Nephele system keeps your uploaded data and result files for 90 days from the time you submit a job. During the 90 days, you can download the result file and resubmit your job using the jobID. After the 90 days, both your uploaded data and result files will be automatically deleted.
+        </div>
+      </div>
+    </div>
+
+</div>
+
+<div class="mt-5 mb-5">
+	<h5>Troubleshooting Nephele Errors</h5>
+  <div class="accordion" id="errors_accordion">
+
+    <div class="card">
+      <div class="card-header" id="headingEight">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse8">I received an error email; now what?</a>
+        </p>
+      </div>
+      <div id="collapse8" class="collapse" data-parent="#errors_accordion">
+        <div class="card-body">
+          We recommend that you start by examining the <code>logfile.txt</code> file, which can be found directly on the results download page as well as in the
+          <code>PipelineResults.JOBID.tar.gz</code> directories. Specifically, you can do a text search for <code>ERROR</code> to see some common errors that can
+          arise with data analyses on Nephele. Many of these errors are described further in additional FAQs here, which provide detailed suggestions or solutions.
+          If you continue to have issues, please do not hesitate to send us a
+          <a href="mailto:nephelesupport@nih@@gov?Subject=Nephele Help" onmouseover="this.href=this.href.replace('@@','.')" onclick="this.href=this.href.replace('@@','.')" target="_top">support request</a>.
+        </div>
+      </div>
+    </div>
+
+  <div class="card">
+    <div class="card-header" id="headingNine">
+      <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse9">The logfile shows that some files are missing but, in fact, I did upload them.</a>
+      </p>
+    </div>
+    <div id="collapse9" class="collapse" data-parent="#errors_accordion">
+      <div class="card-body">
+        This is most likely due to corrupted sequence data files. File corruption is not uncommon on slow or unreliable network connections.
+        If the file is gzipped and cannot be uncompressed successfully, Nephele will report an error of missing files. If this happens to your submission,
+        there are possible remedies: (1) ensure that the file is not already corrupted on your computer, (2) try to find a faster, reliable connection,
+        and (3) use software with file integrity check option such as <a href="https://filezilla-project.org/" target="_blank" rel="noopener noreferrer">FileZilla</a>
+        with FTP upload.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingTen">
+      <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse10">The logfile is empty or it only contains a single line?</a>
+      </p>
+    </div>
+    <div id="collapse10" class="collapse" data-parent="#errors_accordion">
+      <div class="card-body">
+        This is most likely the result of having a bad or corrupt .gz files. You'll need to recreate your .gz files before resubmitting your pipeline. The .gz files should only contain a single sequence data file, and NO FOLDERS. MacOS users should create your .gz file using the command line, (Terminal.app <a href="https://coderwall.com/p/l8byfq/using-gzip-in-os-x" target="_blank" rel="noopener noreferrer">instructions</a>).
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingTenA">
+      <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse10A">I received a Downstream Analysis Pipeline error from core_metrics or alpha_group_significance.</a>
+      </p>
+    </div>
+    <div id="collapse10A" class="collapse" data-parent="#errors_accordion">
+      <div class="card-body">
+        Errors from <a href="https://docs.qiime2.org/2018.6/plugins/available/diversity/" target="_blank" rel="noopener noreferrer">QIIME 2's diversity plugin</a> visualizers <a href="https://docs.qiime2.org/2018.6/plugins/available/diversity/core-metrics/" target="_blank" rel="noopener noreferrer">core metrics</a> and <a href="https://docs.qiime2.org/2018.6/plugins/available/diversity/alpha-group-significance/" target="_blank" rel="noopener noreferrer">alpha group significance</a> are usually because the sampling depth chosen filters out more samples than you intended.  In particular, see <a href="{{ url_for('show_da_details') }}">the requirements</a> for alpha group significance to run.  You can often diagnose these errors by looking at the <em>summary.qzv</em> file on QIIME 2's <a href="https://view.qiime2.org" target="_blank" rel="noopener noreferrer">view page</a>.  The summary visualization gives you the ability to modify the sampling depth and see which samples and metadata groups would remain after filtering.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingMothur">
+      <p class="mb-0">
+        <a data-toggle="collapse" href="#collapsemothur">For the mothur pipeline, what does it mean that my inputs or distance matrix are too large?</a>
+      </p>
+    </div>
+    <div id="collapsemothur" class="collapse" data-parent="#errors_accordion">
+      <div class="card-body">
+        Pat Schloss, the author of mothur, has written this very informative blog post: <a href="http://mothur.org/blog/2014/Why-such-a-large-distance-matrix" target="_blank" rel="noopener noreferrer">Why do I have such a large distance matrix?</a> about this issue.  After reading this post, you may want to run our <a href="#headingSevenA">QC pipeline to check and quality filter</a> your input data.
+
+        Nephele has limited resources and cannot handle such large data files for our mothur pipeline, so we check the size of the input data, and if it is above 10Gb, we do not start the pipeline.  Additionally, we check the size of the split distance matrices from the first part of mothur's <a href="https://mothur.org/wiki/Cluster.split" target="_blank" rel="noopener noreferrer"><code>cluster.split</code></a> command, and if any are larger than 36Gb (or 60% of available memory), we do not run the rest of the pipeline. In this case, OTU clustering and visualizations will not be made.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mt-5 mb-5">
+  <h5>Problems with Output Files</h5>
+
+  <div class="accordion" id="output_accordion">
+    <div class="card">
+      <div class="card-header" id="headingEleven">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse11">Why didn't I get the expected images from core diversity analysis for the QIIME1 or mothur pipelines?  Why didn't I get the expected html report for the bioBakery WGS pipeline?</a>
+        </p>
+      </div>
+
+      <div id="collapse11" class="collapse" data-parent="#output_accordion">
+        <div class="card-body">
+          The QIIME1 core diversity analysis and the bioBakery wmgx_vis workflow each require a minimum of 3 samples. If you submitted a mapping file with more than three samples, check the contents of <code>logfile.txt</code>. It is possible that one or more of your samples did not have the minimum number of OTUs or reads and was excluded from further analysis. This will be indicated in the <code>logfile.txt</code> output.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingTwelve">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse12">Why are only some of my samples appearing in the downstream analysis for the amplicon pipelines?</a>
+        </p>
+      </div>
+      <div id="collapse12" class="collapse" data-parent="#output_accordion">
+        <div class="card-body">
+          Missing samples are typically the result of poor or low OTU or sequence variant counts for those samples. To identify which samples have been excluded from your final analysis look at the <code>samples_being_ignored.txt</code> file. You may also look at the logfile.txt to see why those samples have been excluded. Samples that have low OTU or sequence variant counts are sometimes removed because of the <q>Sampling depth</q> cutoff parameter. If you do not specify the parameter, please see <a href="{{ url_for('show_FAQ', _anchor='collapse18') }}">FAQ:How is the sampling depth calculated?</a> for more information. If you open the <code>otu_summary_table.txt</code> file, you can see OTU counts for all of your samples. Adjusting the <q>Sampling depth</q> parameter accordingly (i.e., entering a value that will include all of your samples) in a new run with the same data will resolve this issue.  The parameter can be set under the <em>Analysis</em> tab of the job submission page, and you can use the job resubmission feature of Nephele to more easily resubmit your data with a different value.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingThirteen">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse13">Why do some of the samples have so few counts in the DADA2 pipeline results?</a>
+        </p>
+      </div>
+      <div id="collapse13" class="collapse" data-parent="#output_accordion">
+        <div class="card-body">
+          <p>The DADA2 pipeline is highly sensitive to sequence quality and primer trimming.  It is very important to specify the correct primer lengths at job submission (or remove the primers from the data before submitting), as these sequences may interfere with the denoising of the reads as well as with chimera removal (if you are in doubt of the primer lengths, we advise you not to choose the chimera removal option).  See this <a href="https://benjjneb.github.io/dada2/faq.html#how-can-i-remove-primersadaptersetc-from-my-amplicon-reads" target="_blank" rel="noopener noreferrer">DADA2 FAQ</a> for more information.</p>
+          <p>The DADA2 pipeline produces quality profile plots that you can look at to gauge the quality of your data (<em>qualityProfile_R1/2.pdf</em>).  If the data is poor quality, the reads may be filtered out during the <code>filterAndTrim</code> step.  You can also see a table in the log file of how many reads pass this step.  Additionally, if the data is poor quality, reads that pass the filter may be trimmed too much in the <code>filterAndTrim</code> step, and may not merge properly in the <code>mergePairs</code> step.  You can search the log file for <code>paired-reads</code> for how many reads successfully merged for each sample.  Sometimes, it is helpful to use a trimming program such as <a href="http://cutadapt.readthedocs.io/en/stable/index.html" target="_blank" rel="noopener noreferrer">cutadapt</a>, <a href="http://www.usadellab.org/cms/?page=trimmomatic" target="_blank" rel="noopener noreferrer">Trimmomatic</a>, or <a href="https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/bbduk-guide/" target="_blank" rel="noopener noreferrer">BBDuk</a> to trim for quality (and/or primers) prior to running DADA2.  You can use Nephele's <a href="{{ url_for('show_pipes_guide', _anchor='qc_pipes') }}">QC pipeline</a> to do this pre-processing of your data; see <a href="{{ url_for('show_qc_details') }}">here for more information</a>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingFourteen">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse14">I'm having problems with the heatmaps from the 16S visualizations.</a>
+        </p>
+      </div>
+      <div id="collapse14" class="collapse" data-parent="#output_accordion">
+        <div class="card-body">
+          The interactive heatmaps are produced using <a href="https://software.broadinstitute.org/morpheus/" target="_blank" rel="noopener noreferrer">Morpheus by the Broad Institute</a>.  They work best in Google Chrome or Firefox.  You may have problems with Microsoft Edge, Internet Explorer, or Safari.
+        </div>
+      </div>
+    </div>
+
+</div>
+
+<div class="mt-5 mb-5">
+  <h5>Miscellaneous</h5>
+  <div class="accordion" id="misc_accordion">
+
+    <div class="card">
+      <div class="card-header" id="headingFifteen">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse15">How do I open the xxx.tar.gz file on Windows?</a>
+        </p>
+      </div>
+      <div id="collapse15" class="collapse" data-parent="#misc_accordion">
+        <div class="card-body">
+          Computers running Windows (7, 8, or 10) requires a third-party program like <a href="https://www.winzip.com" target="_blank" rel="noopener noreferrer">WinZip (commericial)</a> or <a href="https://www.7-zip.org" target="_blank" rel="noopener noreferrer">7-Zip (open source)</a>. A file with a .tgz or .tar.gz extension is a Gnu Zip compressed Tar Archive file. They are made up of files that have been placed in a TAR archive and then compressed using Gnu Zip.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingSixteen">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse16">How do I cite Nephele?</a>
+        </p>
+      </div>
+      <div id="collapse16" class="collapse" data-parent="#misc_accordion">
+        <div class="card-body">
+          <p>See the <a href="{{ url_for('show_references') }}">Citing Nephele page</a>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingSeventeen">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse17">How do I know which software versions were run at the time of my analysis?</a>
+        </p>
+      </div>
+      <div id="collapse17" class="collapse" data-parent="#misc_accordion">
+        <div class="card-body">
+          <!-- need real link to release notes -->
+          <p>Please refer to the <a href="{{ url_for('show_release_notes') }}">Release Notes</a> to see when Nephele updates were made. Also, in the initial email you receive for each job, you will find the version of Nephele that corresponds to the Release Notes, as well as a copy of all the parameters that were selected for that job.  Software package versions for the pipelines are also listed in the log files.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingEighteen">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse18">How is sampling depth calculated?</a>
+        </p>
+      </div>
+      <div id="collapse18" class="collapse" data-parent="#misc_accordion">
+        <div class="card-body">
+          <!-- need real link to release notes -->
+          <p>Choosing a sampling depth is generally arbitrary.  Generally, it's recommended to choose a value high enough that you are able to capture the diversity present in samples with high read counts, but low enough to include the majority of your samples. For a simple community with only a handful of abundant members, for example, a sampling depth of 5,000 or less may suffice for an accurate estimate of diversity. For a more complex community with many low abundant members, however, a much higher value for sampling depth, 10,000 or higher, is generally necessary.</p>
+          <p>Nephele specifies the sampling depth of 10,000 reads as the minimum requirement for all downstream analysis. The pipelines use the following logics to determine the sampling depth:</p>
+          <ol>
+            <li>apply the user-specified sampling depth, if available</li>
+            <li>set the sampling depth based on the sample with the least number of reads if it is greater than or equal to 10,000</li>
+            <li>otherwise, no downstream analysis is performed.</li>
+          </ol>
+          <p><b>Note</b>: Users are encouraged to specify the sampling depth that is most appropriate for their studies. There is really no formula that can precisely determine the most appropriate value simply based on the distribution of read counts and the number of samples. If the pipeline does not generate any downstream analysis for you samples, it is most likely that the sample with the least number of reads is below 10,000. You will need to lower the sampling depth in order to run the downstream analysis.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingNineteen">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse19">Is it still free to use Nephele? Will it continue to be free?</a>
+        </p>
+      </div>
+      <div id="collapse19" class="collapse" data-parent="#misc_accordion">
+        <div class="card-body">
+          Nephele is currently provided to the research community free of charge (this may change in the future).
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingTwenty">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse20">What are the educational scenarios for usage of Nephele?</a>
+        </p>
+      </div>
+      <div id="collapse20" class="collapse" data-parent="#misc_accordion">
+        <div class="card-body">
+          Since the public launch in 2016, Georgetown University, North Carolina State University, and University of Florida have used Nephele in their microbiology classes. Nephele has mainly served to process FASTQ files, and then students have studied the result files by visualizing the processed data and making sense of what it means biologically. Besides the classroom, Ph.D. candidates or graduate students who do not have access to a high computing environment use Nephele for their research. If you are interested in using Nephele in your class, please let us know to see how we can help.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" id="headingTwentyOne">
+        <p class="mb-0">
+        <a data-toggle="collapse" href="#collapse21">Can I add my own pipelines to Nephele?</a>
+        </p>
+      </div>
+      <div id="collapse21" class="collapse" data-parent="#misc_accordion">
+        <div class="card-body">
+          We also like learning about new and different pipelines that could better serve your research and educational needs! If you have a suggestion of a tool or analysis for Nephele, please fill out <a href="https://goo.gl/forms/FoNIPILlR9ss0hUL2" target="_blank" rel="noopener noreferrer">this form</a>.  We are interested in hearing more about the research needs of our users!<!-- We need to get the link to the form from Lewis. -->
+        </div>
+      </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$(function(){
+
+    // check if there is a hash in the url
+    if ( window.location.hash != '' )
+    {
+        // remove any accordion panels that are showing (they have a class of 'in')
+        $('.collapse').removeClass('in');
+
+        // show the panel based on the hash now:
+        $(window.location.hash + '.collapse').collapse('show');
+    }
+
+});
+</script>
+{% endblock %}

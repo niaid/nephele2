@@ -1,0 +1,52 @@
+Flask
+Requests
+Boto3
+boto3
+Flask-WTF
+Flask-bootstrap4
+sh
+numpy==1.16.1
+pandas==0.24.1
+xlrd
+sqlalchemy
+sqlalchemy_utils
+sqlservice==0.23.0
+mysql-connector
+flask-login
+rsa
+docutils
+awscli
+html2text
+uwsgitop
+flask
+flask_script
+flask_migrate
+humanize
+testing.mysqld
+pytest
+moto==1.3.7
+mock
+sphinx
+sphinxcontrib-napoleon
+pygtail
+# ditching versions for now. Just using the more current.
+# Flask==0.11
+# Requests==2.11.1
+# Boto3==1.4.1
+# Flask-WTF==0.14.2
+# WTForms==2.1
+# Flask-bootstrap==3.3.7.0
+# sh==1.12
+# openpyxl==2.4.0
+# numpy==1.11.2
+# pandas==0.19.2
+# biom-format==2.1.5
+# simpleflow==0.14.0
+# sqlalchemy==1.1.6
+# sqlservice==0.10.0
+# mysql-connector==2.2
+
+# # These are only for testing:
+# Pytest==3.0.3
+# pytest_mysql
+# moto==0.4.2

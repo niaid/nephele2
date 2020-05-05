@@ -1,0 +1,9 @@
+^packrat
+^\.Rprofile$
+^\.Renviron$
+^out/
+^.*\.Rproj$
+^\.Rproj\.user$
+^scripts/
+README
+^doc/

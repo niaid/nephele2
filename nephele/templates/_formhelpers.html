@@ -1,0 +1,39 @@
+{% macro render_field(field, col_size, offset) %}
+	{% if field.type == "BooleanField" %}
+	    <div class="{{ col_size }}">
+	     <label for="{{ field.id }}" class="control-label">{{ field.label.text }}</label>
+	    </div>
+	    <div class="{{ col_size }}">
+	     {{ field(**kwargs)|safe }}
+	    </div>
+	{% elif field.type == "FileField" %}
+	    <label for="{{ field.id }}" class="control-label">{{ field.label.text }}</label>
+	    {{ field(**kwargs)|safe }}
+	{% elif field.type == "RadioField" or field.type == "MultiCheckboxField" or field.type == "MultiDashedCheckboxField" %}
+	    <div class="{{ col_size }}">
+	     <label for="{{ field.id }}" class="control-label">{{ field.label.text }}</label>
+	    </div>
+	    <div class="{{ col_size }} form-check">
+	     {% for subfield in field %}
+	      <div>{{ subfield(class_='form-check-input',**kwargs)|safe }}<label for="{{ field.id }}" class="form-check-label" style="margin-left: 3px;">{{ subfield.label.text }}</label></div>
+	     {% endfor %}
+	    </div>
+	{% else %}
+	    <div class="{{ col_size }}">
+	     <label for="{{ field.id }}" class="control-label">{{ field.label.text }}</label>
+	    </div>
+	    <div class="{{ col_size }}">
+	     {{ field(class_='form-control',**kwargs)|safe }}
+	    </div>
+	{% endif %}
+	{% if field.errors %}
+	<div class="{{ col_size }} {{ offset }}">
+    <ul for="{{ field.id }}" class="list-unstyled error">
+    <!-- including |safe in the display allows us to embed HTML -->
+    {% for error in field.errors %}
+      <li>{{ error|safe }}</li>
+    {% endfor %}
+    </ul>
+    </div>
+  {% endif %}
+{% endmacro %}

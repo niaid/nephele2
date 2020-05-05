@@ -1,0 +1,50 @@
+{% extends "base_with_help.html" %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block page_content %}
+  <h2>{{ title }}</h2>
+  {% if info_link %}
+     <div><a href={{ info_link }} target='_blank' rel="noopener noreferrer">{{ info_link_title }}</a></div>
+  {% endif %}
+  {% from "_formhelpers.html" import render_field %}
+  <form action="" enctype="multipart/form-data" method="post" name="upload_data_form">
+      {{ form.hidden_tag() }}
+      <div>
+        {{ form.job_dir }}<br>
+          {{ render_field(form.data_file) }}<br>
+      </div>
+
+      <div>
+        <button id="form_btn" type="submit" class="btn btn-primary">
+          <i class="glyphicon glyphicon-upload"></i>
+          <span>Upload</span>
+        </button>
+      </div>
+  </form>
+{% endblock %}
+
+{% block info_content %}
+      <ul>
+        {% for string in help_text %}
+          <li>{{ string|safe }}</li>
+        {% endfor %}
+      </ul>
+{% endblock %}
+
+{% block scripts %}
+ {{ super() }}
+ <script>
+ $("#form_btn").click(function(e){
+          e.preventDefault();
+          $(this).prop("disabled", true);
+          $('.error').hide();
+          //show loading gif
+          $(this).find('i').toggleClass("glyphicon glyphicon-upload fa fa-refresh fa-spin");
+          $(this).find('span').text("Loading...");
+          $('form').submit();
+     });
+ </script>
+{% endblock %}

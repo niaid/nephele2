@@ -1,0 +1,255 @@
+{% extends "base_with_help.html" %}
+
+{% block head %}
+{{ super() }}
+<!-- Generic page styles -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/map_validation.css') }}">
+<script>
+	//This has to go here because it doesn't get interpretted properly within the raw block
+	var errs = {{ errors|safe }};
+	var warnings = {{ warnings|safe }};
+</script>
+{% endblock %}
+
+{% block page_content %}
+  {% if is_valid %}
+  <h2 class="text-warning">Your mapping file validated with warnings</h2>
+  {% else %}
+  <h2 class="text-danger">Your mapping file failed to validate</h2>
+  {% endif %}
+  <h4>Move your mouse over the highlighted cells to see error messages</h4>
+  <br/>
+  <form method=post action="">
+   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+   <!--  div style="overflow:auto; max-height:500px;" adds a vertical scroll bar as well-->
+   <div style="overflow:auto;">
+  	{{ table|safe }}
+   </div>
+
+  	<p><p>
+  	<button class="btn btn-primary" type=submit >
+  		<i class="glyphicon glyphicon-repeat"></i>
+  		<span>Save &amp; Retry</span>
+  	</button>
+	<button class="btn btn-warning" formaction="{{ url_for('upload_mapping') }}">
+		<i class="glyphicon glyphicon-upload"></i>
+		<span>Reload Map File</span>
+	</button>
+	{% if session['input_from'] == 'local' %}
+	<button class="btn btn-success" formaction="{{ url_for('upload_data') }}">
+		<i class="glyphicon glyphicon-plus"></i>
+        <span>Add Input Files</span>
+    </button>
+    {% else %}
+    <button class="btn btn-success" formaction="{{ url_for('upload_url_data') }}">
+		<i class="glyphicon glyphicon-plus"></i>
+        <span>Update Files From Remote</span>
+    </button>
+    {% endif %}
+  	{% if is_valid %}
+  	  {% if 'previous_jobid' in session %}
+  	    <p><a style="margin-top: 10px; text-decoration: none;" class="btn btn-primary" href="{{ url_for('start_job') }}"><i class="glyphicon glyphicon-chevron-right"></i><span>Continue</span></a>
+  	  {% else %}
+        <p><a style="margin-top: 10px; text-decoration: none;" class="btn btn-primary" href="{{ url_for('select_job') }}"><i class="glyphicon glyphicon-chevron-right"></i><span>Continue</span></a>
+      {% endif %}
+  	{% endif %}
+  </form>
+  
+  {% raw %}
+  	<script>
+  	//Calls the methods to generate the column map that we pass to the validator and adds it to a hidden
+  	//input attribute so that it's passed back to the server.
+  	$(function(){
+  		$('form').submit(function (event) {
+  			var header_list = GetHeaders();
+  			var headers = $("<input>").attr("type", "hidden").attr("name", "tableHeaders").val(JSON.stringify(header_list));
+  			$('form').append(headers);
+  			var tableData = $("<input>").attr("type", "hidden").attr("name", "tableData").val(GetAllRows(header_list));
+  			$('form').append(tableData);
+  		});
+  	});
+  	</script>
+    <script>
+    //makes cells in the table editable on click, removes input tag when we click outside of the cell.
+    //FIXME: make sure the cells don't change size when they're headers
+       $(function(){
+         $("td, th").click(function(event){
+                 if($(this).children("input").length > 0)
+               		       return false;
+                 var tdObj = $(this);
+                 console.log(tdObj.is("th"));
+                 var preText = tdObj.html();
+                 var inputObj = $("<input type='text' />");
+                 tdObj.html("");
+                 if (tdObj.is("td")) {
+                	 inputObj.width(tdObj.width())
+                           .height(tdObj.height())
+                           .css({border:"0px"})
+                           .val($.trim(preText))
+                           .appendTo(tdObj)
+                           .trigger("focus")
+                           .trigger("select");
+                 } else{
+                   inputObj.height(tdObj.height())
+                         .css({border:"0px"})
+                         .val($.trim(preText))
+                         .appendTo(tdObj)
+                         .trigger("focus")
+                         .trigger("select");
+                 }
+              inputObj.keydown(function(event){
+                 if("Enter" == event.key) { // press ENTER-key
+                	 event.preventDefault();
+                     var text = $(this).val();
+                     tdObj.html(text);
+                 }
+                 else if("Escape" == event.key) {  // press ESC-key
+                     tdObj.html(preText);
+                 }
+	          });
+              inputObj.blur(function(){
+            	  var text = $(this).val();
+            	  tdObj.html(text);
+              });
+    	      inputObj.click(function(){
+        	           return false;
+          	  });
+          });
+        });
+     </script>
+     <script>
+     //Adds some CSS to the table (on load?)
+     $(function(){
+    	 $('table').addClass('table').addClass('table-responsive');
+     });
+     </script>
+     <script>
+     //Adds background color to any headers that have errors or warnings, and adds popover boxes to any cell with
+     //errors or warnings.
+     $(function(){
+    	 //FIXME: need to have a way to display missing required column errors!
+    	 $.each(errs, function(key, val){
+    		 //indexOf only works in IE9 or later...
+    		 if(errs[key]['rows'].indexOf("header") != -1){
+    			 //+2 because nth-child indexing starts at 1, not 0.
+    			 //var col_index = $('th:contains("'+errs[key]['col']+'")').index() + 1;
+    			 var col_index = errs[key]['col'] + 2;
+    			 $('table th:nth-child('+col_index+')').css('background-color', 'red');
+    			 $('table th:nth-child('+col_index+')').popover({
+    				 container: 'body',
+    				 title: 'Error',
+    				 html: true,
+    				 content: errs[key]['msg'],
+    				 trigger: 'hover',
+    				 placement: 'top'
+    			 });
+    		 }
+    		 //add popovers to the non-header errors as well, theoretically, I could use a standard for loop here as well for improved speed
+    		 $.each(errs[key]['rows'], function(array_index, row_num){
+    			 //var col_index = $('th:contains("'+errs[key]['col']+'")').index();
+    			 var col_index = errs[key]['col']+1;
+    			//this is apparently 0 based, while :contains is a 1 base, so -1 from col_index
+    			 var cell = $('tbody tr').eq(row_num).find('td').eq(col_index - 1);
+    			 cell.popover({
+    				 container: 'body',
+    				 title: 'Error',
+    				 content: errs[key]['msg'],
+    				 trigger: 'hover',
+    				 placement: 'top'
+    			 });
+    		 });
+    	 });
+    	 $.each(warnings, function(key, val){
+    		 //indexOf only works in IE9 or later...
+    		 if(warnings[key]['rows'].indexOf("header") != -1){
+    			 //+1 because nth-child indexing starts at 1, not 0.
+    			 //var col_index = $('th:contains("'+warnings[key]['col']+'")').index() + 1;
+    			 var col_index = warnings[key]['col'] + 2;
+    			 $('table th:nth-child('+col_index+')').css('background-color', 'yellow');
+    			 $('table th:nth-child('+col_index+')').popover({
+    				 container: 'body',
+    				 title: 'Warning',
+    				 content: warnings[key]['msg'],
+    				 trigger: 'hover',
+    				 placement: 'top'
+    			 });
+    		 }
+    		//add popovers to the non-header warnings as well, theoretically, I could use a standard for loop here as well for improved speed
+    		 $.each(warnings[key]['rows'], function(array_index, row_num){
+    			 //var col_index = $('th:contains("'+warnings[key]['col']+'")').index();
+    			 var col_index = warnings[key]['col']+1;
+    			//this is apparently 0 based, while :contains is a 1 base, so -1 from col_index
+    			 var cell = $('tbody tr').eq(row_num).find('td').eq(col_index - 1);
+    			 cell.popover({
+    				 container: 'body',
+    				 title: 'Warning',
+    				 content: warnings[key]['msg'],
+    				 trigger: 'hover',
+    				 placement: 'top'
+    			 });
+    		 });
+    	 });
+     });
+     </script>
+     <script>
+     //needed to display the popovers that are added to the table cells (do not remove unless we remove the popovers)
+     	$(document).ready(function(){
+		    $('[data-toggle="popover"]').popover();   
+ 		 });
+     </script>
+     <script>
+     //constructs the column map we will pass back to the validator object.
+     function GetAllRows(columnHeaders)
+     {
+    	 var tableObject = $('table tbody tr').map(function (i) {
+             var row = {};
+             $(this).find('td').each(function (i) {
+                 var rowName = columnHeaders[i];
+                 row[rowName] = $.trim($(this).text());
+             });
+             return row;
+         }).get();
+    	 return JSON.stringify(tableObject);
+     }
+     </script>
+     <script>
+     //gets all of the headers, in order, from the table, ensures the headers are unique
+     //will rename duplicates
+     function GetHeaders(){
+    	 var myHeaders = [];
+    	 var occurrences = {};
+    	 
+    	 $('table thead th').each(function (index, value){
+    		 if(index != 0){
+    		 	var label = $.trim(value.innerHTML);
+    		 	//rename any duplicate column names
+    		 	if (label in occurrences) {
+    		 		occurrences[label] = occurrences[label] + 1;
+    		 		label = label+"."+occurrences[label];
+    		 		$(this).text(label);
+    		 	}else{
+    		 		occurrences[label] = 0;
+    		 	}
+    			myHeaders.push(label);
+    		 }
+    	 });
+    	 //console.log(myHeaders);
+    	 return myHeaders;
+     }
+     </script>
+  {% endraw %}
+{% endblock %}
+{% block info_content %}
+            <ul>
+				<li>The map file can be edited by clicking in the cells in the table above.  Changes will be saved, and the file
+  will be revalidated, when you hit "Retry".</li>
+  				<li>You cannot add or remove rows or columns from the above table. If you need to make this type of change to your
+  file, please upload a corrected mapping file using the "Reload Map File" button. You may download the correct 
+  <a href="{{ template }}" target="_blank" rel="noopener noreferrer">template</a> if you are uncertain of the required format.
+  				<li>If you are missing input files that are listed in your mapping file, please select "Add Input Files" to navigate
+  back to the file upload page to add the necessary files.  Once your files have been uploaded, your mapping file will be
+  revalidated automatically when you hit the "Next" button.</li>
+  				<li>If only warnings are displayed and you are satisfied that your file is good as is, please select the "Continue" button
+  to proceed to the job submission page.</li>
+			</ul>
+{% endblock %}

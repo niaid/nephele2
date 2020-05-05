@@ -1,0 +1,256 @@
+{% extends "guide_base.html" %}
+
+{% block guide_content %}
+
+<h1>How to submit a job</h1>
+
+<p>Thank you for choosing Nephele. Here you will find instructions on how to submit a successful job.
+If you would like to try submitting with a small dataset, below are the sample fastq files and a mapping file.
+
+<p>Note: These data are from a 2017 BioProject in NCBI entitled &quot;Experimental Microbial Dysbiosis Does
+Not Promote Disease Progression in SIV-Infected Macaques&quot; (<a href="https://www.ncbi.nlm.nih.gov/bioproject/PRJNA417022" target="_blank" rel="noopener noreferrer">https://www.ncbi.nlm.nih.gov/bioproject/PRJNA417022</a>)
+
+<div class="table-responsive mt-5 mb-5">
+  <table class="table table-bordered">
+    <thead class="thead-light">
+      <tr>
+	<th>File (Type)</th>
+	<th>Size</th>
+	<th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td><a href="{{ test_seqs_url }}" target="_blank" rel="noopener noreferrer">Sequences</a></td>
+	<td>72MB</td>
+	<td>Contains paired-end data (forward and reverse) from 10 samples sequenced on an Illumina MiSeq</td>
+      </tr>
+      <tr>
+	<td><a href="{{ test_map_url }}" target="_blank" rel="noopener noreferrer">Mapping File (Excel)</a></td>
+	<td>9KB</td>
+	<td>Metadata file used in Nephele job submissions that describes samples, groups, etc. for analysis</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<p class="lead mb-5">You can follow along with this user guide using the sample data.
+
+<div class="mb-5">
+  <h5>Step 1: Select analysis type.</h5>
+  <p>Please select the analysis you are interested in. Nephele provides amplicon analysis including 16S, ITS and WGS metagenomics analysis. Select <strong>16S</strong> if you are using the sample data.
+
+  <div class="card">
+    <div class="card-body">
+      <img class="img-responsive sample-images" src="{{ url_for('static', filename='images/submit_guide_figure1.png') }}" alt="Screenshot of analysis type select panel with Amplicon and WGS type selection buttons">
+    </div>
+  </div>
+
+</div>
+
+
+
+<div class="mb-5">
+  <h5>Step 2: Select data type (demultiplexed file only)</h5>
+  <p>Nephele supports the following data types for analysis types.
+  <ul>
+    <li>16S
+      <ul>
+	<li style="margin-left:2em">demultiplexed paired end fastq (select this option if you are using the sample data)</li>
+	<li style="margin-left:2em">demultiplexed single end fastq</li>
+      </ul>
+    </li>
+    <li>ITS
+      <ul>
+	<li style="margin-left:2em">As ITS supports only demultiplexed paired end fastq, the system will assume the data type and proceed to next page</li>
+      </ul>
+    </li>
+    <li>WGS
+      <ul>
+	<li style="margin-left:2em">demultiplexed paired end fastq</li>
+	<li style="margin-left:2em">demultiplexed single end fastq</li>
+      </ul>
+    </li>
+  </ul>
+  <p>Select the type appropriate to your data (e.g. <strong>Paired End FASTQ</strong>) and click “Next”.</p>
+
+</div>
+
+
+<div class="mb-5">
+  <h5>Step 3: Select upload method.</h5>
+  <p>Nephele provides two methods to upload input files: local and FTP. Local file upload allows you to upload files from your local computer.
+  This method is suitable for less than 300MB per fastq or fastq.gz file or 10GB size in total. We recommend that you upload compressed .gz files for performance.
+  Select this option if you are using the sample data. If you have a large data set, we recommend using the FTP method.
+
+  <div class="card mb-5">
+    <div class="card-body">
+      <img class="img-responsive sample-images" src="{{ url_for('static', filename='images/submit_guide_figure4.png') }}" alt="Screenshot of upload options panel with from local and FTP buttons">
+    </div>
+  </div>
+
+
+  <ul>
+    <li>Local uploads
+      <ol>
+	<li style="margin-left:2em">Click &quot;<strong>+ Add files</strong>&quot; and select fastq or fastq.gz files or Drag and drop the files.</li>
+	<li style="margin-left:2em">Click <strong>Start upload</strong> to start upload your input files.<br>
+	  <font color="red">*Dependent on your network, the upload speed and total time can vary. We recommend stable and high-speed internet for this method.</font></li>
+	<li style="margin-left:2em">After completing the uploads, click <strong>Next</strong>.</li>
+	<li style="margin-left:2em">You can cancel the upload anytime by clicking the &quot;<strong>Cancel upload</strong>&quot; button.</li>
+	<li style="margin-left:2em">You can select all files by clicking &quot;<strong>Select all</strong>.&quot;</li>
+	<li style="margin-left:2em">If you wish to delete files, you can delete them by clicking the &quot;<strong>Delete selected</strong>&quot; button.</li>
+      </ol>
+
+      <div class="card mt-5 mb-5">
+	<div class="card-body">
+	  <img class="img-responsive sample-images" src="{{ url_for('static', filename='images/submit_guide_figure5.png') }}" alt="Screenshot of local upload panel with file uploads in progress">
+	</div>
+      </div>
+
+    </li>
+    <li id="ftp_howto">FTP (NIH Helix) (recommended for large data)
+      <ul>
+	<li>If you don’t have an FTP server that is readily accessible to you, please use NIH Felix FTP (ftp://helix.nih.gov/pub).
+	  <ol>
+	    <li style="margin-left:2em">Upload your files to FTP, for example NIH helix. If you are not familiar with using FTP, please see <a href="{{ url_for('using_ftp') }} "target="_blank" rel="noopener noreferrer">this guide</a>.</li>
+	    <li style="margin-left:2em">Copy the ftp URL—for example, ftp://helix.nih.gov/pub/test. The URL should point to a location of a folder that contains
+	      fastq or fastq.gz files.<br><font color="red">Note: please make the folder with only files without nested folders.</font></li>
+	    <li style="margin-left:2em">Select <strong>Upload via FTP</strong> from the upload options page</li>
+	    <li style="margin-left:2em">Paste the URL in the text box.<br><font color="red">Note: please enter the URL as exactly it is.
+		If there is a space in the folder name, you can put a space in the path.</font>
+
+	      <div class="card mt-5 mb-5">
+		<div class="card-body">
+		  <img class="img-responsive sample-images" src="{{ url_for('static', filename='images/submit_guide_figure6.png') }}" alt="Screenshot of ftp upload page with helix link in the input field">
+		</div>
+	      </div>
+
+	    </li>
+	    <li style="margin-left:2em">Click <strong>Upload</strong>.</li>
+	  </ol>
+	</li>
+	<li><font color="red">Nephele FTP method can retrieve data from publicly available FTP that does not require a username or password.</font>
+	  (Nephele FTP method does not support Google Drive or Box currently. Read more in the <a href="{{ url_for('show_FAQ', _anchor='collapse6') }}">FAQ</a>).</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+
+
+
+
+
+
+<div class="mb-5">
+  <h5>Step 4: Upload mapping files</h5>
+  <p>After uploading your input files, Nephele pipelines require a mapping file. To upload your mapping file, simply click <strong>Browse</strong>,
+  select your mapping file, and click <strong>Upload</strong>. Upload the sample mapping file (xx.xlsx).
+  <p>Nephele validates your mapping file instantly so that you can correct any error interactively. In order to prevent any mapping file errors,
+  we recommend that you start with mapping file templates provided on the map file upload page for the pipeline you&#39;re running.
+</div>
+
+
+
+<div class="mb-5">
+  <h5>Step 4.1: How to use Nephele interactive mapping file validation</h5>
+  <p>If you have an error in your mapping file, for example, a typo in your fastq file name column, here is an example of how to correct it using the interactive error page.</p>
+  <ul>
+    <li>On the validation error page, move your mouse over to the <font color="red">area that is highlighted in red.</font></li>
+    <li>This example shows that the file names in both ForwardFastqFile and the ReverseFastqFile column names are the same: &quot;3_S3_L001_R1_001s.fastq&quot;.
+      There is a typo on the ReverseFastqFile column.
+
+
+
+      <div class="card mt-5 mb-5">
+	<div class="card-body">
+	  <img class="img-responsive sample-images" src="{{ url_for('static', filename='images/submit_guide_figure7.png') }}" alt="Screenshot of map file error page with two columns in first row highlighted and error displayed">
+	</div>
+      </div> 
+
+
+    </li>
+    <li>Click on the ReverseFastqFile column and correct &quot;3_S3_L001_R1_001s.fastq&quot; to &quot;3_S3_L001_R<strong>2</strong>_001s.fastq.&quot;
+
+      <div class="card mt-5 mb-5">
+	<div class="card-body">
+	  <img class="img-responsive sample-images" src="{{ url_for('static', filename='images/submit_guide_figure8.png') }}" alt="Screenshot of map file error page with two columns in first row highlighted, editing second column">
+	</div>
+      </div> 
+
+
+    </li>
+    <li>Click &quot;<strong>Save &amp; Retry</strong>.&quot;</li>
+    <li>The mapping file passes the validation and moves to the next page, Select Pipelines, automatically.</li>
+  </ul>
+  <p>Notes on map file validation:</p>
+  <ol>
+    <li>"BarcodeSequence" and "LinkerPrimerSequence" columns are no longer required by Nephele pipelines.
+      Please remove them if you are using older mapping files.</li>
+    <li>The file names listed in the mapping file should exactly match the names of the files you have uploaded for analysis.
+      If you have uploaded &#42;.fastq.gz files, make sure to add the .gz extension to the file names in the mapping file. Do not include full file paths.</li>
+    <li>Nephele 2 accepts tab-delimited text (.txt) files and Excel (.xlsx or .xls) files. Comma-separated (.csv) files are not supported.</li>
+  </ol>
+</div>	
+
+
+
+
+<div class="mb-5">
+  <h5>Step 5: Select a pipeline</h5>
+  <p>After uploading mapping file and pass the validation, you can select a pipeline. Simply click &quot;<strong>Select</strong>&quot; on the pipeline you wish to use.
+  Select QIIME1 if you use the sample data.<br>
+  You can learn more about pipelines in Nephele in the <a href="{{ url_for('show_pipes_guide') }}">Nephele Pipelines</a> section.</p>
+
+  <div class="card mt-5 mb-5">
+    <div class="card-body">
+      <img class="img-responsive sample-images" src="{{ url_for('static', filename='images/submit_guide_figure9.png') }}" alt="Screenshot of the pipeline selection page">
+    </div>
+  </div> 
+</div>
+
+
+
+<div class="mb-5">
+  <h5>Step 6: Update parameters (optional)</h5>
+  <p>Once you select a pipeline, you will see a submission page. You can enter a description of your job so that you can identify different jobs easily.</p>
+
+  <div class="card mt-5 mb-5">
+    <div class="card-body">
+      <img class="img-responsive sample-images" src="{{ url_for('static', filename='images/submit_guide_figure10.png') }}" alt="Screenshot of Job Details tab of pipeline options page">
+    </div>
+  </div> 
+
+  <p>On this page, there are different tabs such as &quot;<strong>Pre-processing</strong>&quot; and &quot;<strong>Analysis</strong>&quot;
+  (dependent on the pipeline) which allow you to change the parameters the pipeline is run with. Don’t forget to have a look if you are
+  interested in different options. See Nephele's <a href="{{ url_for('show_pipes_guide') }}">Pipeline Section</a> for more details regarding parameters.</p>
+
+  <div class="card mt-5 mb-5">
+    <div class="card-body">
+      <img class="img-responsive sample-images" src="{{ url_for('static', filename='images/submit_guide_figure11.png') }}" alt="Screenshot of Pre-processing tab of pipeline options page">
+    </div>
+  </div>
+
+
+  <p>Finally, click <strong>Validate and Submit</strong>!</p>
+  <p>Congratulations! You have submitted a job! You will receive a Pipeline Started email shortly.</p>
+</div>
+
+
+<h1>How to resubmit your job</h1>
+<p>You can resubmit a job without uploading all of your input files again.</p>
+<p><strong>Step 1:</strong> Enter the Nephele JobID that you would like to resubmit.</p>
+
+<div class="card mt-5 mb-5">
+  <div class="card-body">
+    <img class="img-responsive sample-images" src="{{ url_for('static', filename='images/submit_guide_figure12.png') }}" alt="Screenshot of Home page with job resubmission box highlighted">
+  </div>
+</div>
+
+
+<p><strong>Step 2:</strong> As long as your job hasn&#39;t expired, your input data will be retrieved. The rest of steps are the same as submitting a job. You can re-upload a mapping file and change parameters for the resubmission.</p>
+
+
+{% endblock %}

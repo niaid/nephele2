@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block info_panel %}
+  {{ super() }}
+   <div class="card">
+  <div class="card-header nephele-help-title">
+    Help
+  </div>
+  <div class="card-body">
+    <p class="card-text">{% block info_content %}{% endblock %}</p>
+  </div>
+</div>
+{% endblock %}
+

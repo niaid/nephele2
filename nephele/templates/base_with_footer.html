@@ -1,0 +1,96 @@
+{% extends "bootstrap/base.html" %}
+
+{%block body %}
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KCTX2VD"
+                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div class="site-content">
+  {{ super() }}
+</div>
+
+{% block footer %}
+
+<!-- Footer -->
+
+<div class="mt-5">
+  <footer class="main-footer px-5 py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h5 class="text-uppercase font-weight-bold main-footer-link-heading">Connect</h5>
+          <ul class="list-inline">
+            <li class="list-inline-item">
+              <a class="" href="https://twitter.com/niaidbioit" target="_blank" rel="noopener noreferrer" aria-label="Link for NIAID twitter"><i class="fab fa-twitter fa-lg"></i></a>
+            </li>
+            <li class="list-inline-item">
+              <a class="" href="https://plus.google.com/u/0/communities/107278901311674483366" target="_blank" rel="noopener noreferrer" aria-label="Link for NIAID Google group"><i class="fab fa-google-plus-g fa-lg"></i></a>
+            </li>
+            <li class="list-inline-item">
+              <a class="" href="https://www.youtube.com/user/NIAIDBioinformatics" target="_blank" rel="noopener noreferrer" aria-label="Link for NIAID Bioinformatics YouTube page"><i class="fab fa-youtube fa-lg"></i></a>
+            </li>
+            <li class="list-inline-item">
+              <a class="" href="https://github.com/niaid/Nephele" target="_blank" rel="noopener noreferrer" aria-label="Link to Nephele in GitHub"><i class="fab fa-github fa-lg"></i></a>
+            </li>
+          </ul>  
+        </div>
+        <div class="col">
+          <h5 class="text-uppercase font-weight-bold main-footer-link-heading">Links</h5>
+          <ul class="list-unstyled">
+            <li><a class="main-footer-link" href="https://www.niaid.nih.gov" target="_blank" rel="noopener noreferrer">NIAID Website</a></li>
+            <li><a class="main-footer-link" href="mailto:nephelesupport@nih@@gov" onmouseover="this.href=this.href.replace('@@','.')" onclick="this.href=this.href.replace('@@','.')">Contact Us</a></li>
+            <li><a class="main-footer-link" href="{{ url_for('show_FAQ') }}">Help</a></li>
+            <li><a class="main-footer-link" href="https://plus.google.com/u/0/communities/107278901311674483366" target="_blank" rel="noopener noreferrer">Discussion Forum</a></li>
+            <li><a class="main-footer-link" href="http://www.nih.gov/web-policies-notices" target="_blank" rel="noopener noreferrer">NIH Web Policies &amp; Notices</a></li>
+            <li><a class="main-footer-link" href="http://www.foia.gov/" target="_blank" rel="noopener noreferrer">FOIA</a></li>
+            <li><a class="main-footer-link" href="{{ url_for('show_privacy_policy') }}">Nephele Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div class="col">
+          <h5 class="text-uppercase font-weight-bold main-footer-link-heading">Related government sites</h5>
+          <ul class="list-unstyled">
+            <li><a class="main-footer-link" href="https://www.niaid.nih.gov" target="_blank" rel="noopener noreferrer">National Institute of Allergy &amp; Infectious Diseases</a></li>
+            <li><a class="main-footer-link" href="https://www.nih.gov" target="_blank" rel="noopener noreferrer">National Institutes of Health</a></li>
+            <li><a class="main-footer-link" href="http://www.hhs.gov" target="_blank" rel="noopener noreferrer">U.S. Department of Health &amp; Human Services</a></li>
+            <li><a class="main-footer-link" href="https://www.usa.gov/" target="_blank" rel="noopener noreferrer">USA.gov</a></li>
+            <li><a class="main-footer-link" href="https://bioinformatics.niaid.nih.gov/" target="_blank" rel="noopener noreferrer">bioinformatics @NIAID</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:right"><small><small><em>version {{tag}}-{{ git_sha_short }}</em></small></small></div>
+
+  </footer>
+  <!-- 
+  <footer class="secondary-footer py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <address>
+            National Institutes of Health. . .<br>
+            Turning Discovery Into Health<sup>®</sup>
+          </address>
+        </div>
+        <div class="col">
+          <address>
+            National Institutes of Health (NIH), 9000 Rockville Pike,<br>
+            Bethesda, Maryland 20892
+          </address>
+        </div>
+        <div class="col">
+          <ul class="list-inline">
+            <li class="list-inline-item"><a class="" href="https://www.usa.gov/" target="_blank" rel="noopener noreferrer"><img class="img-responsive" src="{{ url_for('static', filename='images/usagov-logo-footer.png') }}" width="100" height="30.4" alt="Image for USA.gov"></a></li>
+            <li class="list-inline-item"><a class="" href="http://www.hhs.gov" target="_blank" rel="noopener noreferrer"><img class="img-responsive" src="{{ url_for('static', filename='images/hhs-logo-footer.png') }}" width="30" height="36" alt="Image for HHS.gov"></a></li>
+            <li class="list-inline-item"><a class="" href="http://www.nih.gov/" target="_blank" rel="noopener noreferrer"><img class="img-responsive" src="{{ url_for('static', filename='images/nih-logo-footer.png') }}" width="48" height="30" alt="Image for NIH.gov"></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+  -->
+</div>
+
+
+{% endblock %}
+{% endblock %}

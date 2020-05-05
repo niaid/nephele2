@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<div id="content" class="text-monospace"></div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$(function worker(){
+	$.ajax({
+        url: '{{ url_for("streamed_response") }}',
+        type: 'GET',
+        dataType: "text",
+        data: {log_file: "{{ log_file }}"},
+        success: function(response) {
+            if (response.length > 0){
+              $("#content").append("<br/>"+response);
+            }
+        },
+        error: function(error) {
+            console.log(error);
+        },
+        complete: function() {
+            // Schedule the next request when the current one's complete
+            setTimeout(worker, 5000);
+        }
+    });
+});
+</script>
+{% endblock %}

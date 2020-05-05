@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block page_content %}
+    {% if email %}
+    <h1>Success!</h1>
+    <p>
+      You've successfully registered your email address {{ email }} with Nephele.  Please use this address when submitting jobs in the system.
+    </p>
+    {% else %}
+     <h1>Oops!</h1>
+    <p>
+      {{ error|safe }}
+    </p>
+    {% endif %}
+   
+{% endblock %}

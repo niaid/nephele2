@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+  </head>
+  <body>
+    <div>
+      <p>Dear Nephele User,</p>
+        <br>
+        Thank you for your Nephele Analysis pipeline submission, your job ID:
+        {{ job_id }} is now in progress. For your records, here's a description
+        of the pipeline you submitted:
+        <ul>
+          <li>Nephele Version: {{ neph_version }}</li>
+          <li>Run Type: {{ pipe_name }}</li>
+          <li>Pipeline Description: {{ job_desc }}</li>
+          <li>Job ID: {{ job_id }}</li>
+          <li>Pipeline parameters:
+            <ul>
+              {% for key,val in job_args|dictsort %}
+              <li>{{ key }} : {{ val }} </li>
+              {% endfor %}
+            </ul>
+          </li>
+        </ul>
+
+        <p>While the pipeline is running, you can view the interim file output
+        in your web browser
+        <a href="{{ logUrl }}" target="_blank">here</a>.
+        <p>Upon completion of your pipeline, you will receive an email with a link to
+        your output files.</p>
+
+        <p>We'd love to hear your feedback. Please reply to this e-mail with any questions or comments.</p>
+        Thank you,<br>
+        The Nephele Team<br>
+        <a href="https://nephele.niaid.nih.gov" target="_blank">https://nephele.niaid.nih.gov</a><br>
+        National Institute of Allergy and Infectious Diseases (NIAID)<br>
+        National Institutes of Health (NIH)
+    </div>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd$
+testdata/
+check/
+__init__.py
+^scripts$
+^doc$
+\.Rhistory$
+^\.gitignore$
+.Rprofile
+README\.md

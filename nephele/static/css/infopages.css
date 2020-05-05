@@ -1,0 +1,76 @@
+.nephele-sidebar {
+	padding-left: 0px;
+}
+
+.aboutpage-content {
+	padding-bottom: 2em;
+}
+
+.nephele-team-thumbnails {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 0px;
+    background-color: transparent;
+}
+
+.team-portraits {
+    margin-bottom: 0px;
+    border: 1px solid #eee;
+    -webkit-transition: border .2s ease-in-out;
+    -o-transition: border .2s ease-in-out;
+    transition: border .2s ease-in-out;
+}
+
+.team-names {
+    margin-bottom: 0px;
+}
+
+.team-titles {
+    font-size: 14px;
+    color: #555;
+}
+
+.nephele-collaborators {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.nephele-collab-thumbnails {
+    text-align: center;
+    padding: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+a {
+    text-decoration: none;
+}
+
+.video-icon {
+	margin-left: 5px;
+    vertical-align: middle;
+}
+
+.underline {
+	text-decoration: underline;
+}
+
+.panel-title-blue {
+    margin-top: 0;
+    margin-bottom: 0;
+    color: #337ab7;
+}
+
+.panel {
+    background-color: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 0px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.panel-body {
+	background-color: #fff;
+}

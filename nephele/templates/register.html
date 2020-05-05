@@ -1,0 +1,84 @@
+{% extends "base_with_help.html" %}
+
+{% block page_content %}
+<h4>We need your email address to send you information about your jobs, including the link to the job results.
+ By registering your email address we ensure that you can receive email from our system.</h4>
+{% from "_formhelpers.html" import render_field %}
+
+
+
+<form method=post action="/register">
+  {{ form.hidden_tag() }}
+  {{ render_field(form.fname) }}
+  {{ render_field(form.lname) }}
+  <!-- We're rendering this field with a non-standard extra, so don't use the formhelper -->
+  <div>
+    <label for="{{ form.email.id }}" class="control-label">{{ form.email.label }}</label>
+    <a class='my-tool-tip' data-toggle="tooltip" data-placement="right" title="We will use this email address to send you information about your jobs.">
+      <!-- The class CANNOT be tooltip... -->
+      <i class='glyphicon glyphicon-info-sign'></i>
+    </a>
+  </div>
+  
+  <div>
+    {{ form.email(class_='form-control')|safe }}
+  </div>
+  
+  {% if form.email.errors %}
+  <ul class="list-unstyled error">
+    <!-- including |safe in the display allows us to embed HTML -->
+    {% for error in form.email.errors %}
+    <li>{{ error|safe }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {{ render_field(form.email_chk) }}
+  {{ render_field(form.affil) }}
+  {{ render_field(form.affil_cat) }}
+  {{ render_field(form.ref) }}
+  {{ render_field(form.analysis) }}
+  <div>
+    {{ form.subscribe|safe }} <label for="{{ form.subscribe.id }}" class="control-label">{{ form.subscribe.label }}</label>
+  </div>
+
+  <div>
+    {{ form.priv_pol|safe }} <label for="{{ form.priv_pol.id }}" class="control-label">{{ form.priv_pol.label }}</label>
+    {% for error in form.priv_pol.errors %}
+    <ul class="list-unstyled error">
+      <li>{{ error|safe }}</li>
+    </ul>
+    {% endfor %}
+  </div>
+
+  <div class="row">
+    <div class="col">
+      {{render_field(form.recaptcha)}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <input class="btn btn-primary" type=submit value=Register>
+    </div>
+  </div>
+</form>
+
+{% endblock %}
+
+{% block info_content %}
+<ul>
+  <li>Why do we want this information?  So we know where to send your results!</li>
+  <li>Some of the analysis pipelines that Nephele runs can take hours to complete.  We don't expect you sit there and wait, so we email you the results once your analysis is complete.
+    We ask that you register your email address with us so we can verify that you can receive email from our system, and to
+    help ensure that you don't accidentally mistype your email address when you run that one really important job.</li>
+  <li>If you choose to subscribe to our newsletter, we'll keep you informed of the latest updates to Nephele.</li>
+</ul>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$(function(){
+  $("a.my-tool-tip").tooltip();
+});
+</script>
+{% endblock %}

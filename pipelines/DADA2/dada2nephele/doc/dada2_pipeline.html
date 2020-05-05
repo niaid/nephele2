@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<style>
+    p {
+        margin-bottom: 10px !important;
+    }
+
+    .routput {
+        background-color: transparent;
+    }
+
+    code>span.kw {
+        color: #152166;
+        font-weight: bold;
+    }
+
+    /* Keyword^ */
+    code>span.dt {
+        color: #152166;
+    }
+
+    /* DataType^ */
+    code>span.fl {
+        color: #099;
+    }
+
+    /* Float^ */
+    code>span.dv {
+        color: #099;
+    }
+
+    /* Value^ */
+    code>span.st {
+        color: #d14;
+    }
+
+    /* String^ */
+    code>span.co {
+        color: #8f5902;
+        font-style: italic;
+    }
+
+    /* Comment */
+    code>span.ot {
+        color: #990073;
+    }
+
+    /* Other^ */
+    code>span.op {
+        color: #006666;
+        font-weight: bold;
+    }
+
+    /* Operator^ */
+    dl {
+        margin-bottom: 5px;
+    }
+
+    dt {
+        font-weight: normal !important;
+    }
+
+</style>
+<div>
+    <h1>DADA2 Pipeline</h1>
+    <nav id="TOC">
+        <ul>
+            <li><a href="#r-packages">R packages</a></li>
+            <li><a href="#user-options">User Options</a></li>
+            <li><a href="#databases">Databases</a></li>
+            <li><a href="#pipeline-steps">Pipeline steps</a></li>
+            <li><a href="#output-files">Output Files</a></li>
+            <li><a href="#tools-and-references">Tools and References</a></li>
+        </ul>
+    </nav>
+    <h2 id="r-packages">R packages</h2>
+    <p>Nephele runs the <a href="https://benjjneb.github.io/dada2/index.html" target="_blank" rel="noopener noreferrer">DADA2 R package</a> v1.10 following the steps in the package authors' <a href="https://benjjneb.github.io/dada2/bigdata.html" target="_blank" rel="noopener noreferrer">Big Data workflow</a> including optional use of <a href="http://www2.decipher.codes" target="_blank" rel="noopener noreferrer">DECIPHER</a> package v2.10. We make some minor modifications of the parameters used. Our pipeline is <a href="#pipeline-steps">outlined below</a>. <strong>If you are new to DADA2, it might be helpful to read through the <a href="https://benjjneb.github.io/dada2/tutorial.html" target="_blank" rel="noopener noreferrer">DADA2 Tutorial</a>.</strong></p>
+    <h2 id="user-options">User Options</h2>
+    <ul>
+        <li><strong>Ion Torrent Data -</strong> <strong style="color:#FF0000">Beta</strong>: By default, DADA2 is trained to work on Illumina data. Checking this option sets the denoising parameters according to <a href="https://benjjneb.github.io/dada2/faq.html#can-i-use-dada2-with-my-454-or-ion-torrent-data" target="_blank" rel="noopener noreferrer">DADA2's suggested values for Ion Torrent data</a>. They also suggest the <code>trim left</code> parameter be increased by 15 bp (on top of any primer lengths). This option is in <span style="color:#FF0000">beta</span>, and has not been extensively tested. If you have Ion Torrent data, we are interested in your feedback - please <a href="mailto:nephelesupport@nih@@gov?Subject=Ion Torrent data" onmouseover="this.href=this.href.replace('@@','.')" onclick="this.href=this.href.replace('@@','.')" target="_top">email us</a>!</li>
+    </ul>
+    <h4 id="filter-and-trim">Filter and Trim</h4>
+    <ul>
+        <li><strong>Trim left</strong>: The number of nucleotides to remove from the start of each read, forward and reverse. The values should be chosen based on the lengths of primers used for sequencing. If your data are untrimmed, this parameter is very important for the DADA2 pipeline. See this <a href="{{ url_for('show_FAQ', _anchor='collapse13') }}">FAQ</a> (Default: 20).</li>
+        <li><strong>Truncation quality score</strong>: Truncate reads at the first instance of a quality score less than or equal to this value. (Default: 4).</li>
+        <li><strong>Truncation length</strong>: The length at which to truncate reads, forward and reverse. Reads shorter than these lengths are discarded. If set to 0, reads are not truncated. If both trim left and truncation length are set, the filtered reads will have length = <em>truncation length - trim left</em>. (Default: 0).</li>
+        <li><strong>Maximum expected errors (maxEE)</strong>: After truncation, reads with higher than this many "expected errors" will be discarded. Expected errors are calculated from the nominal definition of the quality score: EE = sum(10^(-Q/10)). (Default: 5).</li>
+    </ul>
+    <h4 id="merge-pairs">Merge Pairs</h4>
+    <p>For <em>paired-end data only</em>.</p>
+    <ul>
+        <li><strong>Just concatenate</strong>: Concatenate paired reads instead of merging. (Default: FALSE)</li>
+        <li><strong>Maximum mismatches</strong>: The maximum number of mismatches allowed in the overlap region when merging read pairs. (Default: 0).</li>
+        <li><strong>Trim overhanging sequence</strong>: After merging paired end reads, trim sequence which overhangs the start of each read. If amplicons are shorter than read length, e.g. 16S V4 region, we suggest checking this option. (Logical. Default: FALSE).</li>
+    </ul>
+    <h4 id="analysis">Analysis</h4>
+    <ul>
+        <li><strong>Chimera removal</strong>: Remove chimeric sequences. If primers are not trimmed (either prior to submission or using the trim left option), then we suggest unchecking this option. (Default: True).</li>
+        <li><strong>Taxonomic assigment</strong>: Method to be used for taxonomic assignment, either <code>rdp</code> or <a href="http://www2.decipher.codes/ClassificationFAQ.html" target="_blank" rel="noopener noreferrer"><code>IDTAXA</code></a>. (Default: rdp)</li>
+        <li><strong>Reference database</strong>: Reference database to be used for taxonomic assignment. <code>IDTAXA</code> will use its own SILVA v132 database. See <a href="#databases">Databases below</a>.</li>
+        <li><strong>Sampling depth</strong>: The number of counts for filtering and subsampling the OTU table for downstream analysis. Samples which have counts below this value will be removed from the downstream analysis. The counts of the remaining samples will be subsampled to this value. If not specified, it will be calculated automatically. (See <a href="{{ url_for('show_FAQ', _anchor='collapse18') }}">this FAQ</a>)</li>
+    </ul>
+    <h2 id="databases">Databases</h2>
+    <ul>
+        <li><a href="https://benjjneb.github.io/dada2/training.html" target="_blank" rel="noopener noreferrer">SILVA v132 database</a></li>
+        <li><a href="http://www.homd.org/index.php" target="_blank" rel="noopener noreferrer">Human Oral Microbiome Database (HOMD)</a> v15.1 formatted for DADA2</li>
+        <li><a href="https://benjjneb.github.io/dada2/training.html" target="_blank" rel="noopener noreferrer">Greengenes</a> v13.8</li>
+        <li>For <code>IDTAXA</code>, we use the authors' <a href="http://www2.decipher.codes/Downloads.html" target="_blank" rel="noopener noreferrer">modified SILVA v132 SSU trained classifier</a>. More information in <a href="http://www2.decipher.codes/ClassificationFAQ.html" target="_blank" rel="noopener noreferrer">the DECIPHER FAQ</a>.</li>
+    </ul>
+    <h2 id="pipeline-steps">Pipeline steps</h2>
+    <ol class="example" style="list-style-type: decimal">
+        <li>
+            <p><a href="https://rdrr.io/bioc/dada2/man/plotQualityProfile.html" target="_blank" rel="noopener noreferrer">Plot quality profiles</a> of forward and reverse reads. These graphs are saved as <em>qualityProfile_R1.pdf</em> and <em>qualityProfile_R2.pdf</em>.</p>
+            <pre class="sourceCode r"><code class="sourceCode r">pqp1 &lt;-<span class="st"> </span><span class="kw">plotQualityProfile</span>(<span class="kw">file.path</span>(datadir, r1))
+pqp2 &lt;-<span class="st"> </span><span class="kw">plotQualityProfile</span>(<span class="kw">file.path</span>(datadir, r2))</span></code></pre>
+        </li>
+        <li>
+            <p>Preprocess sequence data with <a href="https://rdrr.io/bioc/dada2/man/filterAndTrim.html" target="_blank" rel="noopener noreferrer">filterAndTrim</a>. The <strong>maxEE</strong>, <strong>trimLeft</strong>, <strong>truncQ</strong>, and <strong>truncLen</strong> parameters can be set by the user (defaults used below as example). The filtered sequence files, <em>*_trim.fastq.gz</em>, are output to the <em>filtered_data</em> directory.</p>
+            <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filterAndTrim</span>(<span class="dt">fwd =</span> <span class="kw">file.path</span>(datadir, readslist<span class="op">$</span>R1), <span class="dt">filt =</span> <span class="kw">file.path</span>(filt.dir, trimlist<span class="op">$</span>R1), 
+    <span class="dt">rev =</span> <span class="kw">file.path</span>(datadir, readslist<span class="op">$</span>R2), <span class="dt">filt.rev =</span> <span class="kw">file.path</span>(filt.dir, trimlist<span class="op">$</span>R2), 
+    <span class="dt">maxEE =</span> <span class="dv">5</span>, <span class="dt">trimLeft =</span> <span class="dv">20</span>, <span class="dt">truncQ =</span> <span class="dv">4</span>, <span class="dt">truncLen =</span> <span class="dv">0</span>, <span class="dt">rm.phix =</span> <span class="ot">TRUE</span>, <span class="dt">compress =</span> <span class="ot">TRUE</span>, 
+    <span class="dt">verbose =</span> <span class="ot">TRUE</span>, <span class="dt">multithread =</span> nthread, <span class="dt">minLen =</span> <span class="dv">50</span>)</span></code></pre>
+        </li>
+        <li>
+            <p>Learn the error rates with <a href="https://rdrr.io/bioc/dada2/man/learnErrors.html" target="_blank" rel="noopener noreferrer">learnErrors</a>. The <strong>nbases</strong> parameter is set to <strong>1e+08</strong>. The error rate graphs made with <a href="https://rdrr.io/bioc/dada2/man/plotErrors.html" target="_blank" rel="noopener noreferrer">plotErrors</a> are saved as <em>errorRate_R1.pdf</em>, <em>errorRate_R2.pdf</em>. The error profiles, <code>err</code>, are also saved as a list R binary object in the <em>intermediate_files</em> directory.</p>
+            <pre class="sourceCode r"><code class="sourceCode r">errR1 &lt;-<span class="st"> </span><span class="kw">learnErrors</span>(r1, <span class="dt">multithread =</span> nthread, <span class="dt">nbases =</span> nbases, <span class="dt">randomize =</span> <span class="ot">TRUE</span>)
+pe1 &lt;-<span class="st"> </span><span class="kw">plotErrors</span>(errR1, <span class="dt">nominalQ =</span> <span class="ot">TRUE</span>)</span></code></pre>
+        </li>
+        <li>
+            <p>Dereplicate reads with <a href="https://rdrr.io/bioc/dada2/man/derepFastq.html" target="_blank" rel="noopener noreferrer">derepFastq</a> and run the <a href="https://rdrr.io/bioc/dada2/man/dada.html" target="_blank" rel="noopener noreferrer">dada</a> sequence-variant inference algorithm.</p>
+            <pre class="sourceCode r"><code class="sourceCode r">derepR1 &lt;-<span class="st"> </span><span class="kw">derepFastq</span>(r1[sample], <span class="dt">verbose =</span> <span class="ot">TRUE</span>)
+ddR1 &lt;-<span class="st"> </span><span class="kw">dada</span>(derepR1, <span class="dt">err =</span> errR1, <span class="dt">multithread =</span> nthread, <span class="dt">verbose =</span> <span class="dv">1</span>)</span></code></pre>
+        </li>
+        <li>
+            <p>For paired-end data, merge the overlapping denoised reads with <a href="https://rdrr.io/bioc/dada2/man/mergePairs.html" target="_blank" rel="noopener noreferrer">mergePairs</a>. The <strong>minOverlap</strong> parameter is set to <strong>12</strong>. <strong>trimOverhang</strong>, <strong>justConcatenate</strong>, and <strong>maxMismatch</strong> are set by the user. The sequence table, <code>seqtab</code>, containing the final amplicon sequence variants (ASVs), is saved as an R binary object to the <em>intermediate_files</em> directory.</p>
+            <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mergePairs</span>(dd<span class="op">$</span>R1, derep<span class="op">$</span>R1, dd<span class="op">$</span>R2, derep<span class="op">$</span>R2, <span class="dt">verbose =</span> <span class="ot">TRUE</span>, <span class="dt">minOverlap =</span> <span class="dv">12</span>, <span class="dt">trimOverhang =</span> <span class="ot">FALSE</span>, 
+    <span class="dt">justConcatenate =</span> <span class="ot">FALSE</span>, <span class="dt">maxMismatch =</span> <span class="dv">0</span>)
+seqtab &lt;-<span class="st"> </span><span class="kw">makeSequenceTable</span>(mergedReads)</span></code></pre>
+        </li>
+        <li>
+            <p>Filter out ASVs of length less than 75 bp. The sequence table is saved as <em>seqtab_min75.rds</em>. Also, filter out chimeras with <a href="https://rdrr.io/bioc/dada2/man/removeBimeraDenovo.html" target="_blank" rel="noopener noreferrer">removeBimeraDenovo</a>, if the option is chosen.</p>
+            <pre class="sourceCode r"><code class="sourceCode r">seqtab &lt;-<span class="st"> </span>seqtab[, <span class="kw">which</span>(seqlengths <span class="op">&gt;=</span><span class="st"> </span><span class="dv">75</span>)]
+seqtabnochimera &lt;-<span class="st"> </span><span class="kw">removeBimeraDenovo</span>(seqtab, <span class="dt">verbose =</span> <span class="ot">TRUE</span>, <span class="dt">multithread =</span> nthread)</span></code></pre>
+        </li>
+        <li>
+            <p>Classify the remaining ASVs taxonomically with</p>
+            <ul>
+                <li>
+                    <p><strong>rdp using <a href="https://rdrr.io/bioc/dada2/man/assignTaxonomy.html" target="_blank" rel="noopener noreferrer">assignTaxonomy</a></strong> (default). The <strong>minBoot</strong> parameter for minimum bootstrap confidence is set to <strong>80</strong> and <strong>tryRC</strong> is set to <strong>TRUE</strong>. This genus level result is saved as <em>taxa.biom</em>. Add species annotation to the taxonomic identification using <a href="https://rdrr.io/bioc/dada2/man/addSpecies.html" target="_blank" rel="noopener noreferrer">addSpecies</a>. This final result is saved as a biom file <em>taxa_species.biom</em>.</p>
+                    <pre class="sourceCode r"><code class="sourceCode r">taxa &lt;-<span class="st"> </span><span class="kw">assignTaxonomy</span>(seqtab, refdb, <span class="dt">multithread =</span> nthread, <span class="dt">minBoot =</span> <span class="dv">80</span>, <span class="dt">tryRC =</span> <span class="ot">TRUE</span>, 
+    <span class="dt">verbose =</span> <span class="ot">TRUE</span>)
+taxa.species &lt;-<span class="st"> </span><span class="kw">addSpecies</span>(taxa, refdb_species, <span class="dt">verbose =</span> <span class="ot">TRUE</span>, <span class="dt">tryRC =</span> <span class="ot">TRUE</span>)</span></code></pre>
+                    <p>For PE data, if the <a href="https://rdrr.io/bioc/dada2/man/mergePairs.html" target="_blank" rel="noopener noreferrer">mergePairs</a> <strong>justConcatenate</strong> option is checked, species annotation will only be done <a href="https://github.com/benjjneb/dada2/issues/529#issuecomment-408171883" target="_blank" rel="noopener noreferrer">using the forward reads (R1)</a>.</p>
+                </li>
+                <li>
+                    <p><strong>IDTAXA using <a href="https://rdrr.io/bioc/DECIPHER/man/IdTaxa.html" target="_blank" rel="noopener noreferrer">IdTaxa</a></strong> from the DECIPHER R package. The final result will be saved as <em>taxa.biom</em></p>
+                    <pre class="sourceCode r"><code class="sourceCode r">dna &lt;-<span class="st"> </span><span class="kw">DNAStringSet</span>(<span class="kw">getSequences</span>(seqtab))
+ids &lt;-<span class="st"> </span><span class="kw">IdTaxa</span>(dna, trainingSet, <span class="dt">strand =</span> <span class="st">&quot;both&quot;</span>, <span class="dt">processors =</span> nthread, <span class="dt">verbose =</span> T)</span></code></pre>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <p>The final results are also saved as a tab-separated text file <em>OTU_table.txt</em>. The final sequence variants used for taxonomic classification are output as <em>seq.fasta</em>. A summary of the counts in the OTU table is saved to <em>otu_summary_table.txt</em>.</p>
+        </li>
+    </ol>
+    <h2 id="output-files">Output Files</h2>
+    <p>Complete descriptions of the intermediate and final output files can be found in the <a href="#pipeline-steps">Pipeline Steps above</a>.</p>
+    <ul>
+        <li><em>OTU_table.txt</em>: tab-separated text file of ASV counts and taxonomic assignment</li>
+        <li><em>seq.fasta</em>: FASTA file of amplicon sequence variants</li>
+        <li><em>taxa_species.biom</em>: taxonomic assignment at the species level <a href="http://biom-format.org/documentation/format_versions/biom-1.0.html" target="_blank" rel="noopener noreferrer">BIOM V1 format</a></li>
+        <li><em>otu_summary_table.txt</em>: summary of the sequence variant counts by sample</li>
+        <li><em>taxa.biom</em>: <a href="http://biom-format.org/documentation/format_versions/biom-1.0.html" target="_blank" rel="noopener noreferrer">BIOM V1</a> file of sequence variant counts with taxonomic assignment at the genus level</li>
+        <li><em>taxonomy_table.txt</em>: tab-separated taxonomy file suitable for <a href="{{ url_for('show_qiime2_tutorial') }}">importing into QIIME2</a></li>
+        <li><em>errorRate_R1/2.pdf</em>: error profile plots</li>
+        <li><em>qualityProfile_R1/2.pdf</em>: quality profile plots</li>
+        <li><strong>filtered_data</strong>: trimmed sequence files</li>
+        <li><strong>intermediate_files</strong>: intermediate files produced by the pipeline; useful for debugging</li>
+        <li><strong>graphs</strong>: output of the <a href="{{ url_for('show_vis_details') }}">visualization pipeline</a></li>
+    </ul>
+    <h2 id="tools-and-references">Tools and References</h2>
+    <ol style="list-style-type: decimal">
+        <li>
+            <p>Callahan BJ, McMurdie PJ, Rosen MJ, Han AW, Johnson AJA and Holmes SP (2016). "DADA2: High-resolution sample inference from Illumina amplicon data." <em>Nature Methods</em>, <b>13</b>, pp. 581-583. doi: <a href="http://doi.org/10.1038/nmeth.3869" target="_blank" rel="noopener noreferrer">10.1038/nmeth.3869</a>.</p>
+        </li>
+        <li>
+            <p>McMurdie PJ and Paulson JN (2016). <em>biomformat: An interface package for the BIOM file format</em>. <a href="https://github.com/joey711/biomformat/" target="_blank" rel="noopener noreferrer">https://github.com/joey711/biomformat/</a>.</p>
+        </li>
+        <li>
+            <p>Microsoft and Weston S (2017). <em>foreach: Provides Foreach Looping Construct for R</em>. R package version 1.4.4, <a href="https://CRAN.R-project.org/package=foreach" target="_blank" rel="noopener noreferrer">https://CRAN.R-project.org/package=foreach</a>.</p>
+        </li>
+        <li>
+            <p>Murali, A., Bhargava, A., and Wright, E. S. (2018). IDTAXA: a novel approach for accurate taxonomic classification of microbiome sequences. <em>Microbiome</em>, <b>6</b>(1). doi: <a href="https://doi.org/10.1186/s40168-018-0521-5" target="_blank" rel="noopener noreferrer">10.1186/s40168-018-0521-5</a>.</p>
+        </li>
+        <li>
+            <p>Quast C., Pruesse E., Yilmaz P., Gerken, J., Schweer T., Yarza P., Peplies, J., Gl&#xF6;ckner, F. O. (2013). "The SILVA ribosomal RNA gene database project: Improved data processing and web-based tools." <em>Nucleic Acids Research</em>, <strong>41</strong>(D1), D590-D596. doi: <a href="https://doi.org/10.1093/nar/gks1219" target="_blank" rel="noopener noreferrer">10.1093/nar/gks1219</a>.</p>
+        </li>
+        <li>
+            <p>Escapa, I. F., Chen, T., Huang, Y., Gajare, P., Dewhirst, F. E., &amp; Lemon, K. P. (2018). "New Insights into Human Nostril Microbiome from the Expanded Human Oral Microbiome Database (eHOMD): a Resource for the Microbiome of the Human Aerodigestive Tract." <em>MSystems</em>, <b>3</b>(6), e00187-18. doi: <a href="https://doi.org/10.1128/mSystems.00187-18" target="_blank" rel="noopener noreferrer">10.1128/mSystems.00187-18</a>.</p>
+        </li>
+        <li>
+            <p>DeSantis, T. Z., et al. "Greengenes, a Chimera-Checked 16S rRNA Gene Database and Workbench Compatible with ARB." <em>Applied and Environmental Microbiology</em>, vol. 72, no. 7, July 2006, pp. 5069&#x2013;72. <em>aem.asm.org</em>, doi: <a href="https://doi.org/10.1128/AEM.03006-05" target="_blank" rel="noopener noreferrer">10.1128/AEM.03006-05</a>.</p>
+        </li>
+    </ol>
+</div>
+{% endblock %}

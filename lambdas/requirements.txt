@@ -1,0 +1,4 @@
+sqlalchemy
+pyyaml
+sqlservice 
+mysql-connector

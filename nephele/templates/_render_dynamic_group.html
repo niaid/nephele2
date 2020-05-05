@@ -1,0 +1,14 @@
+{% macro render(fields_list, title) -%}
+{% from "_formhelpers.html" import render_field %}
+
+<div class="well raised-segment">
+  <h4>{{ title }}</h4>
+  <div class="container-fluid">
+   {% for d_field in fields_list %}
+    <div class="row form-group">
+        {{ render_field(d_field, "col-sm-5", "col-md-offset-5", data_desc=d_field.description|safe) }}
+    </div>
+   {% endfor %}
+  </div>
+</div>
+{% endmacro %}

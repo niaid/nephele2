@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block page_content %}
+<!--<div style="padding: 20px 30px 20px 30px">-->
+
+<div>
+    <h1>mothur Pipeline</h1>
+    <p>mothur is an open source software package for bioinformatics data processing initiated by <a href="http://www.schlosslab.org/" target="_blank" rel="noopener noreferrer">Patrick Schloss and his development team</a> in the Department of Microbiology and Immunology at the University of Michigan. The mothur project aims to develop a single piece of open source, expandable software to fill the bioinformatics needs of the microbial ecology community. mothur incorporates the functionality of <a href="https://aem.asm.org/content/71/3/1501" target="_blank" rel="noopener noreferrer">DOTUR</a>, <a href="https://aem.asm.org/content/72/10/6773" target="_blank" rel="noopener noreferrer">SONS</a>, <a href="https://aem.asm.org/content/72/4/2379" target="_blank" rel="noopener noreferrer">TreeClimber</a>, <a href="https://aem.asm.org/content/70/9/5485.long" target="_blank" rel="noopener noreferrer">s-libshuff</a> and others. Nephele uses mothur v1.40.5.</p>
+    <h2 id="user-options">User Options</h2>
+    <h3>Input FASTQ files</h3>
+    <p>The mothur pipeline only operates on paired-end FASTQ data. Additionally, due to resource limitations, the input data size is limited to 10 Gb unzipped or 2 Gb zipped.</p>
+    <h3>Pre-processing</h3>
+    <p>mothur provides a number of commands for sequence processing. These commands allow you to run a fast and flexible sequence analysis pipeline for OTU-based analysis. As an example, the <strong>Max length</strong> option determines the maximum length of sequences after reads are joined. If you leave the default value of 0, we will infer the correct maximum length from your data. If you wish to override the inferred value, you can set this field to a non-zero value.</p>
+    <ul>
+        <li><strong>Max length</strong>: The default value is 0 (automatically determined).</li>
+        <li><strong>Remove sequences that belong to taxa of certain lineages</strong>: You can remove taxa that belong to the lineages such as archaea, chloroplast, mitochondria, eukaryote, or unknown. The default lineages are chloroplast, mitochondria, eukaryote, and unknown.</li>
+    </ul>
+    <h3>Pre-Clustering</h3>
+    <p>The <strong>Optimize</strong> and <strong>Criteria</strong> settings allow you to set the <strong>start</strong> and/or <strong>end</strong> of your aligned sequences. The start and end positions are determined based on the median start and end positions of sequences. The default value will remove any sequence that starts after the position that 90% of the sequences, or ends before the position that 90% of the sequences. This parameter ensures that sequences align to the same region.</p>
+    <ul>
+        <li><strong>Optimize</strong>: default value is start-end.</li>
+        <li><strong>Criteris</strong>: default value is 90.</li>
+    </ul>
+    <h3>Analysis</h3>
+    <ul>
+        <li><strong>OTU Picking Reference Database</strong>: reference database, default SILVA
+            <ul>
+                <li>The <a href="http://www.homd.org/" target="_blank" rel="noopener noreferrer">HOMD database (release 15.1)</a> provides comprehensive curated information o­n the bacterial species present in the human aerodigestive tract (ADT), which encompasses the upper digestive and upper respiratory tracts, including the oral cavity, pharynx, nasal passages, sinuses and esophagus. HOMD should also serve well for the lower respiratory tract. O­ne important aspect of the HOMD, is that it presents a provisional naming scheme for the currently unnamed taxa, based o­n the 16S rRNA sequence phylogeny, so that strain, clone and probe data from any laboratory can be directly linked to a stably named reference scheme. The HOMD links sequence data with phenotypic, phylogenetic, clinical and bibliographic information.</li>
+                <li>The <a href="https://www.arb-silva.de/" target="_blank" rel="noopener noreferrer">SILVA database (release 128)</a>, on the other hand, is a comprehensive, quality-controlled databases of aligned ribosomal RNA (rRNA) gene sequences from the <em>Bacteria</em>, <em>Archaea</em> and <em>Eukaryota</em> domains. The extensively curated SILVA taxonomy and the new non-redundant SILVA datasets provide an ideal reference for high-throughput classification of data from next-generation sequencing approaches.  <a href="https://mothur.org/wiki/Silva_reference_files" target="_blank" rel="noopener noreferrer">mothur's SILVA alignment</a> is 50,000 columns long, so it can be compatible with 18S rRNA sequences as well as archaeal 16S rRNA sequences. The developers of mothur have suggested that this is the best reference alignment for the analysis of microbiome.</li>
+            </ul>
+        <li><strong>Sampling depth for downstream analysis</strong>: no default value.</li>
+            <ul>
+                <li>The sampling depth determines the number of counts for filtering and subsampling the OTU table for downstream analysis. Samples which have counts below this value will be removed from the downstream analysis. The counts of the remaining samples will be subsampled to this value. If not specified, it will be calculated automatically (see <a href="{{ url_for('show_FAQ', _anchor='collapse18') }}">FAQ</a>).</li>
+            </ul>
+        <li><strong>Run PICRUSt annotation</strong>: default no.  See <a href="#picrust">PICRUSt section below</a>.</li>
+    </ul>
+
+    <h2 id="pipeline-major-steps">Pipeline Major Steps</h2>
+
+    <h3>Join forward and reverse short reads as contigs</h3>
+    <p>Contigs are generated using the command <code>make.contigs</code>, and then renamed using the command <code>rename.seqs</code> in order to reduce the memory usage. The <code>make.contigs</code> command extracts the sequence and quality score data from the FASTQ files, creates the reverse complement of the reverse read and then joins the reads into contigs. This command implements a simple algorithm. Briefly, the algorithm first aligns the pairs of sequences, and then searches across the alignment and identifies any positions where the two reads disagree. If one sequence has a base and the other has a gap, the quality score of the base must be over 25 to be considered real. If both sequences have a base at that position, then one of the bases is required to have a quality score 6 or higher than the other. If it is less than 6 points, then the consensus bases is set to an N. mothur only supports samples with pair-end reads.</p>
+
+    <h3>Screen contigs to reduce sequencing errors</h3>
+    <p>This step utilizes the commands <code>screen.seqs</code>. Specifically, the <code>screen.seqs</code> command preserves sequences that satisfies certain criteria. Several parameters are used to specify the criteria. In the Nephele's mothur pipeline, 10% of sequences are randomly selected to estimate optimal values for these parameters. The mothur commands <code>summary.seqs</code> is used to estimate the parameters <code>start</code> and <code>end</code>, and a custom algorithm <code>maxlength</code>.</p>
+    <ul>
+        <li><code>start</code> and <code>end</code>: remove sequences that do not start and end at given positions based on the alignment. It is common that some sequences do not align in the same region as most of others. These sequences likely are PCR artifacts or came from the contamination in samples. The <code>start</code> and <code>end</code> positions are determined based on the median start and end positions of sequences. The median start and end positions are generated from the command <code>summary.seqs</code>.</li>
+        <li><code>maxlength</code>: remove sequences that exceed a certain length, default 0. Note: this value will be determined automatically based on the summary statistics of sequence lengths, if it is set to 0. It is recommended not to set this value manually.</li>
+    </ul>
+    <p>The <code>maxlength</code> largely works as quality assurance on the sequences. This option removes sequences that are either too long or too short. Excessive long sequences are likely due to incorrect pairing while short sequences indicate low quality reads. This parameter, however, is generally difficult to determine precisely because it depends on the 16S region and PCR primers being used. The Nephele's mothur pipeline includes a custom algorithm that automatically determines most probable length. The algorithm constructs a histogram based on the sequence lengths and determine the most appropriate cutoff for analysis. The algorithm, although rudimentary, seems relative robust.</p>
+    <table class="image" style="margin: 0px auto">
+        <caption align="bottom"><b>Historgram of contigs</b>: the length of the most abundant contigs is used to determine the cutoff length (<code>maxlength</code>).</caption>
+        <tr>
+            <td><img src="{{ url_for('static', filename='images/histogram.png') }}" alt="Histogram of contig lengths" height="318" width="564"></td>
+        </tr>
+    </table>
+
+    <h3>Dereplicate sequences</h3>
+    <p>This step returns only the unique sequences and reduces the computing time in the downstream analysis. The <code>unique.seqs</code> command returns the unique sequences found in a FASTA-formatted sequence file and a file that indicates those sequences that are identical to the reference sequences. Often times a collection of sequences will have a significant number of identical sequences. It consumes considersable processing time and have to align, calculate distances, and cluster each of these sequences individually. This command significantly reduces processing time by eliminating and recording duplicate sequences.</p>
+
+    <h3>Taxonomic assignment</h3>
+    <p>This step utilizes the command <code>align.seqs</code>. This command aligns a user-supplied FASTA-formatted candidate sequence file to a user-supplied FASTA-formatted template alignment. Taxonomic assignments in the reference database are then assigned to the OTUs. The reads that failed to align to the reference sequences are clustered against one another without an external reference sequences. This approach, <em>de novo</em> OTU picking, is particularly useful for studying populations where there is poor characterization of existing data. The mothur pipeline currently aligns sequences to either the HOMD or mothur's SILVA v128 databases.</p>
+
+    <h3>Filter sequences</h3>
+    <p>This step removes columns from alignments based on given criteria with the command <code>filter.seqs</code>. Alignments generated against reference alignments, such as HOMD or SILVA, often have columns where every character is either a <q>.</q> or a <q>-</q>. These columns are not included in calculating distances because they have no information in them. By removing these columns, the calculation of a large number of distances is accelerated.</p>
+
+    <h3>Remove sequences due to sequencing errors</h3>
+    <p>This step remove sequences that are likely due to sequencing errors with the command <code>pre.cluster</code>. This command implements a pseudo-single linkage algorithm originally developed by <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2909393/" target="_blank" rel="noopener noreferrer">Sue Huse</a>. The basic idea is that abundant sequences are more likely to generate erroneous sequences than rare sequences. The algorithm proceeds by ranking sequences in order of their abundance. It then walks through the list of sequences looking for rarer sequences that are within some threshold of the original sequences. Those that are within the threshold are merged with the larger sequence. The original Huse method performs this task on a distance matrix, whereas mothur performs the same task based on the original sequences. The advantage is that the algorithm works on aligned sequences instead of a distance matrix. This is advantageous because pre-clustering removes a large number of sequences, which makes the distance calculation much faster.</p>
+
+    <h3>Remove chimeric sequences</h3>
+    <p>The command <code>chimera.vsearch</code> reads a FASTA file and reference file, and outputs potentially chimeric sequences. This command utilizes the <a href="https://github.com/torognes/vsearch" target="_blank" rel="noopener noreferrer">VSEARCH</a> program. VSEARCH stands for vectorized search, as the tool takes advantage of parallelism in the form of SIMD vectorization as well as multiple threads to perform accurate alignments at high speed. VSEARCH uses an optimal global aligner (full dynamic programming <a href="https://www.sciencedirect.com/science/article/abs/pii/0022283670900574" target="_blank" rel="noopener noreferrer">Needleman-Wunsch</a>), in contrast to <a href="https://www.drive5.com/usearch/" target="_blank" rel="noopener noreferrer">USEARCH</a> which by default uses a heuristic seed and extend aligner. This usually results in more accurate alignments and overall improved sensitivity (recall) with VSEARCH, especially for alignments with gaps. The VSEARCH program supports <em>de novo</em> and reference based chimera detection, clustering, full-length and prefix dereplication, rereplication, reverse complementation, masking, all-vs-all pairwise global alignment, exact and global alignment searching, shuffling, subsampling and sorting. It also supports FASTQ file analysis, filtering, conversion and merging of paired-end reads.</p>
+
+    <h3>Cluster OTUs</h3>
+    <p>Sequences are clustered into OTUs using <a href="https://mothur.org/wiki/cluster.split/" target="_blank" rel="noopener noreferrer"><code>cluster.split</code></a>. <code>cluster.split</code> first computes the pairwise distances between sequences and saves them to a distance matrix. Nephele checks the size of this distance matrix to ensure it will fit in memory (see <a href="{{ url_for('show_FAQ', _anchor='collapsemothur') }}">this FAQ</a>) before the clustering takes place.</p>
+
+    <h3>Classify OTUs</h3>
+    <p>This step generates a consensus taxonomy for an OTU. From each OTU, a single sequence is selected as a representative. This representative sequence is annotated, and that annotation is applied to all remaining sequences within that OTU. The command <code>classify.otu</code> requires parameters such as list, taxonomy, count, cutoff, label and probabilities. The default is the <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1950982/" target="_blank" rel="noopener noreferrer">Wang method</a>. The Wang method looks at all taxonomies represented in the template, and calculates the probability a sequence from a given taxonomy would contain a specific <em>k</em>mer. Then calculates the probability a query sequence would be in a given taxonomy based on the <em>k</em>mers it contains, and assign the query sequence to the taxonomy with the highest probability. This method also runs a bootstrapping algorithm to find the confidence limit of the assignment by randomly choosing with replacement 1/8 of the <em>k</em>mers in the query and then finding the taxonomy.</p>
+
+    <h3>Remove sequences of certain lineages</h3>
+    <p>The <code>remove.lineage</code> command reads a taxonomy file and a taxon and generates a new file that contains only the sequences not containing that taxon. The default option is to remove the lineages chloroplast, mitochondria, eukaryote, and unknown.</p>
+
+    <h3>Fast distance-based phylogenetic tree</h3>
+    <p>This step generates a distance-based phylogenetic tree based on the relaxed neighbor joining (RNJ) algorithm with the command <code>clearcut</code>. RNJ modifies the traditional neighbor joining algorithm and achieves typical asymptotic runtime of <em>O(n<sup>2</sup></em>log<em>N)</em> without a significant reduction in the quality of the inferred trees. As with traditional neighbor joining, RNJ will reconstruct the true tree given a set of additive distances. Relaxed neighbor joining was developed by Jason Evans, Luke Sheneman, and James Foster from the <a href="http://bioinformatics.hungry.com/clearcut/" target="_blank" rel="noopener noreferrer">Initiative for Bioinformatics and Evolutionary STudies (IBEST) at the University of Idaho</a>. No custom parameters are available.</p>
+
+    <h2 id="picrust">PICRUSt</h2>
+    <p>PICRUSt is designed to estimate the gene families contributed to a metagenome by bacteria or archaea identified using 16S rRNA sequencing. Intermediate steps in this pipeline may also be of independent interest, as they allow for phylogenetic prediction of organismal traits using reference examples (here applied to the problem of gene content prediction), and correction for variable marker gene copy number.  Nephele is running PICRUSt v1.1.4.</p>
+
+    <h2 id="output-files">Output Files/Folders</h2>
+    <ul>
+        <li><code>combo.*.biom</code>: <a href="http://biom-format.org/documentation/format_versions/biom-1.0.html">BIOM</a> file of sequence variant counts with taxonomic assignment at the genus level.</li>
+        <li><code>combo.*.phylip.dist</code> and <code>combo.*.phylip.tre</code>: Phylogenetic distance and tree calculated using the commands <code>dist.seqs</code> and <code>clearcut</code>.</li>
+        <li><code>combo.*.fasta</code>: The final FASTA file for taxonomic assignment after a series of quality control steps.</li>
+        <li><code>combo.*.opti_mcc.*</code>: Consensus taxonomy and summmary with the optimal <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0177678" target="_blank">Matthews correlation coefficient (mcc)</a> value.</li>
+        <li><code>otu_summary_table.txt</code>: Summary of the numbers of taxonomically assigned reads for each sample in the dataset.</li>
+        <li><b>graphs</b>: Output of our visualization pipeline using plotly and morpheus.  See <a href="{{ url_for('show_vis_details') }}">visualization pipeline page for more information on the output files</a>.</li>
+        <li><b>otu_picrust (optional)</b>: Closed reference OTU picking using QIIME1 with Greengenes 99 database.</li>
+        <li><b>PICRUST_data (optional)</b>: The final metagenome functional predictions with figures and bar plots. For more information, please visit <a href="http://picrust.github.io/picrust/">PICRUSt online documentation</a>.</li>
+    </ul>
+    <h2 id="tools-and-references">Tools and References</h2>
+    <ol>
+        <li>PD Schloss, SL Westcott, T Ryabin, JR Hall, M Hartmann, EB Hollister, RA Lesniewski, BB Oakley, DH Parks, CJ Robinson, JW Sahl, B Stres, GG Thallinger11, DJ Van Horn and CF Weber (2009) Introducing mothur: Open-Source, Platform-Independent, Community-Supported Software for Describing and Comparing Microbial Communities, doi: <a href="http://aem.asm.org/content/75/23/7537.full" target="_blank" rel="noopener noreferrer">10.1128/AEM.01541-09</a>.</li>
+        <li>MGI Langille, J Zaneveld, JG Caporaso, D McDonald, D Knights, JA Reyes, JC Clemente, DE Burkepile, RL Vega Thurber, R Knight, RG Beiko and C Huttenhower (2013) Predictive functional profiling of microbial communities using 16S rRNA marker gene sequences. Nature Biotechnology, doi: <a href="https://www.nature.com/articles/nbt.2676" target="_blank" rel="noopener noreferrer">10.1038/nbt.2676</a>.</li>
+        <li>J Evans, L Sheneman, and JA Foster. Relaxed neighbor-joining: a fast distance-based phylogenetic tree construction method, Journal of Molecular Evolution, <a href="https://link.springer.com/article/10.1007/s00239-005-0176-2" target="_blank" rel="noopener noreferrer">62:785-792</a>.</li>
+    </ol>
+</div>
+
+{% endblock %}

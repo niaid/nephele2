@@ -1,0 +1,32 @@
+{% extends "options_base.html" %}
+
+{% block form_content %}
+<p><font color="red">Note: Mothur is ONLY SUITABLE for jobs with input sizes LESS THAN 2 GB.<br>
+If your inputs are greater than 2GB, please consider using one of our other 16S pipelines.</font></p>
+<ul class="nav nav-tabs" role="tablist">
+   <li class="nav-item"><a class="nav-link active show" href="#t1" role="tab" data-toggle="tab">Job Details</a></li>
+   <li class="nav-item"><a class="nav-link" href="#t2" role="tab" data-toggle="tab">Pre-processing</a></li>
+   <li class="nav-item"><a class="nav-link" href="#t3" role="tab" data-toggle="tab">Analysis</a></li>
+ </ul>
+
+ <div class="container-fluid connected-pane" style="height: 100%;">
+   <div class="row" style="height: 100%;">
+     <div class="col-sm-8 tab-content" style="height: 100%;">
+       <div class="tab-pane fade show active" id="t1">
+        {# { d_group.render([form.job_desc, form.instance_type], group['Title']) } #}
+        {{ d_group.render([form.job_desc], "Job Details") }}
+       </div>
+       <div class="tab-pane fade" id="t2">
+    	{{ d_group.render([form.maxlength, form.remove_lineage], "Pre-processing") }}
+        {{ d_group.render([form.optimize, form.criteria], "Pre-Clustering") }}
+ 	   </div>
+ 	   <div class="tab-pane" id="t3">
+    	{{ d_group.render([form.ref_db, form.sampling_depth, form.picrust], "Analysis Type for Clustering and Classification Analysis") }}
+ 	   </div>
+     </div>
+     <div class="col-sm-4 pre-scrollable" style="height: calc(100%); overflow-y: auto;">
+       <div class="well raised-segment" id="help-container"></div>
+     </div>
+   </div>
+ </div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<!-- Page content -->
+<main role="main" class="container">
+  <div class="starter-template">
+
+    <a class="btn btn-link new-to-nephele" href="{{ url_for('show_about') }}">New to Nephele? Get started here.</a>
+
+    <h2 class="mb-5">Select your analysis type below to start.</h2>
+
+    <div class="card-group mb-5">
+
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Pre-processing quality check</h5>
+          <a class="btn btn-primary" href="{{ url_for('data_selection_qc') }}">QC</a>
+        </div>
+        <div class="card-footer">
+          <a class="" href="{{ url_for('show_pipes_guide', _anchor='qc_pipes') }}">Details</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Amplicon Data</h5>
+          <a class="btn btn-primary" href="{{ url_for('data_selection_16s') }}">16S</a>
+          <a class="btn btn-primary" href="{{ url_for('init_ITS') }}">ITS</a>
+        </div>
+        <div class="card-footer">
+          <a class="" href="{{ url_for('show_pipes_guide', _anchor='amplicon_pipes') }}">Details</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">WGS Data</h5>
+          <a class="btn btn-primary" href="{{ url_for('data_selection_wgs') }}">WGS</a>
+        </div>
+        <div class="card-footer">
+          <a class="" href="{{ url_for('show_pipes_guide', _anchor='wgs_pipes') }}">Details</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Downstream analysis</h5>
+          <a class="btn btn-primary" href="{{ url_for('upload_biom') }}">DA</a>
+        </div>
+        <div class="card-footer">
+          <a class="" href="{{ url_for('show_pipes_guide', _anchor='da_pipes') }}">Details</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="">
+      <form class="form-inline justify-content-center" method="post" action="{{ url_for('get_resubmit_data') }}">
+        <div class="form-group">
+          <label for="rerunprevious" class="mr-3">Need to re-run previous job?</label>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="input-group">
+            <input type="text" class="form-control" id="rerunprevious" name="previous_jobid" alt="Enter job ID" placeholder="Enter job ID" aria-label="Enter job ID" aria-describedby="button-addon2"/>
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Submit</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <hr class="my-5">
+    <div class="card-deck mt-5 mb-5">
+      <div class="card bg-transparent border-0">
+        <img class="card-img-top nephele-home-icons" src="{{ url_for('static', filename='images/upload.svg') }}" alt="Card image upload"/>
+        <div class="card-body nephele-steps">
+          <p class="card-text">Select your pipeline and upload your data</p>
+        </div>
+      </div>
+      <div class="card bg-transparent border-0">
+        <img class="card-img-top nephele-home-icons" src="{{ url_for('static', filename='images/parameters.svg') }}" alt="Card image list"/>
+        <div class="card-body nephele-steps">
+          <p class="card-text">Select the parameters for your microbiome analysis</p>
+        </div>
+      </div>
+      <div class="card bg-transparent border-0">
+        <img class="card-img-top nephele-home-icons" src="{{ url_for('static', filename='images/cloud-computing.svg') }}" alt="Card image cloud pipeline"/>
+        <div class="card-body nephele-steps">
+          <p class="card-text">Your pipeline starts and runs in the cloud</p>
+        </div>
+      </div>
+      <div class="card bg-transparent border-0">
+        <img class="card-img-top nephele-home-icons" src="{{ url_for('static', filename='images/binary-code.svg') }}" alt="Card image binary"/>
+        <div class="card-body nephele-steps">
+          <p class="card-text">Download and visualize your results</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+
+
+{% endblock %}

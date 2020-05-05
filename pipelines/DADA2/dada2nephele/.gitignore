@@ -1,0 +1,4 @@
+packrat/lib*/
+out/
+packrat/src/
+*.Rproj

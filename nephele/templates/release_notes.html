@@ -1,0 +1,888 @@
+{% extends "about_base.html" %}
+
+{% block about_content %}
+<h1>Release Notes</h1>
+
+<p><strong>Release Version:</strong> Nephele 2.4.0<br/>
+<strong>Release Tag:</strong> Nephele_2020_Apr_15</p>
+
+<p><strong>Additions</strong></p>
+<ul>
+  <li>Increased the Nephele concurrent pipeline job submission capacity and added a queuing system to accommodate the high demand.</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+<ul>
+      <li>Improved Nephele's mothur pipeline error handling to prevent the non-responding status of the pipeline with large input files.</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<br/><br/>
+<p><strong>Release Version:</strong> Nephele 2.3.3<br/>
+<strong>Release Tag:</strong> Nephele_2020_Jan_29</p>
+
+<p><strong>Additions</strong></p>
+<ul>
+  <li>Ion Torrent data processing (beta) feature is added in
+    <a href="{{ url_for('show_dada2_details') }}">DADA2 pipeline</a>. If
+    you have Ion Torrent data for 16S, you can use the DADA2 pipeline.</li>
+  <li>QIIME BIOM V2 file can be submitted in the Downstream Analysis pipeline.</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+<ul>
+      <li>N&#47;A</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+<ul>
+  <li>Gateway timeout issue for job resubmission due to unzipping has been fixed</li>
+</ul>
+
+<br/><br/>
+<p><strong>Release Version:</strong> Nephele 2.3.2<br/>
+<strong>Release Tag:</strong> Nephele_2019_Dec_16</p>
+
+<p><strong>Additions</strong></p>
+<ul>
+  <li>reCAPTCHA has been added to the Sign-Up page</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+<ul>
+      <li>QIIME 1 pipeline is now running the core diversity without the
+        taxonomy plots. For the taxonomy plots, we recommend using the  <a
+          href="{{ url_for('show_da_details') }}">Amplicon Downstream Analysis
+          pipeline</a> after the QIIME job is complete.
+</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+<ul>
+  <li>An issue with "I received an error email; now what?" accordion menu not opening has been fixed</li>
+</ul>
+
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.3.1<br/>
+<strong>Release Tag:</strong> Nephele_2019_Oct_08
+</p>
+
+<p><strong>Additions</strong></p>
+<ul>
+  <li>Alpha significance of Shannon diversity feature is added on Downstream Analysis (DA) pipeline.</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.3.0<br/>
+<strong>Release Tag:</strong> Nephele_2019_Aug_21
+</p>
+
+<p><strong>Additions</strong></p>
+<ul>
+  <li>NEW Pipeline: <a href="{{ url_for('show_da_details') }}">Amplicon Downstream Analysis pipeline</a></li>
+</ul>
+
+<p><strong>Removals</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+<ul>
+  <li>Update QIIME pipeline instance with 64GB of memory (m5.4xlarge)</li>
+  <li>Updated QIIME ITS OTU database from the version 7.1 (2016-11-20) to <a href="https://plutof.ut.ee/#/doi/10.15156/BIO/786334" target="_blank" rel="noopener noreferrer">version 8.0 (2018-11-18)</a></li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.2.8<br/>
+<strong>Release Tag:</strong> Nephele_2019_Jun_13
+</p>
+
+<p><strong>Additions</strong></p>
+<ul>
+  <li>DADA2 pipeline updates
+    <ul>
+      <li>Greengenes for the OTU picking reference database</li>
+      <li>Option added in the DADA2 pipeline to allow for concatenation of paired-end reads instead of merging</li>
+      <li>Added DECIPHER as a taxonomic assignment method</li>
+    </ul>
+  </li>
+  <li>QIIME ITS pipeline
+    <ul>
+      <li>Closed Reference and De Novo for the OTU picking analysis type</li>
+      <li>A release identifier has been added in the logfile.txt</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>Removals</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+<ul>
+  <li>EC2 time has set to Eastern Standard Time (EST) Zone</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.2.7<br/>
+<strong>Release Tag:</strong> Nephele_2019_May_29
+</p>
+
+<p><strong>Additions</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+<ul>
+  <li>Fixed an issue to display the user's email address after signing in.</li>
+</ul>
+
+<br/><br/>
+<p><strong>Release Version:</strong> Nephele 2.2.6<br/>
+<strong>Release Tag:</strong> Nephele_2019_May_16</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Rarefied OTU table is included in DADA2 output</a></li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>Removed excessive intermediate files (join_pair folder) from QIIME pipelines</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Updated Boostrap version to 4.3.1</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Fixed biom format when only one sample in dataset</li>
+  <li>Fixed filtering out for low abundant organisms in a heatmap</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.2.5<br/>
+<strong>Release Tag:</strong> Nephele_2019_Apr_01</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Updated MultiQC 1.6 to <a href="https://github.com/ewels/MultiQC/releases" target="_blank" rel="noopener noreferrer">1.8dev</a></li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Updated Bootstrap version from 3.3.7 to 4.0.0</li>
+  <li>Updated the name of the SILVA database in the DADA2 forms to reflect the version of the database.
+  NOTE: The database used has not changed, the name was updated in the form to more accurately reflect what is used.</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.2.4<br/>
+<strong>Release Tag:</strong> Nephele_2019_Feb_14</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Updated DADA2 1.6 to <a href="https://benjjneb.github.io/dada2/ReleaseNotes_1_10.html" target="_blank" rel="noopener noreferrer">1.10</a></li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.2.3<br/>
+<strong>Release Tag:</strong> Nephele_2019_Feb_01</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Added <a href="http://homd.org/" target="_blank" rel="noopener noreferrer">Human Oral Microbiome Database (HOMD)</a> in 16S pipelines</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Modifications to code retrieving remote files via FTP</li>
+  <li>Restored unnecessarily deleted intermediate files from the mothur pipeline result file</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.2.2<br/>
+<strong>Release Tag:</strong> Nephele_2018_Nov_28</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Added Nephele Webinar (11.16.2018) on Tutorials page</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Enable QIIME1 to run core diversity in parallel</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Fixed minor infrastructure bug fix in the pipeline exception handling.</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.2.1<br/>
+<strong>Release Tag:</strong> Nephele_2018_Nov_08</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Added Tutorials page</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>&quot;Visualization tutorial&quot; and &quot;Importing into Phyloseq&quot; moved to new Tutorials page</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Issue with the mothur pipeline that stalls on the 'dist.seqs' step for large dataset has been resolved.</li>
+  <li>Issue with slow data transfer using the FTP method has been resolved.</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.2.0<br/>
+<strong>Release Tag:</strong> Nephele_2018_Oct_05</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>NEW PIPELINE: <a href="{{ url_for('show_pipes_guide', _anchor='qc_pipes') }}">Pre-processing Quality Check (QC)</a></li>
+  <li>NEW PIPELINE: DADA2 Single End</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>18S "Coming Soon" button has been removed due to the lack of interest. Please <a href="mailto:nephelesupport@nih@@gov" onmouseover="this.href=this.href.replace('@@','.')" onclick="this.href=this.href.replace('@@','.')">email us</a> if you would like to provide us your feedback on the 18S pipeline.</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Cleaned up unnecessary intermediate files from the mothur pipeline result file</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Issue with the remove lineage option in mothur pipeline has been fixed.</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.1.2<br/>
+<strong>Release Tag:</strong> Nephele_2018_Sep_13</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>"Closed reference" option restored in 16S QIIME1 PE and SE pipelines</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Issue with QIIME1 "Closed reference" OTU picking method has been fixed.</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.1.1<br/>
+<strong>Release Tag:</strong> Nephele_2018_Sep_07</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>Temporary removal of "Closed reference" option in 16S QIIME1 PE and SE pipelines</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Issue with QIIME1 running the default OTU picking method regardless of the user selection has been fixed.</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.1.0<br/>
+<strong>Release Tag:</strong> Nephele_2018_Aug_29</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>mothur 1.40.5 pipeline</li>
+  <li><a href="{{ url_for('show_phyloseq_tutorial') }}">Tutorial</a> for importing Nephele results into Phyloseq</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>Updated supported file extensions; removed support for legacy file formats</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Modify sampling depth calculation in 16S pipelines (see <a href="{{ url_for('show_FAQ', _anchor='collapse18') }}">FAQ</a> for more details)</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Check the mapping file for non-ASCII characters to prevent errors during downstream analysis</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.0.2<br/>
+<strong>Release Tag:</strong> Nephele_2018_Jul_27</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Added sampling depth option to QIIME1 pipeline for downstream analysis</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Fixed a bug in the sampling depth calculation for QIIME1 and DADA2 that was introduced in version 2.0.1 which caused the sampling depth to be set too low for some datasets</li>
+  <li>Corrected typos in mapping file instructions</li>
+  <li>Corrected reference for Nephele in the about pages</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.0.1<br/>
+<strong>Release Tag:</strong> Nephele_2018_Jul_19</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Added filter and trim parameters for the DADA2 Paired End pipeline (<a href="{{ url_for('show_dada2_details', _anchor='user_options') }}">see pipeline detail page</a>)</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>An issue that caused the PICRUSt step to not be correctly initiated in QIIME1 Single End has been fixed</li>
+  <li>Corrected typos in mapping file instructions</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 2.0<br/>
+<strong>Release Tag:</strong> Nephele_2018_July_02</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li><strong>NEW PIPELINE:</strong> 16S DADA2 Paired-end FASTQ pipeline</li>
+  <li>Added interactive mapping file validation</li>
+  <li>Added a Sign&#45;Up page and email validation which you&#39;ll need to complete prior to your first job submission</li>
+  <li>Added a &quot;resubmit a job with jobID&quot; function</li>
+  <li>Added 16S Data Visualization tutorial page</li>
+  <li>Automated the result data expiration after 90 days of the job completion.</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>Removed the promotional code request page and its functionality and replaced it with a sign&#45;up</li>
+  <li>Removed 16S QIIME SFF pipeline</li>
+  <li>Removed 16S QIIME FASTA&amp;QUAL pipeline</li>
+  <li>Removed 16S QIIME Paired-end Multiplex pipeline</li>
+  <li>Removed 16S mothur SFF pipeline</li>
+  <li>Removed WGS bioBakery SFF pipeline</li>
+  <li>Removed HMP Comparison feature</li>
+  <li>Removed 3D microbiome page</li>
+  <li>Removed the ability to change the instance type for a job</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Updated bioBakery WGS pipeline including visualization</li>
+  <li>Updated 16S data visualization ampvis2 R package.</li>
+  <li>Updated the job submission workflow to a step-by-step style wizard</li>
+  <li>Updated file upload to allow a multi-file fastq files instead of a single zip file</li>
+  <li>Updated the SILVA database to release 132</li>
+  <li>Modified default instance type from c3.4xlarge to c5.4xlarge (the instance for DADA2 is m5.4xlarge, WGS bioBakery is m5.12xlarge)</li>
+  <li>Modified mapping file templates remove unnecessary columns</li>
+  <li>Updated UserGuide, FAQ page and About pages</li>
+  <li>Modified Nephele homepage design</li>
+  <li>Updated pipelines parameters and help text</li>
+  <li>Re&#45;wrote the site from the ground up using a new framework</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>N&#47;A</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 1.8<br/>
+<strong>Release Tag:</strong> Nephele_2017_Jun_30</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Introduced OpenMP-based parallelization to accelerate both mothur and QIIME 16S analysis pipelines</li>
+  <li>Added a feature to automatically filter out rare OTUs (&lt;0.05&#37; abundance) in QIIME analyses</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>None</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Upgraded mothur version from 1.38 to 1.39.5</li>
+  <li>Updated the SILVA database to release 128</li>
+  <li>Updated the UNITE/INSDC representative/reference sequences for the QIIME ITS pipeline to version 7.1 (2016-11-20)</li>
+  <li>Updated FastTree to version 2.1 to support double precision and OpenMP (the support of double precision eliminates an issue associated with rounding errors on tree branches less than 0.0001, which were likely to produce trees that failed to accurately describe divergence among isolates)</li>
+  <li>Replaced USEARCH with the open-source VSEARCH alternative, for both mothur- and QIIME-based 16S analysis pipelines</li>
+  <li>Modified all pipelines using the SILVA reference database to align against SILVA NR rather than SEED database</li>
+  <li>Updated references, including replacing downloadable citation files in EndNote, RIS, and BIB formats with an NCBI Collection URL</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Fixed an issue in QIIME pipelines with a user-defined selection of SILVA for reference taxonomy selection being ignored and running with the default Greengenes-based taxonomy classification</li>
+  <li>Corrected a bug that resulted in failure to remove chimeric sequences in QIIME-based pipelines</li>
+  <li>Addressed an issue in mothur pipelines that prevented removal of low-abundant reads as specified in the &quot;difference rank&quot; parameter</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 1.7<br/>
+<strong>Release Tag:</strong> Nephele_2016_Dec_22</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Implemented functional annotation analysis capability using PICRUSt in QIIME and mothur paired end pipelines (see help text in submission form for additional details)</li>
+  <li>Added Shannon diversity analysis step to all 16S pipelines</li>
+  <li>Developed better error capturing for improved troubleshooting, including reporting of NEPHELE_WARNING and NEPHELE_ERROR notifications in the log file (see FAQ for more details)</li>
+  <li>Added species-level plotting for 16S analysis when using Greengenes reference database, by user request (note: we caveat this feature addition with typical warnings regarding reduced confidence in interpretation of results at this level of granularity)</li>
+  <li>Added support for users of Box.com file storage/sharing service to submit files to Nephele from Box via URL (note: see FAQ for additional details)</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>Removed &quot;OTU_heatmap&quot; directory from mothur paired end outputs, which is instead being created using phyloseq and can be found in &quot;nephele_outputs&quot; directory</li>
+  <li>Removed selection of m3.2xlarge instance type</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Modified QIIME and mothur pipelines&#39; usage of UCLUST algorithm, in favor of SortMeRNA for clustering when selecting open reference OTU picking</li>
+  <li>Changed classification step in mothur paired end pipeline to use SILVA NR database instead of SEED database</li>
+  <li>Updated processing of compare-to-HMP to use pre-computed BIOM files for faster processing</li>
+  <li>Modified calculations for sequence filtering while running core diversity analysis in all 16s pipelines to use percentage of median OTUs rather than the maximum, including modifying the default fraction value for subsampling from 0.1 to 0.2</li>
+  <li>Changed default max_length cutoff value in mothur from 300 to 450 base pairs</li>
+  <li>Updated mothur paired end pipeline to stop processing and report in log file when mean joined sequence length is 100 base pairs or less</li>
+  <li>Adapted email text and reply-to address for improved tracking for support and troubleshooting</li>
+  <li>Modified color of phyloseq-generated heat maps from ice blue to the deep red found on the Nephele homepage</li>
+  <li>Moved runtime.txt file from WorkFolder.zip to PipelineResults.zip for improved troubleshooting</li>
+  <li>Updated relevant tutorial videos, pipeline diagrams, user guide details, and references section to reflect changes from this release</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Addressed issue with slowing or termination of jobs during high-usage periods due to AWS-imposed limits</li>
+  <li>Fixed issue with failed pipelines due to too many OTUs to plot by skipping plotting when plots would be too dense to create or interpret</li>
+  <li>Corrected issue with spaces in name of URL-submitted files by automatically removing spaces</li>
+  <li>Fixed false-positive validation error for sequence read directories having gzipped inputs</li>
+  <li>Addressed compare-to-HMP job failures related to too few reads in HMP tissue sources</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 1.6<br/>
+<strong>Release Tag:</strong> Nephele_2016_Oct_11</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Added .mapping file extension for mothur MiSeq pipelines</li>
+  <li>Created Phyloseq-based visualizations, including heat maps, relative abundance stacked bar charts, and mini bar plots, for all QIIME and mothur amplicon jobs</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>Removed bioBakery 16S pipeline due to maintainability challenges</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Modified Nephele homepage design</li>
+  <li>Updated relevant tutorial videos, pipeline diagrams, user guide details, and references section to reflect Phyloseq visualization updates</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Fixed issue with QIIME ITS pipeline not working</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 1.5<br/>
+<strong>Release Tag:</strong> Nephele_2016_Aug_12</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>N/A</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N/A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Moved interface fields for comparing to Human Microbiome Project (HMP) data to separate section on second form screen for amplicon-based analyses</li>
+  <li>Updated email confirmation message to more clearly indicate compare-to-HMP settings that were selected</li>
+  <li>Modified all email address references to one that automatically logs to Nephele&#39;s tracking system</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Addressed issue in mothur pipelines where HMP comparisons were run, even if not specified</li>
+  <li>Fixed problem with large data file output not transferring to AWS S3 after pipeline completion</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 1.4<br/>
+<strong>Release Tag:</strong> Nephele_2016_Jul_13</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li><strong>NEW PIPELINE EXTENSION:</strong> Compare 16S analysis results using QIIME or mothur to the Human Microbiome Project (HMP) healthy human subjects cohort</li>
+  <li>Added description of HMP comparison pipeline to <a href="{{ url_for('show_user_guide') }}">User Guide</a></li>
+  <li>Added <a href="{{ url_for('show_FAQ') }}">FAQs page</a></li>
+  <li>Updated Release Notes page</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N/A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Modified form field to allow user the ability to select which reference database to use for 16S comparisons (e.g., Greengenes versus SILVA), in addition to the original selection of percent similarity threshold value.</li>
+  <li>Set default value of 16S QIIME pipeline&#39;s reference database to SILVA_99 (from original Greengenes_99)</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Addressed issue in file validation timeouts that occassionally resulted in 404 errors</li>
+  <li>Fixed bug with QIIME FASTQ Single End pipeline failures resulting from extra metadata columns were added to the mapping file</li>
+</ul>
+<br/><br/>
+
+<p><strong>Release Version:</strong> Nephele 1.3<br/>
+<strong>Release Tag:</strong> Nephele_2016_Jun_13</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li><strong>NEW PIPELINE:</strong> QIIME ITS analysis for paired end Illumina data</li>
+  <li>Added option to turn off core microbiome analysis for QIIME pipelines</li>
+  <li>Improved mapping file validation to ensure that TreatmentGroup column has a minimum of two distinct values, has only alphanumeric characters, and does not allow spaces</li>
+  <li>Added CHIMERAS_FOUND.txt to nephele_outputs directory of QIIME pipeline results to indicate how many chimeras were found</li>
+  <li>Added Release Notes page</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>Disabled selection of diversity analysis and plots in mothur &amp; QIIME pipelines; these are now run conditionally based on user inputs</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Refactored Mothur MiSeq pipeline to utilize SILVA SEED database v. 123</li>
+  <li>Updated Mothur MiSeq pipeline to automatically skip beta diversity analysis if fewer than 3 samples are provided</li>
+  <li>Modified mapping file validation error messages to make it clearer what actions to take if validation fails</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Addressed issue with auto-detection of phred scores for Illumina 1.9 data</li>
+  <li>Corrected pipeline failure issue when spaces exist in the name of any input file</li>
+  <li>Fixed issue with empty html links for bar plots</li>
+</ul>
+<br/><br/>
+<p><strong>Release Version:</strong> Nephele 1.2<br/>
+<strong>Release Tag:</strong> Nephele_2016_Apr_28</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Released feature improvement for QIIME Single and Paired End pipelines to successfully process single, demultiplexed sample</li>
+  <li>Created new mapping file templates for all pipelines</li>
+  <li>Improved mapping file validation to catch SampleID containing non-alphanumeric or period characters, which causes pipelines to fail</li>
+  <li>Created downloadable citations file in EndNote (.enw), Research Information Systems (.ris), and BibTeX (.bib), accessible from the <a href="{{ url_for('show_references') }}">References</a> page</li>
+  <li>Added &quot;compute_core_microbiome&quot; step to QIIME pipelines and updated associated pipeline diagrams</li>
+  <li>Added Release Notes page</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N/A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Modified generation of heatmaps at the Order taxonomic rank to improve readability of output images</li>
+  <li>Updated mapping file templates for QIIME pipelines</li>
+  <li>Set Nephele pipeline diagram URLs as relative URLs based on environment</li>
+  <li>Modified help text to reflect QIIME maximum sample size update in &quot;Additions&quot; section above</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Addressed issue with some analysis jobs not starting properly</li>
+  <li>Fixed issue with calculation of zero OTU hits that had created a divide-by-zero error in &quot;plot_taxa_summary&quot; processing step</li>
+  <li>Set processing of QIIME pipelines&#39; &quot;fraction of maximum sample size&quot; parameter such that if 0 is provided in Nephele form (which causes pipeline failure), QIIME&#39;s default value is used instead</li>
+  <li>Corrected QIIME core diversity depth calculation, which was previously incorrect</li>
+  <li>Improved QIIME Single End pipeline to accept variable length barcodes</li>
+  <li>Added versioning tag to HTML, CSS, and JavaScript to fix 404 errors related to system deployments</li>
+</ul>
+<br/><br/>
+<p><strong>Release Version:</strong> Nephele 1.1<br/>
+<strong>Release Tag:</strong> Nephele_2016_Mar_23</p>
+
+<p><strong>Additions</strong></p>
+
+<ul>
+  <li>Added capabilities to QIIME pipelines, including Shannon diversity analysis and the ability to perform core diversity analysis even when there are very few samples (e.g., due to trimming of reads at high thresholds)</li>
+  <li>Created tutorial video on homepage and in User Guide for submitting sample files to Nephele, including sample files for testing</li>
+  <li>Updated Nephele&#39;s mapping file validation feature to prevent submission of jobs that are likely to fail during processing</li>
+  <li>Added more detailed references and citations for QIIME, mothur, and a5-miseq</li>
+  <li>Implemented Google Analytics tracking</li>
+  <li>Established new support tracking system and built hooks into Nephele code base</li>
+</ul>
+
+<p><strong>Removals</strong></p>
+
+<ul>
+  <li>N/A</li>
+</ul>
+
+<p><strong>Changes</strong></p>
+
+<ul>
+  <li>Changed version of QIIME from 1.8 to 1.9.1</li>
+  <li>Modified default instance type from c3.8xlarge to c3.4xlarge</li>
+  <li>Modified mapping file templates to work with mapping file validation improvements</li>
+  <li>Restructured information in the User Guide regarding available pipelines and how they work</li>
+  <li>Moved references from User Guide to About page</li>
+</ul>
+
+<p><strong>Fixes</strong></p>
+
+<ul>
+  <li>Resolved issue with pipelines failing when sequence files were submitted within multi-layered zip directories</li>
+  <li>Fixed typo on homepage</li>
+</ul>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+Package: datavis16s
+Title: Graphs for Nephele 16S Pipelines
+Version: 0.1.2
+Date: 2020-05-05
+Authors@R:
+    person(given = "OCICB",
+           family = "NIAID/NIH",
+           role = c("aut", "cre"),
+           email = "nephelesupport@nih.gov")
+Description: visualization pipeline plots
+URL:
+    https://github.com/niaid/nephele2/tree/master/pipelines/datavis16s
+Depends:
+    R (>= 3.4.0)
+Imports:
+    ampvis2,
+    biomformat,
+    bpexploder,
+    data.table,
+    ggplot2,
+    htmltools,
+    htmlwidgets,
+    jsonlite,
+    morpheus,
+    plotly,
+    RColorBrewer,
+    rmarkdown,
+    scales,
+    shiny,
+    stringr,
+    vegan
+Suggests:
+    testthat
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(old_usage=TRUE)
+RoxygenNote: 7.1.0

@@ -1,0 +1,220 @@
+{% extends "base_with_help.html" %}
+{% import "_render_dynamic_group.html" as d_group %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/advopts.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<form action="" method="post" name="options">
+  {{ form.hidden_tag() }}
+  <h2>Submit your {{ job_name }} job to Nephele:</h2>
+  {% block form_content %}
+  {% endblock %}
+  
+ <div>
+   <button class="btn btn-primary"  type="submit">
+     <span class="glyphicon glyphicon-play"></span> Validate and Submit
+   </button>
+   <button type="button" class="btn btn-primary btn-warning" data-toggle="modal" data-target="#nephele" onclick="getArgs( '#nephele' );">
+    <span class="glyphicon glyphicon-info-sign"></span>  View Selections
+   </button>
+ </div>
+</form>
+
+<!-- modal code starts here -->
+        <div class="modal fade"  role="dialog" id="nephele">
+            <div class="modal-dialog">
+                <!-- modal contents -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                        <h4 class="modal-title">Parameters for Job Submission</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table id="args" class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Number</th><th>Name</th><th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-ok"></span>  OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block info_content %}
+      <ul>
+        <li>Nephele provides additional options to fine tune your analysis. If you would like to just run FastQC, just click "Validate and Submit" without choosing any of the options.</li>
+        <li>If you would like to run Adapter/Primer Trimming, Quality Trimming, and/or Read merging, click on the appropriate step, and the options for that step will appear.</li>
+        <li>Additional help and information for this pipeline can be found <a href="{{ url_for('show_qc_details') }}" target="_blank" rel="noopener noreferrer">here</a></li>
+      </ul>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$(function(){
+	//Displays the help text for the currently focused input element
+	//Safari doesn't register focus events on checkboxes, so this is a work around (sort of)
+	$("form :input:checkbox").click(function() {
+		displayHelp($(this).attr('data-desc'));
+		setHelpPosition($(this).closest("div.well").parent().attr('id'));
+	});
+	
+	//Displays the help text for the currently focused input element
+	$("form :input").focus(function() {
+		displayHelp($(this).attr('data-desc'));
+		setHelpPosition($(this).closest("div.well").parent().attr('id'));
+	});
+	
+	//Set focus on the first visible input element
+	$("form :input:visible:first").focus();
+	
+	//These must be done here because the functions must execute in this order.	
+	//hide the conditional elements for the run_cutadapt section (input, label, and errors)
+	if (!$('#run_cutadapt').is(':checked')) {
+		$("#error_rate,#indels,#overlap,#match_read_wildcards,#match_adapter_wildcards,#adapter_f,#adapter_r,#front_f,#front_r,#anywhere_f,#anywhere_r,\
+				label[for=error_rate],label[for=indels],label[for=overlap],label[for=match_read_wildcards],label[for=match_adapter_wildcards],label[for=adapter_f],label[for=adapter_r],label[for=front_f],label[for=front_r],label[for=anywhere_f],label[for=anywhere_r],\
+				ul[for=error_rate],ul[for=indels],ul[for=overlap],ul[for=match_read_wildcards],ul[for=match_adapter_wildcards],ul[for=adapter_f],ul[for=adapter_r],ul[for=front_f],ul[for=front_r],ul[for=anywhere_f],ul[for=anywhere_r]").hide();
+		$('#error_rate,#indels,#overlap,#match_read_wildcards,#match_adapter_wildcards,#adapter_f,#adapter_r,#front_f,#front_r,#anywhere_f,#anywhere_r').closest("div.row").hide();
+	}
+	
+	//hide the conditional elements for the run_qual_trimming section (input, label, and errors)
+	if (!$('#run_qual_trimming').is(':checked')) {
+		$("#window_size,#req_qual,#lead_qual,#trail_qual,#minlen,#avg_qual,\
+				label[for=window_size],label[for=req_qual],label[for=lead_qual],label[for=trail_qual],label[for=minlen],label[for=avg_qual],\
+				ul[for=window_size],ul[for=req_qual],ul[for=lead_qual],ul[for=trail_qual],ul[for=minlen],ul[for=avg_qual]").hide();
+		$('#window_size,#req_qual,#lead_qual,#trail_qual,#minlen,#avg_qual').closest("div.row").hide();
+	}
+	
+	//hide the conditional elements for the run_flash2_merge section (input, label, and errors)
+	if (!$('#run_flash2_merge').is(':checked')) {
+		$("#f2_min_overlap,#f2_max_overlap,#f2_min_overlap_outie,#f2_max_mismatch_density,\
+				label[for=f2_min_overlap],label[for=f2_max_overlap],label[for=f2_min_overlap_outie],label[for=f2_max_mismatch_density],\
+				ul[for=f2_min_overlap],ul[for=f2_max_overlap],ul[for=f2_min_overlap_outie],ul[for=f2_max_mismatch_density]").hide();
+		$('#f2_min_overlap,#f2_max_overlap,#f2_min_overlap_outie,#f2_max_mismatch_density').closest("div.row").hide();
+	}
+	
+	//Set focus to the first visible input element on tab change
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		$("form :input:visible:first").focus();
+	});
+	
+	//Color the error messages red
+	$.each( $('.error').parents('div[class^="tab-pane"]'), function( index, value ){
+		$("a[href='#"+value.id+"']").addClass("errs");
+	});
+	
+	//These must be done here because the functions must execute in this order.
+	//display the conditional elements for the run_cutadapt section if run_cutadapt is selected
+	$('#run_cutadapt').click(function(){
+		this.checked?$('#error_rate,#indels,#overlap,#match_read_wildcards,#match_adapter_wildcards,#adapter_f,#adapter_r,#front_f,#front_r,#anywhere_f,#anywhere_r').closest("div.row").show():$('#error_rate,#indels,#overlap,#match_read_wildcards,#match_adapter_wildcards,#adapter_f,#adapter_r,#front_f,#front_r,#anywhere_f,#anywhere_r').closest("div.row").hide();
+		this.checked?$('#error_rate,#indels,#overlap,#match_read_wildcards,#match_adapter_wildcards,#adapter_f,#adapter_r,#front_f,#front_r,#anywhere_f,#anywhere_r,\
+				label[for=error_rate],label[for=indels],label[for=overlap],label[for=match_read_wildcards],label[for=match_adapter_wildcards],label[for=adapter_f],label[for=adapter_r],label[for=front_f],label[for=front_r],label[for=anywhere_f],label[for=anywhere_r],\
+				ul[for=error_rate],ul[for=indels],ul[for=overlap],ul[for=match_read_wildcards],ul[for=match_adapter_wildcards],ul[for=adapter_f],ul[for=adapter_r],ul[for=front_f],ul[for=front_r],ul[for=anywhere_f],ul[for=anywhere_r]')
+				.show():$('#error_rate,#indels,#overlap,#match_read_wildcards,#match_adapter_wildcards,#adapter_f,#adapter_r,#front_f,#front_r,#anywhere_f,#anywhere_r,\
+				label[for=error_rate],label[for=indels],label[for=overlap],label[for=match_read_wildcards],label[for=match_adapter_wildcards],label[for=adapter_f],label[for=adapter_r],label[for=front_f],label[for=front_r],label[for=anywhere_f],label[for=anywhere_r],\
+				ul[for=error_rate],ul[for=indels],ul[for=overlap],ul[for=match_read_wildcards],ul[for=match_adapter_wildcards],ul[for=adapter_f],ul[for=adapter_r],ul[for=front_f],ul[for=front_r],ul[for=anywhere_f],ul[for=anywhere_r]').hide();
+	});
+	
+	//display the conditional elements for the run_qual_trimming section if run_qual_trimming is selected
+	$('#run_qual_trimming').click(function(){
+		this.checked?$('#window_size,#req_qual,#lead_qual,#trail_qual,#minlen,#avg_qual').closest("div.row").show():$('#window_size,#req_qual,#lead_qual,#trail_qual,#minlen,#avg_qual').closest("div.row").hide();
+		this.checked?$('#window_size,#req_qual,#lead_qual,#trail_qual,#minlen,#avg_qual,\
+				label[for=window_size],label[for=req_qual],label[for=lead_qual],label[for=trail_qual],label[for=minlen],label[for=avg_qual],\
+				ul[for=window_size],ul[for=req_qual],ul[for=lead_qual],ul[for=trail_qual],ul[for=minlen],ul[for=avg_qual]')
+				.show():$('#window_size,#req_qual,#lead_qual,#trail_qual,#minlen,#avg_qual,\
+						label[for=window_size],label[for=req_qual],label[for=lead_qual],label[for=trail_qual],label[for=minlen],label[for=avg_qual],\
+						ul[for=window_size],ul[for=req_qual],ul[for=lead_qual],ul[for=trail_qual],ul[for=minlen],ul[for=avg_qual]').hide();
+	});
+	
+	//display the conditional elements for the run_flash2_merge section if run_flash2_merge is selected
+	$('#run_flash2_merge').click(function(){
+		this.checked?$('#f2_min_overlap,#f2_max_overlap,#f2_min_overlap_outie,#f2_max_mismatch_density').closest("div.row").show():$('#f2_min_overlap,#f2_max_overlap,#f2_min_overlap_outie,#f2_max_mismatch_density').closest("div.row").hide();
+		this.checked?$('#f2_min_overlap,#f2_max_overlap,#f2_min_overlap_outie,#f2_max_mismatch_density,\
+				label[for=f2_min_overlap],label[for=f2_max_overlap],label[for=f2_min_overlap_outie],label[for=f2_max_mismatch_density],\
+				ul[for=f2_min_overlap],ul[for=f2_max_overlap],ul[for=f2_min_overlap_outie],ul[for=f2_max_mismatch_density]')
+				.show():$('#f2_min_overlap,#f2_max_overlap,#f2_min_overlap_outie,#f2_max_mismatch_density,\
+						label[for=f2_min_overlap],label[for=f2_max_overlap],label[for=f2_min_overlap_outie],label[for=f2_max_mismatch_density],\
+						ul[for=f2_min_overlap],ul[for=f2_max_overlap],ul[for=f2_min_overlap_outie],ul[for=f2_max_mismatch_density]').hide();
+	});
+});
+
+/**
+ * Set the value of the help-container to the help text for the current focus element.
+ */
+function displayHelp(help_text) {
+	$('#help-container').html(help_text);
+}
+
+/**
+ * Sets the top position of the help container to be the top
+ * position of the element with the ID that is passed in.
+ *
+ * @param {String}	section_id	The ID of the element we want to match the top position of
+ */
+function setHelpPosition(section_id){
+	//get the top of the group using .position.top, set this in a variable
+	var top_pos = 0;
+	if (section_id == "adapter") {
+		top_pos = $('#adapter').position().top;
+	}else if (section_id == "trimming") {
+		top_pos = $('#trimming').position().top;
+	}else if (section_id == "merge") {
+		top_pos = $('#merge').position().top;
+	}
+    //set the top of the help container to be the top
+    //of the main section the current focus input is in
+	$('#help-col').css({'top' : top_pos + 'px'});
+}
+
+/**
+ * Gets the input elements for display in the modal
+ */
+function getArgs( _id ) {
+    var param = {};
+    //make this only grab the visible ones
+    $( 'input[type=radio]:checked:not([style*="display: none"])' ).each( function() { // all radio buttons
+        param[ ( $( this ).attr( "name" ) ).trim() ] = ( $( this ).val() ).trim(); });
+    
+    $( 'input[type=checkbox]:not([style*="display: none"]):not(.form-check-input)' ).each( function() { // all checkboxes buttons
+        param[ ( $( this ).attr( "name" ) ).trim() ] = ( $( this ).is(":checked") ); });
+    
+    $( 'input.form-check-input[type=checkbox]:not([style*="display: none"])' ).each( function() { // all checkbox groups
+    	if( $( this ).is(":checked") ){
+    		if( ( $( this ).attr( "name" ) ).trim() in param ){
+    			param[ ( $( this ).attr( "name" ) ).trim() ] += "-"+( $( this ).val() );
+    		}else{
+    			param[ ( $( this ).attr( "name" ) ).trim() ] = ( $( this ).val() );
+    		}
+         
+        } });
+
+    $( 'select:not([style*="display: none"])' ).each( function() {                    // all select options
+        param[ ( $( this ).attr( "name" ) ).trim() ] =
+            ( ( $( this ).find( "option:selected" ) ).val() ).trim(); });
+
+    $( 'input[type=text]:not([style*="display: none"])' ).each( function() {          // all text input
+        param[ ( $( this ).attr( "name" ) ).trim() ] = ( $( this ).val() ).trim(); });
+
+    $( "#args > tbody" ).html( "" );                    // empty the table
+
+    $.each( ( Object.keys( param ) ).sort(), function( i, v ) {
+        $( "#args > tbody" ).append( "<tr><td>" + ( i + 1 ) + "</td><td>" + v +
+            "</td><td>" + param[ v ] + "</td></tr>" ); });
+}
+</script>
+{% endblock %}

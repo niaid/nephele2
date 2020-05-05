@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+    </title>
+  </head>
+  <body>
+    <div>
+      <p>Dear Nephele User,</p>
+
+      <p>Your pipeline submission with ID {{ job_id }} has completed processing
+      successfully, and your results are available to download
+      <a href="{{ base }}/results/{{ job_id }}" target="_blank">here</a>.</p>
+
+      <p>To help you interpret these results select the relevant pipeline from
+      those listed
+      <a href="{{ faq_url }}" target="_blank">here</a>.</p>
+
+      {% if job_type == 'DS_Analysis' %}
+        <p>Note: Your results contain QIIME 2 Visualization (.qzv) files. These
+        can be viewed on the
+        <a href="https://view.qiime2.org/" target="_blank">QIIME 2 website</a>.</p>
+      {% endif %}
+
+      <p>For articles and other publications, please cite Nephele as outlined
+      <a href="https://nephele.niaid.nih.gov/references/" target="_blank">here</a>.</p>
+
+      <p>Feel free to reply to this e-mail with any questions or comments!</p>
+      Thank you,
+      <br>
+      The Nephele Team<br>
+      <a href="https://nephele.niaid.nih.gov" target="_blank">
+	https://nephele.niaid.nih.gov</a><br>
+      National Institute of Allergy and Infectious Diseases (NIAID)<br>
+      National Institutes of Health (NIH)
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+top_modules:
+    - 'fastqc'
+    - 'cutadapt'
+    - 'trimmomatic'
+read_count_multiplier: 1
+read_count_prefix: ''
+read_count_desc: 'reads'
+
+flash:
+    use_output_name: true
+
+sp:
+    flash/hist:
+        fn: '*.hist'

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/infopages.css') }}">
+{% endblock %}
+
+{% block content %}
+      
+     <div class="container">
+		<div class="pb-2 mt-5 mb-5 border-bottom">
+			<h1>Nephele User Guide</h1>
+		</div>
+	<div class="row">
+		  <div class="col-sm-3">
+		
+			<div class="list-group">
+			  <a href="{{ url_for('show_user_guide') }}" class="list-group-item list-group-item-action">How to submit a job</a>
+			  
+			  <a href="{{ url_for('show_pipes_guide') }}" class="list-group-item list-group-item-action">Nephele pipelines</a>
+			  <a href="{{ url_for('show_vis_details') }}" class="list-group-item list-group-item-action">Visualization details</a>
+			  <a href="{{ url_for('show_FAQ') }}" class="list-group-item list-group-item-action">FAQ</a>
+			  
+			</div>
+		
+		</div>
+		  <div class="col-sm-9">
+			{% block guide_content %}{% endblock %}
+		</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+

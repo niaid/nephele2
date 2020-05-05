@@ -1,0 +1,532 @@
+{% extends "about_base.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/infopages.css') }}">
+{% endblock %}
+
+{% block about_content %}
+          
+          <div class="mb-5">
+            <h2>Development</h2>
+			<p>Nephele aims to develop a better understanding of how the cloud can be utilized for the storage, 
+			management, and analysis of biomedical data, and to investigate the possibility of the cloud as a long-term 
+				computing solution for other research domains as well.</p>
+
+			<p>To achieve this goal, Nephele is built and managed by an interdisciplinary group of software developers, 
+			bioinformatics specialists, analysts, and project managers from the Bioinformatics and Computational Biosciences Branch 
+			of the NIAID Office of Cyber Infrastructure and Computational Biology in the National Institute of Allergy and 
+			Infectious Diseases (NIAID) part of the National Institutes of Health (NIH)</p>
+
+            <p class="mb-5">For questions, comments, or assistance, please 
+            <a href="mailto:nephelesupport@nih@@gov?Subject=Nephele Help" onmouseover="this.href=this.href.replace('@@','.')" onclick="this.href=this.href.replace('@@','.')" target="_top">email</a> 
+				the Nephele Project Team</p>
+                      
+            
+			
+			<div class="row mb-5">
+			  <div class="col-md-4">
+			  	
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/jennifer-dommer.png') }}" width="100" height="100" alt="Jennifer Dommer">
+						<h5 class="card-title">Jennifer Dommer</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Software Developer</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			  <div class="col-md-4">
+			  	<div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/lewis-kim.png') }}" width="100" height="100" alt="Lewis Kim">
+						<h5 class="card-title">Lewis Kim</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Public Health Informatics Specialist</h6>
+					  </div>
+					</div>
+			  </div>
+			  
+			  <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/philip-macmenamin.png') }}" width="100" height="100" alt="Philip Macmennamin">
+						<h5 class="card-title">Philip MacMenamin</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Technical Lead</h6>
+					  </div>
+					</div>
+			  </div>
+			  
+		    </div><!-- /.row teampics -->
+			  
+			  
+		    <div class="row mb-5">
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/mariam-quinones.png') }}" width="100" height="100" alt="Mariam Quinones">
+						<h5 class="card-title">Mariam Qui&ntilde;ones</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Computational Molecular Biology Specialist</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/conrad-shyu.png') }}" width="100" height="100" alt="Conrad Shyu">
+						<h5 class="card-title">Conrad Shyu</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Computational Genomics Specialist</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/karlynn-noble.png') }}" width="100" height="100" alt="Karlynn Noble">
+						<h5 class="card-title">Karlynn Noble</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Scientific Resource Outreach Strategist</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+		    </div><!-- /.row teampics -->
+			  
+		    <div class="row mb-5">
+			  
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/samuel-ezeji.png') }}" width="100" height="100" alt="Samuel Ezeji">
+						<h5 class="card-title">Samuel Ezeji</h5>
+						<h6 class="card-subtitle mb-2 text-muted">UX Designer</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			  
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/poorani-subramanian.png') }}" width="100" height="100" alt="Poorani Subramanian">
+						<h5 class="card-title">Poorani Subramanian</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Computational Biology Specialist</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+		    </div><!-- /.row teampics -->
+                    
+                    
+                    
+		  </div><!-- /development -->
+		  
+		  <div class="mb-5">
+            <h2>Oversight</h2>
+			<p>The Nephele project has been supported a governing body from NIAID 
+                            and NHGRI who have brought leadership and guidance to the project since its 
+                            inception.</p>
+                        
+                        
+			
+			<div class="row mb-5">
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/vivien-bonazzi.png') }}" width="100" height="100" alt="Vivien Bonazzi">
+						<h5 class="card-title">Vivien Bonazzi</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Program Director, Genome Informatics and Computational Biology, NHGRI</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/maria-giovanni.png') }}" width="100" height="100" alt="Maria Giovanni">
+						<h5 class="card-title">Maria Giovanni</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Director, Office of Genomics and Advanced Technologies, NIAID</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/darrell-hurt.png') }}" width="100" height="100" alt="Darrell Hurt">
+						<h5 class="card-title">Darrell Hurt</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Branch Chief, Bioinformatics and Computational Biosciences Branch, NIAID</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+			  
+			  
+		    </div><!-- /.row teampics -->
+			  
+			  
+		    <div class="row mb-5">
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/chriswellington.png') }}" width="100" height="100" alt="Chris Wellington">
+						<h5 class="card-title">Chris Wellington</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Program Director, Genome Informatics and Computational Biology, NHGRI</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/alison-yao.png') }}" width="100" height="100" alt="Alison Yao">
+						<h5 class="card-title">Alison Yao</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Program Officer, NIAID</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/andy-baxevanis.png') }}" width="100" height="100" alt="Andy Baxevanis">
+						<h5 class="card-title">Andy Baxevanis</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Director, Bioinformatics and Scientific Programming Core, NHGRI</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+				
+			 
+			  
+			  
+			  
+			 
+		    </div><!-- /.row teampics -->
+		    
+		    <div class="row mb-5">
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/eric-green.png') }}" width="100" height="100" alt="Eric Green">
+						<h5 class="card-title">Eric Green</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Director, NHGRI</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+				
+			 <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/kim-kassing.png') }}" width="100" height="100" alt="Kim Kassing">
+						<h5 class="card-title">Kim Kassing</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Branch Chief, Operations and Engineering Branch, NIAID</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			  <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/john-mcgowan.png') }}" width="100" height="100" alt="John J. McGowan">
+						<h5 class="card-title">John J. McGowan</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Deputy Director for Science Management, NIAID</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			 
+			  
+		    </div><!-- /.row teampics -->
+			  
+		    <div class="row mb-5">
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/mike-tartakovsky.png') }}" width="100" height="100" alt="Mike Tartakovsky">
+						<h5 class="card-title">Mike Tartakovsky</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Chief Information Officer, NIAID</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/diane-wax.png') }}" width="100" height="100" alt="Diane Wax">
+						<h5 class="card-title">Diane Wax</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Consultant, NIAID</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+			  
+			  
+			 <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/edwhitley.png') }}" width="100" height="100" alt="Ed Whitley">
+						<h5 class="card-title">Ed Whitley</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Chief Information Officer, NHGRI</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			 
+			  
+		    </div><!-- /.row teampics -->
+			  
+		     <div class="row mb-5">	
+				 
+				 <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/michael-dolan.png') }}" width="100" height="100" alt="Michael Dolan">
+						<h5 class="card-title">Michael Dolan</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Section Head, Bioinformatics Software, Bioinformatics and Computational Biosciences Branch, NIAID</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				 
+			  
+			  </div><!-- /.row teampics -->
+                    
+                    
+		  </div><!-- /oversight -->
+		  
+		  <div class="mb-5">
+            <h2>Alumni</h2>
+			  <p>Past Nephele team members also significantly contributed to the project.</p>
+                        
+                        
+			
+			<div class="row mb-5">
+				
+				 <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/yentram-huyen.png') }}" width="100" height="100" alt="Yentram Huyen">
+						<h5 class="card-title">Yentram Huyen</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Former Branch Chief</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+			  <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/jeff-ning.png') }}" width="100" height="100" alt="Jianchang(Jeff) Ning">
+						<h5 class="card-title">Jianchang(Jeff) Ning</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Former Bioinformatics Software Developer Team Lead</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			   <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/meghan-coakley.png') }}" width="100" height="100" alt="Meghan Coakley">
+						<h5 class="card-title">Meghan Coakley</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Scientific Program Analyst</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			 
+			  
+		    </div><!-- /.row teampics -->
+			  
+		    <div class="row mb-5">
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/andrei-gabrielian.png') }}" width="100" height="100" alt="Andrei Gabrielian">
+						<h5 class="card-title">Andrei Gabrielian</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Program Officer</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+			  <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/raman-kaur.png') }}" width="100" height="100" alt="Ramendeep Kaur">
+						<h5 class="card-title">Ramendeep Kaur</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Software Developer</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			  <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/burke-squires.png') }}" width="100" height="100" alt="R. Burke Squires">
+						<h5 class="card-title">R. Burke Squires</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Computational Genomics Specialist</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			  
+			  
+		    </div><!-- /.row teampics -->
+                    
+            <div class="row mb-5">
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/alex-levitsky.png') }}" width="100" height="100" alt="Alex Levitsky">
+						<h5 class="card-title">Alex Levitsky</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Scientific Infrastructure Lead</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+			 <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/andrew-oler.png') }}" width="100" height="100" alt="Andrew Oler">
+						<h5 class="card-title">Andrew Oler</h5>
+						<h6 class="card-subtitle mb-2 text-muted">High-Throughput Sequencing Bioinformatics Specialist</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			 <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/ian-misner.png') }}" width="100" height="100" alt="Ian Misner">
+						<h5 class="card-title">Ian Misner</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Computational Biology Subject Matter Expert</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+			  
+		    </div><!-- /.row teampics -->
+            
+            <div class="row mb-5">
+				
+				<div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/david-liou.png') }}" width="100" height="100" alt="David Liou">
+						<h5 class="card-title">David Liou</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Software Developer</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+				
+              <div class="col-md-4">
+				  <div class="card text-center border-0">
+					  <div class="card-body">
+						  <img class="rounded-circle img-responsive" src="{{ url_for('static', filename='images/nick-weber.png') }}" width="100" height="100" alt="Nick Weber">
+						<h5 class="card-title">Nick Weber</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Project Manager, Bioinformatics and Computational Biosciences Branch, NIAID</h6>
+					  </div>
+					</div>
+				  
+			  </div>
+			  
+			 
+			  
+           </div><!-- /.row teampics -->
+           
+           </div><!-- /.alumni -->
+           
+           <div class="mb-5">
+           <h2>Partnership</h2>
+
+		   <p>Nephele is an example of NIH's commitment to address the challenges of big data 
+		   analysis and capitalizes on the significant computing infrastructure of Amazon Web Services 
+			   to create new opportunities in biomedical research.</p>
+		  
+		   
+		   <div class="mb-5">
+			   
+			  
+			   
+		   <ul class="list-inline">
+		    <li class="list-inline-item mr-5"><img class="img-responsive" src="{{ url_for('static', filename='images/nih-niaid-logo.png') }}" width="150" height="36" alt="niaid"></li>
+		    <li class="list-inline-item mr-5"><img class="img-responsive" src="{{ url_for('static', filename='images/nhgri-logo.png') }}" width="169" height="36" alt="nhgri"></li>
+		    <li class="list-inline-item mr-5"><img class="img-responsive" src="{{ url_for('static', filename='images/aws-logo.png') }}" width="100" height="36" alt="aws"></li>
+		    <li class="list-inline-item mr-5"><img class="img-responsive" src="{{ url_for('static', filename='images/dlt-logo.png') }}" width="100" height="36" alt="dlt"></li>
+		   </ul>
+		   </div>
+           
+           
+                    
+                    
+		  </div><!-- /.partners -->
+		  
+		  <div class="mb-5">
+            <h2>Acknowledgements</h2>
+			<p>A multidisciplinary group of microbiome researchers and genomics 
+                            data analysis developers from around the country have provided essential 
+                            feedback throughout the planning and testing stages of the Nephele project.</p>
+			
+			
+			
+			<div class="">
+				<ul class="list-inline">
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/bwh-logo-gray.png') }}" width="76" height="78" alt="bwh"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/broad-logo-gray.png') }}" width="80" height="84" alt="broad"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/cornell-logo-gray.png') }}" width="84" height="84" alt="cornell"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/emory-logo-gray.png') }}" width="65" height="90" alt="emory"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/harvard-logo-gray.png') }}" width="84" height="84" alt="harvard"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/jax-logo-gray.png') }}" width="153" height="41" alt="jax"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/jcraigventer-logo-gray.png') }}" width="122" height="35" alt="jcraigventer"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/umichigan-logo-gray.png') }}" width="80" height="84" alt="michigan"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/nyulangone-logo-gray.png') }}" width="125" height="50" alt="nyu"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/oicr-logo-gray.png') }}" width="109" height="80" alt="oicr"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/upittsburgh-logo-gray.png') }}" width="84" height="84" alt="pitt"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/utoronto-logo-gray.png') }}" width="163" height="59" alt="toronto"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/umd-logo-gray.png') }}" width="84" height="84" alt="umd"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/vbi-logo-gray.png') }}" width="176" height="42" alt="vbi"></li>
+            		<li class="list-inline-item mr-5 mb-5"><img class="img-responsive" src="{{ url_for('static', filename='images/wust-logo-gray.png') }}" width="144" height="48" alt="wust"></li>
+          		</ul>
+          	</div><!-- /.row collab -->
+			
+		  </div><!-- /.acknowledgements -->
+
+{% endblock %}

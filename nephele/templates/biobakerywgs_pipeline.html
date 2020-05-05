@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<div>
+<!--<div style="padding: 20px 30px 20px 30px">-->
+<h1>bioBakery WGS Pipeline</h1>
+<nav id="TOC">
+<ul>
+<li><a href="#biobakery-workflows">bioBakery Workflows</a></li>
+<li><a href="#user-options">User Options</a></li>
+<li><a href="#output-files">Output Files</a></li>
+<li><a href="#tools-and-references">Tools and References</a></li>
+</ul>
+</nav>
+<h2 id="biobakery-workflows">bioBakery Workflows</h2>
+<ul>
+<li><a href="https://bitbucket.org/biobakery/biobakery/wiki/Home" target="_blank" rel="noopener noreferrer">bioBakery</a> is developed by the <a href="http://huttenhower.sph.harvard.edu" target="_blank" rel="noopener noreferrer">Huttenhower Lab</a>.</li>
+<li>Nephele runs the <a href="https://bitbucket.org/biobakery/biobakery_workflows/wiki/Home#!whole-metagenome-shotgun-wmgx" target="_blank" rel="noopener noreferrer">Whole Metagenome Shotgun (wmgx)</a> and <a href="https://bitbucket.org/biobakery/biobakery_workflows/wiki/Home#!visualization-for-whole-metagenome-shotgun-wmgx_vis" target="_blank" rel="noopener noreferrer">Visualization for Whole Metagenome Shotgun (wmgx_vis)</a> bioBakery workflows. The workflows are run using the default parameters.</li>
+<li>The visualization pipeline is only run for datasets with <strong>at least 3 samples</strong>.</li>
+<li>More information about the individual tools that make up the pipelines can be found on the <a href="https://bitbucket.org/biobakery/biobakery/wiki/Home" target="_blank" rel="noopener noreferrer">bioBakery wiki</a>.</li>
+</ul>
+<h2 id="user-options">User Options</h2>
+<ul>
+<li><strong>Strainphlan:</strong> Should strain profiling with <a href="http://segatalab.cibio.unitn.it/tools/strainphlan/" target="_blank" rel="noopener noreferrer">StrainPhlAn</a> be run? Strain profiling can greatly increase the runtime of your job depending on the size and diversity of your samples. (Logical. Default: False)</li>
+<li><strong>Project name:</strong> A project name to go at the top of the html graphical output.</li>
+</ul>
+<h2 id="output-files">Output Files</h2>
+<ul>
+<li>The <a href="https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows" target="_blank" rel="noopener noreferrer">workflows tutorial</a> goes through the pipelines step-by-step including information about <a href="https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows#rst-header-output-files" target="_blank" rel="noopener noreferrer">all intermediate and final output files</a>. We list some of the output files that may be of interest to our users here, as well as any output files made or removed by Nephele.</li>
+<li><strong>log files:</strong>
+<ul>
+<li><em>logfile.txt</em>: contains the messages associated with the Nephele backend, such as transferring files</li>
+<li><a href="https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows#rst-header-log-file" target="_blank" rel="noopener noreferrer"><em>anadama.log</em></a>: produced by the bioBakery wmgx workflow and contains <a href="https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows#rst-header-standard-output" target="_blank" rel="noopener noreferrer">all the associated information and error messages</a> from the analysis</li>
+<li><em>wgmx_vis/anadama.log</em>: produced by the bioBakery wmgx_vis workflow</li>
+</ul></li>
+<li><strong>renamed_inputs:</strong> If you submit paired-end data, Nephele makes renamed links to the sequence files to suit the workflow's convention in this directory.</li>
+<li><a href="https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows#rst-header-quality-control-data" target="_blank" rel="noopener noreferrer"><strong>kneaddata:</strong></a>
+<ul>
+<li><em>main</em>: Nephele removes all FASTQ files produced by Kneaddata, so this folder will only contain log files for each sample.</li>
+<li><em>merged/kneaddata_read_count_table.tsv</em>: merged data file containing read counts for each step of the QC process for each input file</li>
+</ul></li>
+<li><a href="https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows#rst-header-taxonomic-profiling-data" target="_blank" rel="noopener noreferrer"><strong>metaphlan2:</strong></a>
+<ul>
+<li><em>main</em>: Nephele removes all bowtie2 sam files produced by MetaPhlAn2. So, this folder only contains <em>sample_name_taxonomic_profile.tsv</em>, a taxonomic profile for each sample</li>
+<li><em>merged/metaphlan2_taxonomic_profiles.tsv</em>: merged taxonomic profiles for all samples</li>
+<li><em>merged/metaphlan2_species_counts_table.tsv</em>: total number of species identified for each sample</li>
+</ul></li>
+<li><a href="https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows#rst-header-functional-profiling-data" target="_blank" rel="noopener noreferrer"><strong>humann2:</strong></a>
+<ul>
+<li><em>main</em>: for each sample, a file of gene family and pathway abundances, pathway coverage, and a log</li>
+<li><em>merged/*.tsv</em>: gene families, ecs, and pathways files for all samples merged into single files</li>
+<li><em>merged/*_relab.tsv</em>: data sets normalized to relative abundance</li>
+<li><em>counts/humann2_feature_counts.tsv</em>: feature counts of gene families, ecs, and pathways for all samples</li>
+<li><em>counts/humann2_read_and_species_count_table.tsv</em>: total species identified after filtering and total reads aligning (for nucleotide and translated search) for each sample</li>
+</ul></li>
+<li><a href="https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows#rst-header-strain-profiling-data" target="_blank" rel="noopener noreferrer"><strong>strainphlan:</strong></a> if the Strainphlan option is chosen, contains <a href="https://bitbucket.org/biobakery/metaphlan2/overview#markdown-header-some-other-useful-output-files" target="_blank" rel="noopener noreferrer">core output</a> for profiling up to 10 species found in the sample
+<ul>
+<li><em>RAxML.*</em>: trees generated for each species, may not exist if species are not found (more information can be found in the <a href="https://bitbucket.org/biobakery/metaphlan2/overview#markdown-header-metagenomic-strain-level-population-genomics" target="_blank" rel="noopener noreferrer">StrainPhlAn manual</a>)</li>
+<li><em>clade_name.fasta</em>: the alignment file of all metagenomic strains</li>
+<li><em>*.info</em>: general information like the total length of the concatenated markers (full sequence length), number of used markers, etc.</li>
+<li><em>*.polymorphic</em>: statistics on the polymorphic site, <a href="https://bitbucket.org/biobakery/metaphlan2/overview#markdown-header-some-other-useful-output-files" target="_blank" rel="noopener noreferrer">details here</a></li>
+<li><em>*.marker_pos</em>: this file shows the starting position of each marker in the strains.</li>
+</ul></li>
+<li><strong>wmgx_vis:</strong> If you submit at least 3 samples, the <a href="https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows#rst-header-id10" target="_blank" rel="noopener noreferrer">html report from the visualization pipeline</a> will be created here. It includes the software versions as well as the individual commands used.</li>
+</ul>
+<h2 id="tools-and-references">Tools and References</h2>
+<ul>
+<li>McIver, L. J., Abu-Ali, G., Franzosa, E. A., Schwager, R., Morgan, X. C., Waldron, L., ... Huttenhower, C. (n.d.). "bioBakery: a meta'omic analysis environment." Bioinformatics. <a href="https://doi.org/10.1093/bioinformatics/btx754" class="uri" target="_blank" rel="noopener noreferrer">https://doi.org/10.1093/bioinformatics/btx754</a></li>
+<li>Nephele runs the <a href="https://hub.docker.com/r/biobakery/workflows/" target="_blank" rel="noopener noreferrer">biobakery/workflows docker image</a> from September 2017, which lists the following software versions:
+<ul>
+<li>kneaddata v0.6.1</li>
+<li>MetaPhlAn version 2.6.0 (19 August 2016)</li>
+<li>humann2 v0.11.1</li>
+</ul></li>
+</ul>
+</div>
+{% endblock %}

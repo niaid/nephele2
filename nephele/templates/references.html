@@ -1,0 +1,64 @@
+{% extends "about_base.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/infopages.css') }}">
+{% endblock %}
+
+{% block about_content %}
+
+          <h2>Citing Nephele</h2>
+
+		  <p>In articles and other publications, please cite Nephele as follows:</p>
+
+		  <p>Weber N., <em>et al.</em> (2018) Nephele: a cloud platform for simplified, standardized and reproducible microbiome data analysis.
+		  <em>Bioinformatics</em>, <strong>34(8):</strong> 1411–1413. <a href="https://doi.org/10.1093/bioinformatics/btx617" target="_blank" rel="noopener noreferrer">https://doi.org/10.1093/bioinformatics/btx617</a>
+
+      <p>Alternatively, use the following acknowledgement:</p>
+
+      <p>This study used the Nephele platform from the National Institute of Allergy and Infectious Diseases (NIAID) Office of Cyber Infrastructure and Computational Biology (OCICB) in Bethesda, MD.</p>
+
+		  <p>Please also report the publication of articles which made use of Nephele by providing
+          the reference in an <a href="mailto:nephelesupport@nih@@gov?Subject=You've been referenced" onmouseover="this.href=this.href.replace('@@','.')" onclick="this.href=this.href.replace('@@','.')" target="_top">email to the Nephele Project Team</a>.</p>
+
+          <hr class="featurette-divider">
+          <h2>Pipeline citations:</h2>
+          <p>Please cite the appropriate pipeline reference(s) along with citing Nephele.  Additional references are available on each pipeline's help page.<p>
+
+
+          <p><strong>Pre-processing QC</strong><br>
+            Nephele uses different tools depending on which options you choose for this pipeline.  See the Pre-processing QC pipeline's <a href="{{ url_for('show_qc_details', _anchor='references') }}">reference list</a>.</p>
+
+          <p><strong>mothur</strong><br>
+    		  Schloss PD, Westcott SL, Ryabin T, Hall JR, Hartmann M, Hollister EB, Lesniewski RA, Oakley BB, Parks DH, Robinson CJ,
+    		  Sahl JW, Stres B, Thallinger GG, Van Horn DJ, Weber CF. Introducing mothur: Open-source, platform-independent,
+    		  community-supported software for describing and comparing microbial communities. Appl Environ Microbiol. 2009;75(23):7537-41.</p>
+
+          <p><strong>QIIME 1</strong><br>
+          Caporaso JG, Kuczynski J, Stombaugh J, Bittinger K, Bushman FD, Costello EK, Fierer N, Gonzalez Pena A, Goodrich JK,
+          Gordon JI, Huttley GA, Kelley ST, Knights D, Koenig JE, Ley RE, Lozupone CA, McDonald D, Muegge BD, Pirrung M,
+          Reeder J, Sevinsky JR, Turnbaugh PJ, Walters WA, Widmann J, Yatsunenko T, Zaneveld J, Knight R. QIIME allows analysis
+          of high-throughput community sequencing data. Nature Methods. 2010;7(5):335-336.,<br>
+          <a href="http://www.qiime.org/" target="_blank" rel="noopener noreferrer">qiime.org</a><br><br>
+          QIIME 1 uses multiple open source software tools that should also be cited. Please see "Citing QIIME" on the above link for details.</p>
+
+          <p><strong>DADA2</strong><br>
+            Callahan BJ, McMurdie PJ, Rosen MJ, Han AW, Johnson AJA and Holmes SP (2016). "DADA2: High-resolution sample inference from Illumina amplicon data." <em>Nature Methods</em>, <b>13</b>, pp. 581-583. doi: <a href="http://doi.org/10.1038/nmeth.3869" target="_blank" rel="noopener noref
+  errer">10.1038/nmeth.3869</a>.<br><br>
+          See the <a href="{{ url_for('show_dada2_details', _anchor='tools-and-references') }}">DADA2 pipeline's references section</a> for citations of specific databases and taxonomic classifiers, which depend on the user options chosen.</p>
+
+		  <p><strong>BioBakery pipeline (WGS)</strong><br>
+		  The bioBakery WGS pipeline is based on the bioBakery workflows developed by the Huttenhower Lab:
+		  McIver LJ, Abu-Ali G, Franzosa EA, Schwager R, Morgan XC, Waldron L, ... Huttenhower, C. (n.d.).
+		  bioBakery: a meta'omic analysis environment. Bioinformatics 2018;34(7):1235-1237.
+		  doi: <a href="https://academic.oup.com/bioinformatics/article/34/7/1235/4673198" target="_blank" rel="noopener noreferrer">https://doi.org/10.1093/bioinformatics/btx754</a>.</p>
+
+      <p><strong>Downstream analysis</strong><br>
+        Bolyen, Evan, et al. "Reproducible, Interactive, Scalable and Extensible Microbiome Data Science Using QIIME 2." <em>Nature Biotechnology</em>, July 2019, doi:<a href="https://doi.org/10.1038/s41587-019-0209-9" target="_blank" rel="noopener noreferrer">10.1038/s41587-019-0209-9</a>.<br><br>
+        QIIME 2 uses multiple plugins that should also be cited individually if their results are used.  Please see the Downstream analysis pipeline's <a href="{{ url_for('show_da_details', _anchor='tools-and-references') }}">references section</a> as well as the links to the individual plugin methods in the <a href="{{ url_for('show_da_details', _anchor='output-files') }}">pipeline steps</a>.</p>
+
+		  <hr class="featurette-divider">
+		  <p>For a list of citations associated with Nephele pipelines, please visit our
+		  <a href="https://www.ncbi.nlm.nih.gov/sites/myncbi/mariam.quinones.1/collections/52867359/public/)" target="_blank" rel="noopener noreferrer">NCBI PubMed Collection</a>.</p>
+
+{% endblock %}

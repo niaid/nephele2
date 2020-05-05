@@ -1,0 +1,203 @@
+{% extends "base_with_footer.html" %}
+
+{% block html_attribs %} lang="en"{% endblock %}
+
+{% block title %}Nephele{% endblock %}
+
+{% block head %}
+<!-- Global site tag (gtag.js) - Google Analytics  must be the first thing in head-->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-45855606-6"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', 'UA-45855606-6');
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push(
+
+{'gtm.start': new Date().getTime(),event:'gtm.js'}
+);var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KCTX2VD');
+</script>
+<!-- End Google Tag Manager -->
+
+{{ super() }}
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="Nephele allows users to analyze their microbiome datasets on dedicated machines using tools like QIIME1, mothur and DADA2.">
+<meta name="author" content="BCBB/NIAID/NIH">
+<meta name="Referrer-Policy" value="no-referrer | same-origin"/>
+<link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+
+<!-- Generic page styles -->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ie10-viewport-bug-workaround.css') }}">
+
+<!-- Custom styles for this template -->
+<!--<link href="https://fonts.googleapis.com/css?family=Martel:200,300,400,600,700,800,900" rel="stylesheet">-->
+<!--<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">-->
+<link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nephele.css') }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+<script src="{{ url_for('static', filename='js/ie-emulation-modes-warning.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery-3.0.0.min.js') }}"></script>
+
+<!-- google recaptcha stuff: -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<!-- end head block -->
+{% endblock %}
+
+
+
+<!-- start top/nav bar block -->
+{% block navbar %}
+
+<div class="card d-none d-sm-block topbar rounded-0 clearfix">
+  <div class="card-body topbar-links">
+    <ul class="list-inline topbar-links-list">
+      <li class="list-inline-item"><a class="" href="http://www.hhs.gov" target="_blank" rel="noopener noreferrer">U.S. Department of Health &amp; Human Services</a></li>
+      <li class="list-inline-item"><a class="" href="http://www.nih.gov" target="_blank" rel="noopener noreferrer">National Institutes of Health</a></li>
+      <li class="list-inline-item"><a class="" href="http://www.niaid.nih.gov" target="_blank" rel="noopener noreferrer">National Institute of Allergy &amp; Infectious Diseases</a></li>
+      <li class="list-inline-item"><a class="" href="http://bioinformatics.niaid.nih.gov" target="_blank" rel="noopener noreferrer">bioinformatics @NIAID</a></li>
+      <li class="list-inline-item float-right">
+        {% if session['_user_id'] %}
+        <span class="small text-white border-right">{{ session['_user_id'] }}</span>
+        <a class="btn btn-link btn-small text-white" href="{{ url_for('logout') }}">logout</a>
+        {% endif %}
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="accordion d-sm-none" id="accordionExample">
+  <div class="card topbar rounded-0">
+    <div class="card-header topbar-card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Quick links
+        </button>
+      </h5>
+    </div>
+    <div id="collapseOne" class="collapse hide" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div class="card-body topbar-links">
+        <ul class="list-inline topbar-links-list">
+          <li class="list-inline-item"><a class="" href="http://www.hhs.gov" target="_blank" rel="noopener noreferrer">U.S. Department of Health &amp; Human Services</a></li>
+          <li class="list-inline-item"><a class="" href="http://www.nih.gov" target="_blank" rel="noopener noreferrer">National Institutes of Health</a></li>
+          <li class="list-inline-item"><a class="" href="http://www.niaid.nih.gov" target="_blank" rel="noopener noreferrer">National Institute of Allergy &amp; Infectious Diseases</a></li>
+          <li class="list-inline-item"><a class="" href="http://bioinformatics.niaid.nih.gov" target="_blank" rel="noopener noreferrer">bioinformatics @NIAID</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main nav -->
+<nav class="navbar navbar-expand-md navbar-dark nephele-bg-dark static-top mb-5">
+  <a class="navbar-brand" href="{{ url_for('index') }}">
+    <div class="media">
+      <img class="mr-3" src="{{ url_for('static', filename='images/white_nih_logo.png') }}" width="auto" height="38" alt="NIH logo">
+      <div class="media-body">
+        <h5 class="nephele-name mt-2">Nephele: Microbiome Analysis</h5>
+        <!-- <small class="nephele-tagline">microbiome analysis platform</small> -->
+      </div>
+    </div>
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav ml-auto mr-3 font-weight-bold">
+      <li class="nav-item mr-4">
+        <a class="nav-link text-white" href="{{ url_for('index') }}">Analysis</a>
+      </li>
+      <li class="nav-item mr-4">
+        <a class="nav-link text-white" href="{{ url_for('show_user_guide') }}">User guide</a>
+      </li>
+      <li class="nav-item mr-4">
+        <a class="nav-link text-white" href="{{ url_for('show_tutorials') }}">Tutorials</a>
+      </li>
+      <li class="nav-item mr-4">
+        <a class="nav-link text-white" href="{{ url_for('show_about') }}">About</a>
+      </li>
+      <li class="nav-item mr-4">
+        <a class="nav-link text-white" href="{{ url_for('show_FAQ') }}">FAQs</a>
+      </li>
+      <li class="nav-item mr-4">
+        <a class="nav-link text-white" href="{{ url_for('show_team') }}">Contact</a>
+      </li>
+    </ul>
+    {% if not session['_user_id'] %}
+    <form class="form-inline my-2 my-lg-0">
+      <a class="btn btn-primary my-2 my-sm-0" href="{{ url_for('register') }}">Sign up</a>
+    </form>
+    {% endif %}
+  </div>
+</nav>
+
+<!-- ends top/nav block -->
+{% endblock %}
+
+
+
+{% block content %}
+<div class="jumbotron nephele-fileupload">
+  <div class="container">
+    {% block page_content %}{% endblock %}
+  </div>
+</div>
+<div class="container">
+  {% block info_panel %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- Placed at the end of the document so the pages load faster -- >
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="{{ url_for('static', filename='js/ie10-viewport-bug-workaround.js') }}"></script>
+<script>
+function highlightLocation(pathname) {
+  var guides = ['/user_guide/', '/user_guide_pipes/', '/user_guide_visualization_details/'];
+  var tutorials = ['/user_guide_tutorials/', '/user_guide_phyloseq_tutorial/', '/user_guide_qiime2_tutorial/', '/webinars/'];
+  var about_pages = ['/about/', '/about_microbes/', '/references/', '/about_release/'];
+  if(guides.includes(pathname)){
+      $('.navbar-nav > li > a[href="/user_guide/"]').parent().addClass('active');
+  } else if(tutorials.includes(pathname)){
+    $('.navbar-nav > li > a[href="/user_guide_tutorials/"]').parent().addClass('active');
+  } else if(about_pages.includes(pathname)){
+    $('.navbar-nav > li > a[href="/about/"]').parent().addClass('active');
+  } else{
+      $('.navbar-nav > li > a[href="'+pathname+'"]').parent().addClass('active');
+  }
+  //highlight the correct link in the left "menu" on the info pages
+  $('.list-group > a[href="'+pathname+'"]').addClass('active');
+  }
+$(document).ready(function() {
+  // get current URL path and assign 'active' class in the nav-bar
+  var pathname = window.location.pathname;
+  highlightLocation(pathname);
+  //$('.list-group a').on("click", function() {
+  //	highlightLocation($(this).attr("href"));
+  //});
+});
+</script>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "about_base.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/infopages.css') }}">
+{% endblock %}
+
+{% block about_content %}
+
+<div class="mb-5">
+	<h1>Your Microbiome</h1>
+
+		  <p>
+			Humans are host to thousands of species of microbes. They naturally live on our skin, in our gut, 
+			mouth, and a number of other sites. The full impact of these diverse microbiota on human health 
+			is not completely understood, but results obtained over the last several years indicate that the 
+			dynamic relationship between host and microbiota plays a far more integral role than previously thought.  
+			Scientists are eager to explore how the microbiome influences human health, including conditions 
+			like auto-immune disease, depression, malnutrition, and diabetes.<br/><br/>
+			Learn more about the microbiome <a href="http://learn.genetics.utah.edu/content/microbiome/" target="_blank" rel="noopener noreferrer">here</a>.</p>
+	
+</div>
+          
+          
+
+<div class="mb-5">
+	<h5>The Human Microbiome Project</h5>
+          
+          <div class="row">
+          <div class="col-md-9">
+          
+            <p>
+			  The first phase of the Human Microbiome Project (HMP), funded by the NIH Common Fund, 
+			  generated over 20 terabytes of metagenomic data. Five sites (nasal passages, oral cavity, skin, 
+			  gastrointestinal tract, and urogenital tract) in healthy individuals were sampled for whole 
+			  genome and 16S rRNA sequencing to characterize the commensal microbiota present in the human body.
+			  <br/><br/>
+			  The second phase, referred to as the Integrative Human Microbiome Project (iHMP), aims to 
+			  generate data and analytical resources to permit comprehensive characterization of how the 
+			  microbiome impacts human health and disease. The iHMP dataset contains longitudinal 
+			  information from host and microbiome, including metagenomic, metatranscriptomic, 
+			  human genetic, microbial culture, and other data types from each cohort study in the project. 
+			  <br/><br/>
+			  Mining these datasets offers great promise for therapeutic targets as well as for 
+			  identifying molecular signatures for health and disease. However, the assembly and analysis 
+			  of metagenomics data remains challenging for many researchers, who may not have access 
+				to the significant computing resources required.</p>
+          </div>
+          
+          <div class="col-md-3">
+			  <div class="card">
+				  <div class="card-body">
+					<img class="img-responsive sample-images" src="{{ url_for('static', filename='images/hmp-logo.png') }}" alt="HMP logo">
+				  </div>
+				</div>
+			  
+			  
+          </div>
+          </div>
+     
+</div>
+          
+          
+
+<div class="mb-5">
+	<h5>HMP Public Datasets</h5>
+
+		  <p>
+			Users all over the world can now access 13 TB of microbiome study results and conduct their 
+			own data analysis directly. The Human Microbiome Project has made data from both of its 
+			phases available through its data portal: 
+			<a href="https://portal.hmpdacc.org" target="_blank" rel="noopener noreferrer">https://portal.hmpdacc.org</a>. In 
+			addition, <a href="https://aws.amazon.com/datasets/human-microbiome-project/" target="_blank" rel="noopener noreferrer">16S data from the HMP</a> 
+			  can be found among AWS Public Data Sets and analyzed through an AWS EC2 account.</p>
+</div>
+          
+          
+
+{% endblock %}

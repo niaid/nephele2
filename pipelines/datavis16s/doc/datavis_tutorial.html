@@ -1,0 +1,68 @@
+{% extends "tutorials_base.html" %}
+
+{% block guide_content %}
+<div style="padding: 20px 30px 20px 30px">
+<h1>16S Visualization Tutorial</h1>
+<nav id="TOC">
+<ul>
+<li><a href="#plotly-graphs">Plotly Graphs</a></li>
+<li><a href="#heatmap">Heatmap</a><ul>
+<li><a href="#filter-low-abundant-taxa">Filter Low Abundant Taxa</a></li>
+<li><a href="#view-the-heatmap-at-different-taxonomic-levels">View the heatmap at different taxonomic levels</a></li>
+<li><a href="#sort-the-heatmap-by-taxonomic-level">Sort the heatmap by taxonomic level</a></li>
+</ul>
+<li><a href="#example-files">Example visualization files</a></li>
+</ul>
+</nav>
+<p>The visualizations are a set of html files that can be viewed in the browser.</p>
+<h2 id="plotly-graphs">Plotly Graphs</h2>
+<ul>
+<li>The title and axis labels can be edited by clicking on them.<br />
+<a href="https://youtu.be/ONBAjvhWZkM" target="_blank" rel="noopener noreferrer">Video<span class="glyphicon glyphicon-facetime-video video-icon"></span></a></li>
+<li>The legend can also be edited, and can be moved by clicking and dragging.<br />
+<a href="https://youtu.be/vUjhMzbKtp8" target="_blank" rel="noopener noreferrer">Video<span class="glyphicon glyphicon-facetime-video video-icon"></span></a></li>
+<li>To save the plot, click on the camera icon in the menu. The browser will download the png file.<br /> <a href="https://youtu.be/Lbe9IaeEEyY" target="_blank" rel="noopener noreferrer">Video<span class="glyphicon glyphicon-facetime-video video-icon"></span></a></li>
+<li>To edit the graph further, you can export the data to Plotly Chart Studio by clicking on &quot;Export Data to Plotly.&quot; See the <a href="http://help.plot.ly/tutorials/" target="_blank" rel="noopener noreferrer">Plotly Chart Studio tutorials</a> for more information.</li>
+</ul>
+<h2 id="heatmap">Heatmap</h2>
+<p>The <a href="https://software.broadinstitute.org/morpheus/documentation.html" target="_blank" rel="noopener noreferrer">Morpheus documentation</a> shows how to use the various features of the heatmap. We will show some examples of how these features could be used specifically for the output of the Nephele 16S pipelines. Note: the features work best in Google Chrome.</p>
+<h3 id="filter-low-abundant-taxa">Filter Low Abundant Taxa</h3>
+<p>Taxa can be filtered based on maximum abundance across all samples or the number of samples for which they are present.</p>
+<ol style="list-style-type: decimal">
+<li>Select <strong>Tools</strong> &gt; <strong>Create Calculated Annotation</strong>.
+<ul>
+<li>Maximum abundance: Enter <code>Max</code> for <strong>Annotation Name</strong> and <code>MAX()</code> for <strong>Formula</strong>.</li>
+<li>Number of samples: Enter <strong>Annotation Name</strong> <code>Num samples</code> and <code>COUNTIF(&quot;&gt;0&quot;)</code> for <strong>Formula</strong>.</li>
+</ul></li>
+<li>Click <strong>OK</strong>.</li>
+<li>Select <strong>Tools</strong> &gt; <strong>Filter</strong> &gt; <strong>Add</strong>.
+<ul>
+<li>Maximum abundance: Choose <strong>Field</strong> <code>Max</code>. You can choose a minimum value for the range. This will filter out taxa which are below this value across all samples. Or you can <code>Switch to top filter</code> to see the top most abundant taxa.</li>
+<li>Number of samples: Choose <strong>Field</strong> <code>Num samples</code> . You can choose a range for the number of samples or you can <code>Switch to top filter</code> to see the most frequent taxa across all samples.</li>
+</ul></li>
+</ol>
+<p><a href="https://youtu.be/nnZCI_dTULw" target="_blank" rel="noopener noreferrer">Video<span class="glyphicon glyphicon-facetime-video video-icon"></span></a></p>
+<h3 id="view-the-heatmap-at-different-taxonomic-levels">View the heatmap at different taxonomic levels</h3>
+<ol style="list-style-type: decimal">
+<li>Select <strong>Tools</strong> &gt; <strong>Collapse</strong>.</li>
+<li>Choose <strong>Collapse Method</strong> <code>Sum</code> and <strong>Collapse</strong> <code>Rows</code>.<br />
+</li>
+<li>For <strong>Collapse Field</strong>, choose the <code>taxonomic level</code> at which you would like to view the heatmap.</li>
+<li>Click <strong>OK</strong>, and a new tab will open with the heatmap at the desired level.</li>
+<li>Select <strong>View</strong> &gt; <strong>Options</strong> &gt; <strong>Annotations</strong> &gt; <strong>Row Annotations</strong> &gt; <code>taxonomic level</code> &gt; <strong>Close</strong>.<br />
+This will show the new row names for the heatmap.</li>
+</ol>
+<p><a href="https://youtu.be/iQMVc7Beoc0" target="_blank" rel="noopener noreferrer">Video<span class="glyphicon glyphicon-facetime-video video-icon"></span></a></p>
+<h3 id="sort-the-heatmap-by-taxonomic-level">Sort the heatmap by taxonomic level</h3>
+<ol style="list-style-type: decimal">
+<li>Select <strong>View</strong> &gt; <strong>Options</strong> &gt; <strong>Annotations</strong> &gt; <strong>Row Annotations</strong> &gt; <code>taxonomic level</code> &gt; <strong>Close</strong>.<br />
+This will show a column with the taxonomic level annotations for the heatmap.</li>
+<li>Select <strong>Tools</strong> &gt; <strong>Sort/Group</strong> &gt; <strong>Add sort level</strong> &gt; <code>taxonomic level</code>. Then select <strong>Group By</strong> &gt; <code>taxonomic level</code>.</li>
+</ol>
+<p><a href="https://youtu.be/iAQiUNSzMfw" target="_blank" rel="noopener noreferrer">Video<span class="glyphicon glyphicon-facetime-video video-icon"></span></a></p>
+{% if download_url %}
+<h3 id="example-files">Here are some example visualization files <span><a class="glyphicon glyphicon-download-alt" href="{{ download_url }}" target="_blank" rel="noopener noreferrer"></a></span></h3>
+<p>These data are from a 2018 publication in Journal of Experimental Medicine entitled &quot;Contextual control of skin immunity and inflammation by Corynebacterium&quot; (<a href="http://jem.rupress.org/content/early/2018/01/30/jem.20171079.long" target="_blank" rel="noopener noreferrer">http://jem.rupress.org/content/early/2018/01/30/jem.20171079.long</a>).</p>
+{% endif %}
+</div>
+{% endblock %}
