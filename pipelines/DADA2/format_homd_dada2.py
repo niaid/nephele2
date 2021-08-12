@@ -2,6 +2,8 @@
 
 """
 
+.. codeauthor:: Poorani Subramanian
+
 Format HOMD database for DADA2. See: https://benjjneb.github.io/dada2/training.html
 
 .. code-block:: bash
@@ -11,7 +13,7 @@ Format HOMD database for DADA2. See: https://benjjneb.github.io/dada2/training.h
 
 positional arguments:
   /fasta
-                        FASTA file of sequences from `HOMD download page <http://www.homd.org/index.php?name=seqDownload&file&type=R>`__ .
+                        FASTA file of sequences from `eHOMD download page <http://www.homd.org/index.php?name=seqDownload&file&type=R>`__ .
                         We used *HOMD 16s
                         rRNA RefSeq Version \*\* (Starts from position 9)* file.
                         Aligned FASTA File does not work.
@@ -46,7 +48,7 @@ def parse_args():
                                      "https://benjjneb.github.io/dada2/training.html")
     parser.add_argument("fasta", type=argparse.FileType("r"), metavar = "fasta", help=
                         "FASTA file of sequences from http://www.homd.org/index.php?name=seqDownload&file&type=R . "
-                        "We used HOMD 16s rRNA RefSeq Version ** (Starts from position 9). "
+                        "We used eHOMD 16s rRNA RefSeq Version ** (Starts from position 9). "
                         "Aligned FASTA File does not work.")
     parser.add_argument("taxonomy", type=argparse.FileType("r"), metavar="taxonomy", help=
                         "MOTHUR taxonomy file. Order must match the FASTA file.")
@@ -64,7 +66,8 @@ def parse_args():
 def openoutfiles(fn, ext):
     """Open output fasta files for writing"""
     if fn is None:
-        x = re.sub(r"(\.p9)*\.fasta", "", os.path.basename(args.fasta.name)) + ext
+        x = re.sub(r"(\.p9)*\.fasta.*", "", os.path.basename(args.fasta.name)) + ext
+        print(x, file=sys.stderr, flush=True)
         return open(x, "w")
     return fn
 

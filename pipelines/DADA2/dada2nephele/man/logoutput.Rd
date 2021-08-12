@@ -4,7 +4,7 @@
 \alias{logoutput}
 \title{write log output}
 \source{
-[computation.R](../R/computation.R#L83)
+[computation.R](../R/computation.R#L10)
 }
 \usage{
 logoutput(c, bline = 0, aline = 0, type = NULL)

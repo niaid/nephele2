@@ -253,7 +253,9 @@ class BiobakeryPipe(PipeBase):
 
 def main(args):
     """Called below by __main__ """
-    container_name = 'biobakery/nephele2'
+    container_name = 'biobakery/nephele2:0.13.2'
+    db_loc = '/mnt/EFS/dbs/biobakery_workflows_databases_0.13.2'
+    db_target = '/opt/biobakery_workflows_databases'
     exit_status = 0
 
     try:
@@ -274,7 +276,7 @@ def main(args):
         pipe.log.info('Running Whole Metagenome Shotgun Workflow (wmgx).')
         cmnd = pipe.gen_wmgx_cmd(inputs_dir, pipe.outputs_dir, pipe.args.strainphlan, pipe.args.threads,
                                  pipe.args.file_ext, pipe.args.local_jobs, pipe.args.keep)
-        docker_cmnd = pipe.gen_docker_cmnd(cmnd, pipe.base_dir, container_name)
+        docker_cmnd = pipe.gen_docker_cmnd(cmnd, pipe.base_dir, container_name, db_loc=db_loc, db_target=db_target)
         pipe.log.info(docker_cmnd)
         pipe.exec_docker_cmnd(docker_cmnd)
 
@@ -299,7 +301,7 @@ def main(args):
                                          pipe.args.threads)
 
             docker_cmnd = pipe.gen_docker_cmnd(
-                cmnd, pipe.base_dir, container_name)
+                cmnd, pipe.base_dir, container_name, db_loc=db_loc, db_target=db_target)
             pipe.log.info(docker_cmnd)
             pipe.exec_docker_cmnd(docker_cmnd)
 

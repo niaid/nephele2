@@ -3,9 +3,7 @@
 #' from \code{\link{matrix-class}}
 #' or \code{\link{data.frame}}.
 #'
-#' @note This code is forked from version 1.4 of the
-#' \href{https://github.com/joey711/biomformat-oldfork}{biomformat R library} released under
-#' \href{https://www.r-project.org/Licenses/GPL-2}{GPL-2}.
+#' @note This code is forked from version 1.5 of the \href{https://github.com/joey711/biomformat-oldfork}{biomformat R library}.
 #'
 #' @description This function creates a valid instance of the \code{\link[biomformat]{biom-class}}
 #' from standard base-R objects like
@@ -51,6 +49,8 @@
 #' @importFrom biomformat biom
 #' @importFrom utils packageVersion
 #' @importFrom methods as
+#'
+#' @source [make_biom in biomformat.R](../R/biomformat.R#L53)
 #'
 make_biom <- function(data, sample_metadata=NULL, observation_metadata=NULL, id=NULL, matrix_element_type="int", qiime_format=TRUE){
   # The observations / features / OTUs / rows "meta" data table
@@ -103,9 +103,7 @@ make_biom <- function(data, sample_metadata=NULL, observation_metadata=NULL, id=
 ################################################################################
 #' Write a biom-format v1 file, returning a \link[biomformat]{biom-class}.
 #'
-#' @note This code is forked from version 1.4 of the
-#' \href{https://github.com/joey711/biomformat-oldfork}{biomformat R library} released under
-#' \href{https://www.r-project.org/Licenses/GPL-2}{GPL-2}.
+#' @note This code is forked from version 1.5 of the \href{https://github.com/joey711/biomformat-oldfork}{biomformat R library}.
 #'
 #' @param biom (Required). A biom object.
 #'
@@ -121,6 +119,8 @@ make_biom <- function(data, sample_metadata=NULL, observation_metadata=NULL, id=
 #'
 #'
 #' @importFrom jsonlite toJSON write_json
+#'
+#' @source [write_biom in biomformat.R](../R/biomformat.R#L123)
 #'
 write_biom <- function(biom, biom_file, pretty=FALSE) {
   ## deal with case of only one sample

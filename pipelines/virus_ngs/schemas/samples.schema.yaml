@@ -1,0 +1,20 @@
+
+$schema: "http://json-schema.org/draft-04/schema#"
+description: row of the samples.csv, representing a sequenced sample
+type: object
+
+properties:
+  sample:
+    type: string
+    description: sample name/id 
+  platform:
+    type: string
+    enum: ["ILLUMINA", "OXFORD_NANOPORE"]
+  library:
+    type: string
+    enum: ["PAIRED", "SINGLE"]
+
+required:
+  - sample
+  - platform
+  - library

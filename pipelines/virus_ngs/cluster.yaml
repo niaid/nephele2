@@ -1,0 +1,53 @@
+__default__:
+  n: 2
+  threads: 2
+  queue: short
+  mem: h_vmem=8G
+  log: '{log}'
+
+map_reads:
+  time: '18:00'
+  mem: h_vmem=24G
+
+fastqc:
+  time: '18:00'
+  mem: h_vmem=8G
+
+pilon:
+  time: '18:00'
+  mem: h_vmem=24G
+
+trim_reads_pe:
+  threads: 8
+  time: '18:00'
+  mem: h_vmem=24G
+
+trim_reads_se:
+  threads: 8
+  time: '18:00'
+  mem: h_vmem=24G
+
+per_base_coverage:
+  threads: 8
+  time: '18:00'
+  mem: h_vmem=24G
+
+coverage_QC:
+  threads: 8
+  time: '18:00'
+  mem: h_vmem=48G
+
+call_variants:
+  threads: 8
+  time: '18:00'
+  mem: h_vmem=72G
+
+combine_calls:
+  threads: 8
+  time: '18:00'
+  mem: h_vmem=72G
+
+merge_vcfs:
+  threads: 16
+  mem: h_vmem=72G
+

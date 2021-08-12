@@ -4,6 +4,8 @@
 
 Pipeline for performing downstream analysis on a biom file.
 
+.. codeauthor:: Philip MacMenamin & Poorani Subramanian
+
 | NEEDS TO RUN:
 | PATH="/usr/local/bin/miniconda3/bin:$PATH"
 | source activate qiime2-2018.6
@@ -12,7 +14,7 @@ Pipeline for performing downstream analysis on a biom file.
 - You can't call this script directly due to qiime2 dependency; instead use downstream_16S.sh_ which contains ^^^
 - but the arguments and usage are otherwise the same.
 
-.. _downstream_16S.sh: https://github.com/niaid/nephele2/blob/master/pipelines/DS_analysis_16S/downstream_16S.sh
+.. _downstream_16S.sh: https://github.niaid.nih.gov/bcbb/nephele2/blob/next_release/pipelines/DS_analysis_16S/downstream_16S.sh
 
 """
 
@@ -22,6 +24,7 @@ import sys
 import os
 
 from nephele2.pipelines.pipebase import PipeBase
+from nephele2.pipelines.DS_analysis_16S import ds_config
 
 import qiime2.plugin
 import qiime2.sdk
@@ -29,11 +32,14 @@ from qiime2.plugins.feature_table.visualizers import summarize
 from qiime2.metadata import metadata
 from qiime2.plugins.diversity.pipelines import core_metrics
 from qiime2.plugins.diversity.visualizers import alpha_group_significance
+from qiime2.plugins.diversity.pipelines import core_metrics_phylogenetic
+from qiime2.plugins.fragment_insertion.methods import filter_features
 
 import biom
 from q2_types.feature_data._transformer import _biom_to_tsv_taxonomy_format
 from qiime2.plugins.feature_table.methods import filter_samples
 from qiime2.plugins.taxa.visualizers import barplot
+from biom.cli.metadata_adder import add_metadata
 
 
 def main(args):
@@ -88,6 +94,15 @@ def main(args):
         artifact = filter_samples(table=artifact, metadata=md).filtered_table
         pipe.log.info('Done.\n')
 
+        # Add metadata from mapping file to biom file
+        pipe.log.info("Adding metadata to biom file")
+        output_biom_file = pipe.outputs_dir + ds_config.BIOMFILE
+        add_metadata.callback(
+            input_fp=args.biom_fp.name, output_fp=output_biom_file, sample_metadata_fp=args.map_file.name,
+            observation_metadata_fp=None, sc_separated=None, sc_pipe_separated=None, int_fields=None, float_fields=None, sample_header=None,
+            observation_header=None, output_as_json=True
+        )
+
         pipe.log.info('Creating Summary')
         """
         qiime feature-table summarize \
@@ -122,7 +137,6 @@ def main(args):
             'view=tf, view_type=TAX_VIEW_TYPE)')
         tax_tab = qiime2.sdk.Artifact.import_data(type="FeatureData[Taxonomy]",
                                                   view=tf, view_type=TAX_VIEW_TYPE)
-        os.remove(str(tf))
 
         """
         filter feature table by sampling depth
@@ -157,18 +171,23 @@ def main(args):
         --m-metadata-file Mapping_file_corrected.txt.nogz
         --output-dir qiime2-core-metrics-results
         """
-        pipe.log.info('Creating Core Metrics.')
-        cm = core_metrics(artifact, args.sampling_depth, md)
+        if args.tree_fp:
+            pipe.log.info("Loading tree")
+            tree = qiime2.sdk.Artifact.import_data("Phylogeny[Rooted]",args.tree_fp)
+            pipe.log.info('Filtering sequences from biom that are not in tree.')
+            filtered_artifact = filter_features(artifact, tree).filtered_table
+            pipe.log.info('Creating Core Metrics Phylogenetic.')
+            cm = core_metrics_phylogenetic(filtered_artifact, tree, args.sampling_depth, md)
+        else:
+            pipe.log.info('Creating Core Metrics.')
+            cm = core_metrics(artifact, args.sampling_depth, md)
         sys.stdout.flush()
         pipe.log.info('Saving.')
         for field in cm._fields:
-            cm.__getattribute__(field).save(pipe.outputs_dir + '/'+field)
-        for field in ['bray_curtis_distance_matrix', 'bray_curtis_pcoa_results',
-                      'evenness_vector', 'jaccard_distance_matrix',
-                      'jaccard_pcoa_results', 'observed_otus_vector',
-                      'rarefied_table', 'shannon_vector']:
-            cm.__getattribute__(field).export_data(
-                pipe.outputs_dir + '/'+field)
+            obj = cm.__getattribute__(field)
+            obj.save(pipe.outputs_dir + '/' + field)
+            if str(obj.type) != "Visualization":
+                obj.export_data(pipe.outputs_dir + '/' + field)
         pipe.log.info('Core metrics done.\n')
 
         if args.alpha_group_sig:
@@ -206,26 +225,18 @@ def main(args):
         pipe.log.info('Pipeline done.')
     except ValueError as ve:
         exit_status = 1
+        pipe.log.error('Pipeline Error:')
+        pipe.log.error(ve.args[0])
         pipe.log.error(traceback.format_exc())
-        if ve.args[0].endswith('Verify your table is valid and that you '
-                               'provided a shallow enough sampling depth.'):
-            pipe.log.error('Pipeline Error:')
-            pipe.log.error(ve.args[0])
+        if ve.args[0].endswith('Verify your table is valid and that you provided a shallow enough sampling depth.'):
             msg = "From core_metrics: " + ve.args[0]
-            pipe.log_to_db(job_id=pipe.job_id,
-                           stack=traceback.format_exc(), msg=msg)
         elif ve.args[0].endswith('consist of exactly one value.'):
-            pipe.log.error('Pipeline Error:')
-            pipe.log.error(ve.args[0])
             msg = "From alpha_group_significance: " + ve.args[0]
-            pipe.log_to_db(job_id=pipe.job_id,
-                           stack=traceback.format_exc(), msg=msg)
+        elif str(ve) == "`ids_to_keep` must contain at least one ID.":
+            msg = "Only samples listed in the mapping file and contained in the BIOM file will be analyzed by the pipeline."
         else:
-            pipe.log.error('Pipeline Error')
-            pipe.log.error(ve.args[0])
-            pipe.log_to_db(job_id=pipe.job_id,
-                           stack=traceback.format_exc(),
-                           msg=str(ve))
+            msg = str(ve)
+        pipe.log_to_db(job_id=pipe.job_id, stack=traceback.format_exc(), msg=msg)
     except BaseException:
         sys.stderr.write(traceback.format_exc())
         pipe.log.error('Pipeline Error:')
@@ -265,6 +276,7 @@ if __name__ == '__main__':
     PARSER.add_argument('--data_type', help='Ignore - placeholder.')
     PARSER.add_argument('-a', '--alpha_group_sig', action='store_true',
                         help="run alpha group significance.")
+    PARSER.add_argument("--tree_fp", type=str)
 
     REQ_PARAMS = PARSER.add_argument_group('required arguments')
 

@@ -15,6 +15,7 @@ import argparse
 import traceback
 import sys
 from biom.cli.table_summarizer import summarize_table
+from biom.cli.metadata_adder import add_metadata
 import rpy2.rinterface
 from rpy2.robjects.packages import importr
 from nephele2 import config, tfvars
@@ -26,52 +27,7 @@ from nephele2.pipelines.QIIME import pick_otu
 from nephele2.pipelines.QIIME import join_read
 from nephele2.pipelines.QIIME import picrust
 from nephele2.pipelines.MOTHUR_MiSeq import moth_utils
-# useful constants go here
-KBYTE = 1024
-
-#: in kilobytes per du man page
-MAX_MOTHUR_INPUT = 10000000
-
-HUMAN_READABLE_SIZE = round(MAX_MOTHUR_INPUT/KBYTE**2, 2)
-
-INPUTS_TOO_BIG_MSG = (
-    'The inputs for this job are greater than {}GiB. mothur will not be able '
-    'to analyse these data due to memory limitations. Please consider another '
-    'pipeline.').format(HUMAN_READABLE_SIZE)
-
-#: filename for biom summary
-OTU_SUMMARY_TABLE = 'otu_summary_table.txt'
-
-CTG_FNAME = ('combo.trim.contigs.renamed.good.unique.good.filter.unique'
-             '.precluster')
-
-#: output files that will be sent to the user
-FILES_TO_KEEP = ['logfile.txt',
-                 OTU_SUMMARY_TABLE,
-                 '{}.denovo.vsearch.pick.pick.count_table'.format(CTG_FNAME),
-                 '{}.denovo.vsearch.pick.pick.count.summary'.format(CTG_FNAME),
-                 '{}.pick.fasta'.format(CTG_FNAME),
-                 '{}.pick.nr_v128.wang.pick.tax.summary'.format(CTG_FNAME),
-                 '{}.pick.opti_mcc.0.03.biom'.format(CTG_FNAME),
-                 '{}.pick.opti_mcc.0.03.cons.tax.summary'.format(CTG_FNAME),
-                 '{}.pick.opti_mcc.0.03.cons.taxonomy'.format(CTG_FNAME),
-                 '{}.pick.opti_mcc.list'.format(CTG_FNAME),
-                 '{}.pick.opti_mcc.shared'.format(CTG_FNAME),
-                 '{}.pick.nr_v128.wang.pick.taxonomy'.format(CTG_FNAME),
-                 '{}.pick.phylip.dist'.format(CTG_FNAME),
-                 '{}.pick.phylip.tre'.format(CTG_FNAME)]
-
-#: dict mapping reference database name to *ref_db* reference fasta and
-#: *tax_db* reference taxonomy.  **Add new reference dbs here.**
-DBS = {'homd': {'ref_db': 'HOMD_16S_rRNA_RefSeq_V15.1.aligned.fasta',
-                'tax_db': 'HOMD_16S_rRNA_RefSeq_V15.1.mothur.taxonomy'},
-       'sv99': {'ref_db': 'silva.nr_v128.align',
-                'tax_db': 'silva.nr_v128.tax'}}
-
-#: output directories sent to the user
-DIRS_TO_KEEP = ['otus_picrust', 'PICRUSt_data', 'graphs']
-
-UNKNOWN_ERR_MSG = 'An unknown error arose during execution of the pipeline'
+from nephele2.pipelines.MOTHUR_MiSeq import m2_config
 
 
 def link_samples(samples, inputs_dir, outputs_dir):
@@ -101,8 +57,8 @@ class MothurNeph(PipeBase):
         self.mem_size = os.sysconf('SC_PAGE_SIZE') \
             * os.sysconf('SC_PHYS_PAGES') * 0.6
         self.db_name = self.args.ref_db
-        self.tax_db_name = DBS[self.db_name]['tax_db']
-        self.ref_db_name = DBS[self.db_name]['ref_db']
+        self.tax_db_name = m2_config.DBS[self.db_name]['tax_db']
+        self.ref_db_name = m2_config.DBS[self.db_name]['ref_db']
         self.ref_db = self.outputs_dir + self.ref_db_name
         self.tax_db = self.outputs_dir + self.tax_db_name
 
@@ -175,7 +131,7 @@ class MothurNeph(PipeBase):
             combo_fname (str): name of the input file
             maxee (int): maximum number of errors allowed for contigs.
                   if ``None``, arg is not passed.  (I think then mothur uses `default 10000`_ -
-                  functionally no filtering on quality/errors).
+                  functionally no filtering on quality/errors ~Poorani).
 
         .. _default 10000: https://github.com/mothur/mothur/blob/v1.40.5/source/commands/makecontigscommand.cpp#L110
 
@@ -352,7 +308,7 @@ class MothurNeph(PipeBase):
                         raise pipeline_error.FilesizeTooBig(
                             msg=msg,
                             fname=os.path.basename(x),
-                            fsize=os.stat(x).st_size/KBYTE**3)
+                            fsize=os.stat(x).st_size/m2_config.KBYTE**3)
 
     @staticmethod
     def cluster_split(pick_file, counts, taxonomy, tax_ref):
@@ -433,9 +389,9 @@ class MothurNeph(PipeBase):
           than {}GiB.
         """
         input_size = PipeBase.get_dir_size(inputs_dir)
-        fsize = input_size/KBYTE**2
-        if input_size > MAX_MOTHUR_INPUT:
-            raise pipeline_error.FilesizeTooBig(msg=INPUTS_TOO_BIG_MSG,
+        fsize = input_size/m2_config.KBYTE**2
+        if input_size > m2_config.MAX_MOTHUR_INPUT:
+            raise pipeline_error.FilesizeTooBig(msg=m2_config.INPUTS_TOO_BIG_MSG,
                                                 fname=inputs_dir,
                                                 fsize=fsize)
 
@@ -596,7 +552,7 @@ def main(args):
 
         # check the size of distance matrix; NPHL-1930
         pipe.log.info('Checking size of distance matrices')
-        pipe.log.info('Max mem size: %f GiB', pipe.mem_size/KBYTE**3)
+        pipe.log.info('Max mem size: %f GiB', pipe.mem_size/m2_config.KBYTE**3)
         pipe.check_dist_matrix_size(current_files['file'], pipe.mem_size)
 
         pipe.log.info(
@@ -613,12 +569,20 @@ def main(args):
         cmd = pipe.clearcut(final_fasta)
         pipe.exec_mothur(cmd)
 
+        # Add metadata from mapping file to biom file
+        pipe.log.info("Adding metadata from {} to {}".format(args.map_file.name, biomfile))
+        add_metadata.callback(
+            input_fp=biomfile, output_fp=biomfile, sample_metadata_fp=args.map_file.name,
+            observation_metadata_fp=None, sc_separated=None, sc_pipe_separated=None, int_fields=None, float_fields=None, sample_header=None,
+            observation_header=None, output_as_json=True
+        )
+
         # Summarize biom file
-        pipe.log.info('Summarizing biom file to %s.', OTU_SUMMARY_TABLE)
+        pipe.log.info('Summarizing biom file to %s.', m2_config.OTU_SUMMARY_TABLE)
         current_files = file_utils.get_current_files(pipe.outputs_dir)
         pipe.ensure_file_exists(biomfile)
         summarize_table.callback(biomfile,
-                                 pipe.outputs_dir + OTU_SUMMARY_TABLE,
+                                 pipe.outputs_dir + m2_config.OTU_SUMMARY_TABLE,
                                  False, False)
 
         # Visualizations
@@ -709,7 +673,7 @@ def main(args):
         pipe.log.error(traceback.format_exc())
         pipe.log.error(err)
         pipe.log_to_db(job_id=pipe.job_id, stack=traceback.format_exc(),
-                       msg=UNKNOWN_ERR_MSG)
+                       msg=m2_config.UNKNOWN_ERR_MSG)
         exit_status = 1
 
     # on exit, clean up
@@ -717,11 +681,11 @@ def main(args):
         try:
             if not args.keep:
                 pipe.log.info('Removing intermediate files and dirs...')
-                files_to_keep = FILES_TO_KEEP + [os.path.basename(pipe.map_fp)]
+                files_to_keep = m2_config.FILES_TO_KEEP + [os.path.basename(pipe.map_fp)]
                 file_utils.remove_intermediate_files(pipe.outputs_dir,
                                                      files_to_keep)
                 file_utils.remove_intermediate_dirs(pipe.outputs_dir,
-                                                    DIRS_TO_KEEP)
+                                                    m2_config.DIRS_TO_KEEP)
             pipe.log.info("Pipeline exiting. %d", exit_status)
         except pipeline_error.PipelineError as p_err:
             sys.stderr.write(traceback.format_exc())
@@ -738,7 +702,7 @@ def main(args):
             pipe.log.error(e)
             pipe.log_to_db(job_id=pipe.job_id,
                            stack=traceback.format_exc(),
-                           msg=UNKNOWN_ERR_MSG)
+                           msg=m2_config.UNKNOWN_ERR_MSG)
             exit_status = 1
 
     sys.exit(exit_status)
@@ -780,7 +744,7 @@ if __name__ == '__main__':
     PARSER.add_argument('--ref_db',
                         type=str,
                         default="sv99",
-                        choices=DBS.keys(),
+                        choices=m2_config.DBS.keys(),
                         help='reference database')
     PARSER.add_argument('--keep',
                         action='store_true',

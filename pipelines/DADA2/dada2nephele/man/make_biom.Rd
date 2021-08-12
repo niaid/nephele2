@@ -5,6 +5,9 @@
 \title{Create a \link[biomformat]{biom-class}
 from \code{\link{matrix-class}}
 or \code{\link{data.frame}}.}
+\source{
+[make_biom in biomformat.R](../R/biomformat.R#L53)
+}
 \usage{
 make_biom(
   data,
@@ -60,7 +63,5 @@ a \code{.biom} file using the \code{\link{write_biom}} function.
 The sparse biom-format is not (yet) supported.
 }
 \note{
-This code is forked from version 1.4 of the
-\href{https://github.com/joey711/biomformat-oldfork}{biomformat R library} released under
-\href{https://www.r-project.org/Licenses/GPL-2}{GPL-2}.
+This code is forked from version 1.5 of the \href{https://github.com/joey711/biomformat-oldfork}{biomformat R library}.
 }

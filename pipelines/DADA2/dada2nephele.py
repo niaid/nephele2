@@ -11,6 +11,11 @@ from rpy2.robjects.vectors import IntVector
 from rpy2.robjects.packages import importr
 import rpy2.robjects as robjects
 from biom.cli.table_summarizer import summarize_table
+from biom.cli.metadata_adder import add_metadata
+from qiime2 import Artifact
+from qiime2.plugins.phylogeny.pipelines import align_to_tree_mafft_fasttree
+from qiime2.plugins import phylogeny
+import wurlitzer
 from nephele2 import config
 from nephele2.pipelines.pipebase import PipeBase
 from nephele2.pipelines import pipeline_error
@@ -21,6 +26,8 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 class DadaWrapper(PipeBase):
     """
+    **Written by**:
+    Poorani Subramanian & Philip MacMenamin
 
     From within R this works:
 
@@ -100,7 +107,7 @@ class DadaWrapper(PipeBase):
 
             return 1
 
-        except rpy2.rinterface.RRuntimeError as rpy2_err:
+        except rpy2.rinterface_lib.embedded.RRuntimeError as rpy2_err:
             raise r_pipeline_error.RPipelineError(rpy2_err, kwargs['job_id']) from None
 
     @staticmethod
@@ -124,6 +131,7 @@ class DadaWrapper(PipeBase):
         ------
         `nephele2.pipelines.r_pipeline_error.RPipelineError`
         """
+        kwargs = {k: DadaWrapper.convert_none(v) for k, v in kwargs.items()}
         try:
             datavis16s = importr('datavis16s')
             exit_code = datavis16s.trygraphwrapper(kwargs['datafile'], kwargs['out_dname'],
@@ -136,7 +144,7 @@ class DadaWrapper(PipeBase):
 
             return 1
 
-        except rpy2.rinterface.RRuntimeError as rpy2_err:
+        except rpy2.rinterface_lib.embedded.RRuntimeError as rpy2_err:
             raise r_pipeline_error.RPipelineError(rpy2_err, kwargs['job_id']) from None
 
     class Conf:
@@ -147,15 +155,17 @@ class DadaWrapper(PipeBase):
         """
         #: maps from database option to database filename
         REFDB = {
-            'sv99': 'dada2_silva_v132/silva_nr_v132_train_set.fa',
-            'homd': 'dada2_homd/HOMD_16S_rRNA_RefSeq_V15.1.train_set.fa',
+            'sv132': 'dada2_silva_v132/silva_nr_v132_train_set.fa',
+            'homd_15_22': 'dada2_homd/HOMD_16S_rRNA_RefSeq_V15.22.train_set.fa',
+            'homd_15_1': 'dada2_homd/HOMD_16S_rRNA_RefSeq_V15.1.train_set.fa',
             'idtaxa': 'dada2_silva_v132/SILVA_SSU_r132_March2018.RData',
             'gg97': 'dada2_greengenes/gg_13_8_train_set_97.fa.gz'
         }
         #: maps from database option to species database filename
         REFDB_SPECIES = {
-            'sv99': 'dada2_silva_v132/silva_species_assignment_v132.fa',
-            'homd': 'dada2_homd/HOMD_16S_rRNA_RefSeq_V15.1.species_assignment.fa',
+            'sv132': 'dada2_silva_v132/silva_species_assignment_v132.fa',
+            'homd_15_22': 'dada2_homd/HOMD_16S_rRNA_RefSeq_V15.22.species_assignment.fa',
+            'homd_15_1': 'dada2_homd/HOMD_16S_rRNA_RefSeq_V15.1.species_assignment.fa',
             'idtaxa': None,
             'gg97': None
         }
@@ -183,6 +193,9 @@ class DadaWrapper(PipeBase):
         for raw_errmsg in ERROR_MSGS:
             ERROR_REGEX.append(re.compile(raw_errmsg))
 
+        # for mafft phylogenetic tree
+        DEFAULT_NUM_THREADS = 12
+
 
 def main(args):
     """main pipeline
@@ -194,94 +207,126 @@ def main(args):
         ## initialize pipeline
         pipe = DadaWrapper(args)
 
-        ##pipe_args are slightly different to args (coming in off the GUI)
-        pipe_args = defaultdict()
+        with open(pipe.outputs_dir + "logfile_debug.txt", "w") as logfile_debug, \
+            wurlitzer.pipes(stdout=logfile_debug if args.wurlitzer_stdout == "file" else None, stderr=logfile_debug if args.wurlitzer_stderr == "file" else None):
+            ##pipe_args are slightly different to args (coming in off the GUI)
+            pipe_args = defaultdict()
 
-        pipe_args['job_id'] = args.job_id
-        pipe_args['input_dname'] = pipe.inputs_dir
-        pipe_args['out_dname'] = pipe.outputs_dir
-        pipe_args['map_fname'] = args.map_file.name
-        pipe_args['log_fname'] = str(pipe.log.name)
+            pipe_args['job_id'] = args.job_id
+            pipe_args['input_dname'] = pipe.inputs_dir
+            pipe_args['out_dname'] = pipe.outputs_dir
+            pipe_args['map_fname'] = args.map_file.name
+            pipe_args['log_fname'] = str(pipe.log.name)
 
-        ## DADA2 computational parameters
-        pipe_args['maxEE'] = args.maxee
-        pipe_args['truncQ'] = args.truncq
-        pipe_args['maxMismatch'] = args.maxmismatch
-        pipe_args['justConcatenate'] = args.just_concatenate
-        pipe_args['chimera'] = args.chimera
-        pipe_args['trimOverhang'] = args.trim_overhang
-        pipe_args['data_type'] = args.data_type
+            ## DADA2 computational parameters
+            pipe_args['maxEE'] = args.maxee
+            pipe_args['truncQ'] = args.truncq
+            pipe_args['maxMismatch'] = args.maxmismatch
+            pipe_args['justConcatenate'] = args.just_concatenate
+            pipe_args['chimera'] = args.chimera
+            pipe_args['trimOverhang'] = args.trim_overhang
+            pipe_args['data_type'] = args.data_type
 
-        if args.data_type == 'PE':
-            pipe_args['trimLeft'] = [args.trimleft_fwd, args.trimleft_rev]
-            pipe_args['truncLen'] = [args.trunclen_fwd, args.trunclen_rev]
-        else:
-            pipe_args['trimLeft'] = args.trimleft_fwd
-            pipe_args['truncLen'] = args.trunclen_fwd
+            if args.data_type == 'PE':
+                pipe_args['trimLeft'] = [args.trimleft_fwd, args.trimleft_rev]
+                pipe_args['truncLen'] = [args.trunclen_fwd, args.trunclen_rev]
+            else:
+                pipe_args['trimLeft'] = args.trimleft_fwd
+                pipe_args['truncLen'] = args.trunclen_fwd
 
-        #Ion Torrent https://benjjneb.github.io/dada2/faq.html#can-i-use-dada2-with-my-454-or-ion-torrent-data
-        if args.ion_torrent:
-            pipe_args['band_size'] = 32
-            pipe_args['homopolymer_gap_penalty'] = -1
-        else:
-            pipe_args['band_size'] = None
-            pipe_args['homopolymer_gap_penalty'] = None
+            #Ion Torrent https://benjjneb.github.io/dada2/faq.html#can-i-use-dada2-with-my-454-or-ion-torrent-data
+            if args.ion_torrent:
+                pipe_args['band_size'] = 32
+                pipe_args['homopolymer_gap_penalty'] = -1
+            else:
+                pipe_args['band_size'] = None
+                pipe_args['homopolymer_gap_penalty'] = None
 
-        # Databases
-        pipe_args['taxmethod'] = args.taxmethod
-        if args.taxmethod == 'idtaxa':
-            args.ref_db = 'idtaxa'
+            # Databases
+            pipe_args['taxmethod'] = args.taxmethod
+            if args.taxmethod == 'idtaxa':
+                args.ref_db = 'idtaxa'
 
-        pipe_args['ref_db'] = pipe.db_dir + pipe.Conf.REFDB[args.ref_db]
-        if pipe.Conf.REFDB_SPECIES[args.ref_db] is not None:
-            pipe_args['ref_db_species'] = pipe.db_dir + pipe.Conf.REFDB_SPECIES[args.ref_db]
-        else:
-            pipe_args['ref_db_species'] = None
+            pipe_args['ref_db'] = pipe.db_dir + pipe.Conf.REFDB[args.ref_db]
+            if pipe.Conf.REFDB_SPECIES[args.ref_db] is not None:
+                pipe_args['ref_db_species'] = pipe.db_dir + pipe.Conf.REFDB_SPECIES[args.ref_db]
+            else:
+                pipe_args['ref_db_species'] = None
 
-        ## graphs parameter
-        pipe_args['datafile'] = pipe.outputs_dir + dada2_config.OTUTABLE
+            ## graphs parameter
+            pipe_args['datafile'] = pipe.outputs_dir + dada2_config.OTUTABLE
 
-        ## Load DADA2 R package
-        if pipe.args.job_id is not None:
-            # using this to see if we are running inside Nephele env
-            r_mod_name = 'DADA2/dada2nephele'
-            pipe.log.info('Loading R module: %s.', r_mod_name)
-            pipe.load_R_mod(config.PIPELINES_LOC_ON_WRKR + r_mod_name)
+            ## Load DADA2 R package
+            if pipe.args.job_id is not None:
+                # using this to see if we are running inside Nephele env
+                r_mod_name = 'DADA2/dada2nephele'
+                pipe.log.info('Loading R module: %s.', r_mod_name)
+                pipe.load_R_mod(config.PIPELINES_LOC_ON_WRKR + r_mod_name)
 
-        pipe.log.info('Running DADA2.')
-        exit_status = pipe.run_dada2(pipe_args)
+            pipe.log.info('Running DADA2.')
+            exit_status = pipe.run_dada2(pipe_args)
 
-        pipe.log.info('Summarizing biom file to %s%s.', pipe.outputs_dir, dada2_config.BIOMSUMMARY)
-        pipe.ensure_file_exists(pipe.outputs_dir + dada2_config.BIOMFILE)
-        summarize_table.callback(pipe.outputs_dir + dada2_config.BIOMFILE,
-                                 pipe.outputs_dir + dada2_config.BIOMSUMMARY, False, False)
+            ## do garbage collection in python
+            ## https://stackoverflow.com/questions/5199334/clearing-memory-used-by-rpy2
+            gc.collect()
 
-        ## do garbage collection in python
-        ## https://stackoverflow.com/questions/5199334/clearing-memory-used-by-rpy2
-        gc.collect()
 
-        pipe.log.info('Checking output file from dada2 pipeline required by data visualization pipeline.')
-        pipe.ensure_file_exists(pipe.outputs_dir + dada2_config.OTUTABLE)
+            # Summarize biom file
+            biom_file = pipe.outputs_dir + dada2_config.BIOMFILE
+            if os.path.exists(biom_file):
+                pipe.log.info('Summarizing biom file to %s%s.', pipe.outputs_dir, dada2_config.BIOMSUMMARY)
+                summarize_table.callback(biom_file, pipe.outputs_dir + dada2_config.BIOMSUMMARY, False, False)
 
-        ## Run visualization pipeline
-        ## use logic in pipeline to provide partial output based on sampling depth.
-        g_depth = pipe.get_depth(pipe.outputs_dir + dada2_config.BIOMFILE, args.sampling_depth)
+            # Create a phylogenetic tree
+            output_fasta = pipe.outputs_dir + dada2_config.OUTPUTFASTA
+            if os.path.exists(output_fasta):
+                # Determine the number os threads/cpus to use for mafft tree
+                try:
+                    system_cpu_count = os.cpu_count()
+                except Exception as _:
+                    # If there is anything happens with this cpu_count func, keep continue, no reason to stop the pipeline
+                    system_cpu_count = pipe.Conf.DEFAULT_NUM_THREADS + 1
+                # If machine has fewer cpus than default, using the max system cpu - 1
+                num_threads = min(pipe.Conf.DEFAULT_NUM_THREADS, system_cpu_count - 1)
 
-        if args.sampling_depth is not None:
-            pipe_args['sampdepth'] = args.sampling_depth
-        elif g_depth > 0:
-            pipe_args['sampdepth'] = g_depth
-        else:
-            pipe_args['sampdepth'] = 10000
+                pipe.log.info("Creating a phylogenetic tree with {} threads".format(num_threads))
+                pipe.log.info("{} version {}. {}".format(*[getattr(phylogeny.__plugin__, a) for a in ['name', 'version', 'description']]))
+                pipe.log.info("Artifact.import_data(type='FeatureData[Sequence]', view={})".format(output_fasta))
+                seqs = Artifact.import_data(type='FeatureData[Sequence]', view=output_fasta)
+                pipe.log.info("align_to_tree_mafft_fasttree(sequences=seqs, n_threads=num_threads)")
+                _, _, unrooted_tree, rooted_tree = align_to_tree_mafft_fasttree(sequences=seqs, n_threads=num_threads)
 
-        if pipe.args.job_id is not None:
-            r_mod_name = 'datavis16s'
-            pipe.log.info('Loading R module: {r_mod_name}.'.format(r_mod_name=r_mod_name))
-            pipe.load_R_mod(config.PIPELINES_LOC_ON_WRKR + r_mod_name)
-        pipe.log.info('Running data visualization pipeline.')
-        exit_status = pipe.run_datavis(pipe_args)
+                phylodir = os.path.join(pipe.outputs_dir, "phylo")
+                pipe.log.info("Saving trees to {}".format(phylodir))
+                unrooted_tree.export_data(output_dir=phylodir) # phylo/tree.nwk
+                os.rename(os.path.join(phylodir, "tree.nwk"),
+                        os.path.join(phylodir, "unrooted_tree.nwk"))
+                rooted_tree.export_data(output_dir=phylodir) # phylo/tree.nwk
+                os.rename(os.path.join(phylodir, "tree.nwk"),
+                        os.path.join(phylodir, "rooted_tree.nwk"))
 
-        pipe.log.info('DADA2 pipeline complete.')
+
+            ## Run visualization pipeline
+            pipe.log.info('Checking output file from dada2 pipeline required by data visualization pipeline.')
+            pipe.ensure_file_exists(pipe.outputs_dir + dada2_config.OTUTABLE)
+            ## use logic in pipeline to provide partial output based on sampling depth.
+            if args.sampling_depth is not None:
+                pipe_args['sampdepth'] = args.sampling_depth
+            else:
+                g_depth = pipe.get_depth(pipe.outputs_dir + dada2_config.BIOMFILE, args.sampling_depth)
+                if g_depth > 0:
+                    pipe_args['sampdepth'] = int(g_depth)
+                else:
+                    pipe_args['sampdepth'] = 10000
+
+            if pipe.args.job_id is not None:
+                r_mod_name = 'datavis16s'
+                pipe.log.info('Loading R module: {r_mod_name}.'.format(r_mod_name=r_mod_name))
+                pipe.load_R_mod(config.PIPELINES_LOC_ON_WRKR + r_mod_name)
+            pipe.log.info('Running data visualization pipeline.')
+            exit_status = pipe.run_datavis(pipe_args)
+
+            pipe.log.info('DADA2 pipeline complete.')
 
     except r_pipeline_error.RPipelineError as rerr:
         pipe.log.error('R Pipeline Error:')
@@ -338,37 +383,40 @@ if __name__ == '__main__':
     PARSER.add_argument('--map_file', type=argparse.FileType('r'), required=True, help="required")  # type=str
     PARSER.add_argument('--data_type', type=str, choices=['SE', 'PE'], default='PE',
                         help="single end or paired end.")
+    PARSER.add_argument("--wurlitzer_stdout", type = str, default = "file", choices = ["file", "std"], help = "choose where to put wurlitzer stdout. Using std to see it from terminal")
+    PARSER.add_argument("--wurlitzer_stderr", type = str, default = "file", choices = ["file", "std"], help = "choose where to put wurlitzer stderr. Using std to see it from terminal")
     USER_OPT = PARSER.add_argument_group('user options')
     USER_OPT.add_argument('--ion_torrent', action='store_true', help="dada2::dada use recommended "
                         "parameters for ion torrent data")
     USER_OPT.add_argument('--trimleft_fwd', type=int,
-                        help="dada2::filterAndTrim trimLeft bp of fwd read.",
+                        help="dada2::filterAndTrim trimLeft bp of fwd read. default: %(default)s",
                         default=int(dada2_config.TRIMLEFT))
     USER_OPT.add_argument('--trimleft_rev', type=int,
-                        help="dada2::filterAndTrim trimLeft bp of rev read.",
+                        help="dada2::filterAndTrim trimLeft bp of rev read. default: %(default)s",
                         default=int(dada2_config.TRIMLEFT))
     USER_OPT.add_argument('--maxee', type=int, help="dada2::filterAndTrim discard reads "
-                        "with EE higher than this value.", default=int(dada2_config.MAXEE))
+                        "with EE higher than this value. default: %(default)s", default=int(dada2_config.MAXEE))
     USER_OPT.add_argument('--trunclen_fwd', type=int,
-                        help="dada2::filterAndTrim truncate fwd reads at this length.",
+                        help="dada2::filterAndTrim truncate fwd reads at this length. default: %(default)s",
                         default=int(dada2_config.TRUNCLEN))
     USER_OPT.add_argument('--trunclen_rev', type=int,
-                        help="dada2::filterAndTrim truncate rev reads at this length.",
+                        help="dada2::filterAndTrim truncate rev reads at this length. default: %(default)s",
                         default=int(dada2_config.TRUNCLEN))
     USER_OPT.add_argument('--truncq', type=int, help="dada2::filterAndTrim truncate "
-                        "reads at first bp with qual <= this value.", default=int(dada2_config.TRUNCQ))
+                        "reads at first bp with qual <= this value.  default: %(default)s",
+                          default=int(dada2_config.TRUNCQ))
     USER_OPT.add_argument('--just_concatenate', action="store_true",
                         help="dada2::mergePairs concatenates instead of merging reads")
     USER_OPT.add_argument('--maxmismatch', type=int,
-                        help="dada2::mergePairs max mismatches allowed.",
+                        help="dada2::mergePairs max mismatches allowed. default: %(default)s",
                         default=int(dada2_config.MAXMISMATCH))
     USER_OPT.add_argument('--trim_overhang', action="store_true",
                         help="dada2::mergePairs trims overhanging seq.")
     USER_OPT.add_argument('--chimera', action="store_true", help="run dada2::removeBimeraDenovo.")
-    USER_OPT.add_argument('--ref_db', type=str, default="sv99", choices=["sv99", "homd", "gg97"],
-                        help="reference database")
+    USER_OPT.add_argument('--ref_db', type=str, default="sv132", choices=["sv132", "homd_15_22", "homd_15_1", "gg97"],
+                        help="reference database. default: %(default)s")
     USER_OPT.add_argument('--taxmethod', type=str, default=dada2_config.TAXMETHOD, choices=["rdp", "idtaxa"],
-                        help='taxonomic assignment method')
+                        help='taxonomic assignment method. default: %(default)s')
     USER_OPT.add_argument('--sampling_depth', type=int,
                         help="sampling depth for downstream analysis. optional")
 

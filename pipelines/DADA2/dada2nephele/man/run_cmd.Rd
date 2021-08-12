@@ -4,7 +4,7 @@
 \alias{run_cmd}
 \title{wrap command in tryCatch}
 \source{
-[computation.R](../R/computation.R#L113)
+[computation.R](../R/computation.R#L40)
 }
 \usage{
 run_cmd(cmd, step = NULL, bline = 0, aline = 0, w2e = NA, log = T)

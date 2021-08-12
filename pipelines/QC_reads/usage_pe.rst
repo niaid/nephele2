@@ -105,4 +105,4 @@ Merge Read Pairs:
 --f2_max_mismatch_density float  **Maximum mismatch density**: Maximum allowed ratio between the number of mismatched base pairs
                                    and the overlap length. (default: 0.25, range: [0,1])
 
-.. _qc_reads.sh: https://github.com/niaid/nephele2/blob/master/pipelines/QC_reads/qc_reads.sh
+.. _qc_reads.sh: https://github.niaid.nih.gov/bcbb/nephele2/blob/next_release/pipelines/QC_reads/qc_reads.sh

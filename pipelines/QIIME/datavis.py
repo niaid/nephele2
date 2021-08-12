@@ -15,7 +15,25 @@ from nephele2.pipelines.pipebase import PipeBase
 from nephele2.pipelines import pipeline_error
 
 class DadaWrapper(PipeBase):
-    
+    """
+    **Written by**:
+    Poorani Subramanian & Philip MacMenamin
+
+    From within R this works:
+
+    trycomputewrapper('/mnt/EFS/user_uploads/88bce3b496d9',
+    '/mnt/EFS/user_uploads/88bce3b496d9',
+    '/mnt/EFS/user_uploads/88bce3b496d9/mapfile.txt',
+    logfilename='DADA_logfile.txt',
+    refdb='/mnt/EFS/user_uploads/88bce3b496d9',
+    refdb_species='/mnt/EFS/user_uploads/88bce3b496d9/silva_species_assignment_v128.fa')
+
+    See :any:`dada2nephele.readme`
+
+    This script is just a wrapper for the above R package.
+    The above R package attempts to run function ``trycomputewrapper``, returns 0 on success and
+    rpy2.rinterface.RRuntimeError on error.
+
     """
     def __init__(self, args):
         super().__init__(args)

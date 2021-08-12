@@ -5,9 +5,9 @@
 \alias{trycomputewrapper}
 \title{run dada2 pipeline}
 \source{
-\href{../R/computation.R#L366}{dada2compute: computation.R}
+\href{../R/computation.R#L243}{computation.R}
 
-[trycomputewrapper: computation.R](../R/computation.R#L635)
+[computation.R](../R/computation.R#L513)
 }
 \usage{
 dada2compute(
@@ -29,7 +29,8 @@ dada2compute(
   justConcatenate = getOption("dparams")$justConcatenate,
   taxmethod = getOption("dparams")$taxmethod,
   band_size = NULL,
-  homopolymer_gap_penalty = NULL
+  homopolymer_gap_penalty = NULL,
+  plotquality = T
 )
 
 trycomputewrapper(datadir, outdir, mapfile, logfilename = "logfile.txt", ...)
@@ -79,6 +80,8 @@ suggest setting this to True.  (Logical. Default: False).}
 
 \item{homopolymer_gap_penalty}{Integer. for \link[dada2:dada]{dada2::dada} & \link[dada2:setDadaOpt]{dada2::setDadaOpt}. cost of gaps in homopolymer
 regions (>=3 repeated bases)}
+
+\item{plotquality}{Logical.  Should quality plots be made?}
 
 \item{logfilename}{Log file name (full path).}
 

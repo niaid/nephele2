@@ -1,0 +1,453 @@
+configfile: "/usr/local/src/nephele2/pipelines/wgsa/config.yaml"
+include: "utils.smk"
+
+TED_READS = config["output_dir"] + "TEDreads/"
+TED_TMP_NAME = "TED_out/"
+TED_TMP = config["output_dir"] + TED_TMP_NAME
+TED_FILE_NAME = config["output_dir"] + config["ted_file_name"]
+METASPADES = config["output_dir"] + "asmbMetaSpades/"
+ASM = METASPADES + "{sample}_asmb/"
+OUT_FILE = ASM + "final.assembly"
+ANNOTATED_GENES = ASM + "annotatedGenes/"
+PATHWAYS = ANNOTATED_GENES + "pathways/"
+ANNOTATION_PREFIX = "annotations"
+ANNOTATION_PATH = ANNOTATED_GENES + ANNOTATION_PREFIX
+BINS = ASM + "draftGenomes/"
+BINQC = BINS + "binQC/"
+BINQC_BINS = BINQC + "bins/"
+QC_PLOTS = BINQC + "QC_plots/"
+BBMAP_BUILD_INDEX = {
+    "human": 1,
+    "house_mouse": 3
+}
+BIOM_FILE = config["output_dir"] + config["biom_file_name"]
+
+
+samples = read_mapping_file()
+threads_per_job = get_num_threads_per_job(len(samples))
+
+onstart:
+    shell(
+    """
+    set +o pipefail
+    echo "Dependencies:"
+    {config[bbtools_bbmap]} --version 2>&1 >/dev/null | head -n2 | tail -n1
+    fastp --version
+    {config[metaspades_script]} --version
+    bowtie2 --version | head -n1 | awk '{{print "bowtie2 version", $3}}'
+    samtools --version | head -n1
+    metabat2 2>&1 >/dev/null | grep version
+    prodigal -v 2>&1 >/dev/null | head -n2 | tail -n1
+    checkm | head -n2 | tail -n1 | sed 's/^ *//g'
+    ktImportText | head -n2 | tail -n1 | sed 's/[^a-zA-Z0-9. ]//g' | sed 's/^ *//g'
+    metaprokka --version
+    cat {config[minpath_script]} | grep version | head -n1
+    verse -v | head -n2 | tail -n1
+    """)
+
+rule all:
+    input:
+        expand(QC_PLOTS + "checkm_plots.done", sample=samples),
+        BIOM_FILE,
+        METASPADES + "pwyFUNCplots_perSample.html",
+        METASPADES + "binTAXplots_perSample.html"
+
+rule run_fastp:
+    input:
+        unpack(get_fastq_gz)
+    threads: threads_per_job
+    output:
+        f=temp(TED_READS + "{sample}_R1_te.fastq.gz"),
+        r=temp(TED_READS + "{sample}_R2_te.fastq.gz"),
+        s_l_html=TED_READS + "{sample}_fastplog.html",
+        s_l_json=temp(TED_READS + "{sample}_fastp.json")
+    run:
+        shell(run_fastp_cmd())
+
+rule run_bbmap:
+    resources:
+        mem_gb=config["bbmap_mem_gb"] # make sure not run out of memory
+    input:
+        in1=rules.run_fastp.output.f,
+        in2=rules.run_fastp.output.r
+    params:
+        wgsa_db=config["wgsa_db"],
+        bbmap_build=BBMAP_BUILD_INDEX[config["decontaminate"]],
+        bbtools_bbmap=config["bbtools_bbmap"],
+        bbmap_log_file=TED_READS + "decontamination.log"
+    output:
+        outu=TED_TMP + "{sample}_R1_ted.fastq.gz",
+        outu2=TED_TMP + "{sample}_R2_ted.fastq.gz"
+    shell:
+        "{params.bbtools_bbmap} minid=0.95 maxindel=3 bwr=0.16 bw=12 quickmatch fast minhits=2 build={params.bbmap_build} path={params.wgsa_db} "
+        "in={input.in1} in2={input.in2} pigz=f unpigz=f "
+        "outu={output.outu} outu2={output.outu2} 2>&1 | tee -a {params.bbmap_log_file}"
+
+rule run_metaspades:
+    input:
+        in1=rules.run_bbmap.output.outu,
+        in2=rules.run_bbmap.output.outu2
+    params:
+        out=ASM,
+        metaspades_script=config["metaspades_script"],
+        tmp_dir=config["tmp_dir"]
+    threads: threads_per_job
+    output:
+        temp(ASM + "scaffolds.fasta")
+    shell:
+        "python3 {params.metaspades_script} -1 {input.in1} -2 {input.in2} "
+        "-m 250 --tmp-dir {params.tmp_dir} "
+        "-o	{params.out} -t {threads} --only-assembler"
+
+rule run_bbmap_stats:
+    input:
+        rules.run_metaspades.output
+    params:
+        asm=ASM,
+        bbtools_stats=config["bbtools_stats"]
+    output:
+        out1=ASM + "assembly_stats.txt",
+        out2=OUT_FILE + ".fasta"
+    shell:
+        "{params.bbtools_stats} in={input} out={output.out1} overwrite=true && "
+        "sed $'s/_cov_/ cov_/g' {input} > {output.out2} && "
+        "rm -rf {params.asm}K* {params.asm}pipeline_state {params.asm}tmp {params.asm}misc {params.asm}before_rr.fasta "
+        "{params.asm}dataset.info {params.asm}*params* {params.asm}*.gfa {params.asm}first_pe_contigs.fasta "
+        "{params.asm}run_spades.sh {params.asm}*.yaml {params.asm}*.paths"
+
+rule bowtie2_build:
+    input:
+        rules.run_bbmap_stats.output.out2
+    params:
+        basename=OUT_FILE + ".fasta.db"
+    threads: threads_per_job
+    output:
+        # to signal this step is completed
+        temp(ASM + "bowtie2_build.done")
+    shell:
+        "bowtie2-build --quiet --threads {threads} {input} {params.basename} && touch {output}"
+
+rule bowtie2_run:
+    input:
+        in1=rules.run_bbmap.output.outu,
+        in2=rules.run_bbmap.output.outu2,
+        in3=rules.bowtie2_build.output
+    params:
+        index=OUT_FILE + ".fasta.db"
+    threads: threads_per_job
+    output:
+        sam=temp(OUT_FILE + ".sam"),
+        bt2=temp(ASM + "bt2_almOUT.txt"),
+    shell:
+        "bowtie2 --phred33 --sensitive-local --no-unal --seed 4 "
+        "-1 {input.in1} -2 {input.in2} "
+        "-x {params.index} "
+        "-S {output.sam} "
+        "-p {threads} 2> {output.bt2}"
+
+rule samtools_to_bam:
+    input:
+        rules.bowtie2_run.output.sam
+    params:
+        collate_tmp=config["tmp_dir"] + "collate",
+        sort_tmp=config["tmp_dir"] + "sort",
+        markdup_tmp=config["tmp_dir"] + "markdup"
+    threads: threads_per_job
+    output:
+        bam_colated=temp(ASM + "bam_colated.bam"),
+        bam_fixmate=temp(ASM + "bam_fixmate.bam"),
+        bam_fixmate_sorted=temp(ASM + "bam_fixmate_sorted.bam"),
+        final_bam=temp(OUT_FILE + ".bam")
+    shell:
+        "samtools collate {input} -o {output.bam_colated} -@ {threads} {params.collate_tmp} && "
+        "samtools fixmate -m {output.bam_colated} {output.bam_fixmate} -@ {threads} && "
+        "samtools sort {output.bam_fixmate} -o {output.bam_fixmate_sorted} -@ {threads} -T {params.sort_tmp} && "
+        "samtools markdup -r -s {output.bam_fixmate_sorted} {output.final_bam} -@ {threads} -T {params.markdup_tmp} && "
+        "samtools index -b {output.final_bam} -@ {threads}"
+
+rule samtools_report:
+    input:
+        bam=rules.samtools_to_bam.output.final_bam,
+        bt2=rules.bowtie2_run.output.bt2,
+        assembly_stats=rules.run_bbmap_stats.output.out1,
+    output:
+        idxstats=temp(OUT_FILE + ".idxstats.txt"),
+        readcounts=OUT_FILE + "_readcounts.txt",
+        depths=temp(OUT_FILE + "_depths.txt")
+    shell:
+        "jgi_summarize_bam_contig_depths {input.bam} --outputDepth {output.depths} && "
+        "echo $(grep 'overall' {input.bt2}) '-> reads mapped to this assembly' >> {input.assembly_stats} && "
+        "samtools idxstats {input.bam} > {output.idxstats} && "
+        "sed '1 s/^/##name\\tlength\\tNumbAlignedReads\\tNumbUnalignedReads\\n/' {output.idxstats} > {output.readcounts}"
+
+# metaprokka generates hundreds MB log (not useful), need to shut it down with 2>/dev/null
+rule metaprokka_run:
+    input:
+        fasta=rules.run_bbmap_stats.output.out2,
+        report=rules.samtools_report.output.depths
+    params:
+        tag="prokka",
+        dbdir=config["prokka_db"],
+        prefix=ANNOTATION_PREFIX,
+        out=ANNOTATED_GENES
+    threads: threads_per_job
+    output:
+        ANNOTATION_PATH + ".gff"
+    shell:
+        "metaprokka --outdir {params.out} --force --prefix {params.prefix} --mincontiglen 200 "
+        "--norrna --gffver 3 --addgenes --locustag {params.tag} --cpus {threads} --dbdir {params.dbdir} --quiet {input.fasta} 2>/dev/null"
+
+rule gff_to_gtf:
+    input:
+        rules.metaprokka_run.output
+    params:
+        prokkagff2gtf_script=config["prokkagff2gtf_script"]
+    output:
+        ec=ANNOTATION_PATH + ".ec.txt",
+        cog=ANNOTATION_PATH + ".cog.txt",
+        gtf=temp(ANNOTATION_PATH + ".gtf")
+    shell:
+        """
+        grep -i "EC_number" {input} | cut -f1,9 | cut -f1,2,3 -d ';'| sed 's/;Parent=/\\t/g'|sed 's/"//g' |sed 's/;eC_number=/\\tEC_number\\t/g' > {output.ec} || {{ echo "ERROR: Failed to generate {output.ec} file" >&2 && exit 1; }}
+        egrep "COG[0-9]{{4}}" {input} | cut -f1,9 | sed -r -e 's/(^.*)\\t.*Parent=(.*_gene).*\:(COG[0-9]{{4}}).*/\\1\\t\\2\\t\\3/g' > {output.cog} || true
+        {params.prokkagff2gtf_script} {input} > {output.gtf}
+        """
+
+rule verse_run:
+    input:
+        gtf=rules.gff_to_gtf.output.gtf,
+        bam=rules.samtools_to_bam.output.final_bam
+    params:
+        basename=ANNOTATION_PATH + "_counts"
+    threads: threads_per_job
+    output:
+        temp(ANNOTATION_PATH + "_counts.gene.txt")
+    shell:
+        """
+        verse -a {input.gtf} -t 'gene' -g gene_id -z 0 -s 0 -o {params.basename} {input.bam} -T {threads}
+        """
+
+rule annotation_report:
+    input:
+        gtf=rules.gff_to_gtf.output.gtf,
+        counts_gene=rules.verse_run.output,
+        fastp_json=rules.run_fastp.output.s_l_json
+    output:
+        lengths=temp(ANNOTATION_PATH + "_lengths.txt"),
+        counts=temp(ANNOTATION_PATH + "_counts.txt"),
+        gene_coverage=temp(ANNOTATION_PATH + "_gene.coverage.txt"),
+        gene_TPM=ANNOTATION_PATH + "_gene.TPM.txt"
+    run:
+        read_length=get_read_length(input.fastp_json)
+        shell("""
+        ## Mean read1 length from {input.fastp_json}: {read_length}
+        cut -f4,5,9 {input.gtf} | sed 's/gene_id //g' | gawk '{{print $3,$2-$1+1}}' | tr ' ' '\\t' | sed '1s/^/gene\\tlength\\n/' > {output.lengths}
+        join {output.lengths} {input.counts_gene} -t $'\\t' >  {output.counts}
+        grep "prokka" {output.counts} | awk -v OFS="\\t" '{{$5 = sprintf("%0.4f", $3*{read_length}/$2)}}1' |sort | cut -f 1,2,3,5 | sed -e '1s/^/#name\\tlength\\tNumbAlignedReads\\trelGENE_coverage\\n/' > {output.gene_coverage}
+        awk 'NR==FNR{{sum+= $4; next}} FNR==1{{print $0,"relGene_TPM"; next}} {{printf("%s %0.4f\\n",$0,$4*1000000/sum)}}' OFS='\\t' {output.gene_coverage} {output.gene_coverage} |sed -e 's/\s/\\t/g' > {output.gene_TPM}
+        """)
+
+rule cut_annotations:
+    input:
+        ec=rules.gff_to_gtf.output.ec
+    output:
+        temp(PATHWAYS + "tmp_ec2.txt")
+    shell:
+        "cut -f3,5 {input.ec} > {output}"
+
+rule minpath_run:
+    input:
+        rules.cut_annotations.output
+    params:
+        pwymap=config["pwymap"],
+        kegg=config["kegg"],
+        minpath_script=config["minpath_script"],
+        mps_metacyc=PATHWAYS + "minpath_metacyc.mps",
+        mps_kegg=PATHWAYS + "minpath_kegg.mps"
+    output:
+        metacyc_ec_report=PATHWAYS + "metacyc_ec.report.txt",
+        kegg_ec_report=PATHWAYS + "KEGG_ec.report.txt",
+        ipath=PATHWAYS + "KEGG_ec.report-ipath.txt"
+    shell:
+        "python3 {params.minpath_script} -any {input} -map {params.pwymap} "
+        "-report {output.metacyc_ec_report} -mps {params.mps_metacyc}  && "
+        "python3 {params.minpath_script} -any {input} -map {params.kegg} "
+        "-report {output.kegg_ec_report} -mps {params.mps_kegg} && "
+        "awk '{{gsub(\"^map\",\"\",$14);print $14\" #ff0000\"}}' {output.kegg_ec_report} > {output.ipath}"
+
+rule run_krona:
+    input:
+        ec=rules.gff_to_gtf.output.ec,
+        ec_report=rules.minpath_run.output.metacyc_ec_report,
+        gene_TPM=rules.annotation_report.output.gene_TPM
+    params:
+        krona_script=config["krona_script"],
+        pwymap=config["pwymap"],
+        pwyhrr=config["pwyhrr"]
+    output:
+        temp(ANNOTATED_GENES + "{sample}_4krona.txt")
+    shell:
+        "python3 {params.krona_script} -i <(cut -f2,5 {input.ec} |sed 's/ID=//g') "
+        "-m {params.pwymap} -H {params.pwyhrr} -n {wildcards.sample} "
+        '-l <(grep "minpath 1" {input.ec_report}) '
+        "-c <(cut -f1,5 {input.gene_TPM}) "
+        "-o {output}"
+
+rule krona_import_text:
+    input:
+        expand(rules.run_krona.output, sample=samples)
+    output:
+        METASPADES + "pwyFUNCplots_perSample.html"
+    shell:
+        "ktImportText {input} -o {output}"
+
+rule metabat2_run:
+    input:
+        f=rules.run_bbmap_stats.output.out2,
+        depths=rules.samtools_report.output.depths
+    params:
+        basename=BINS + "bin"
+    threads: threads_per_job
+    output:
+        # Generate bunch of files, use this .done to signal it is completed
+        temp(ASM + "metabat2_run.done")
+    shell:
+        "metabat2 -i {input.f} -o {params.basename} -m 1500 --maxEdges 250 "
+        "--unbinned  -t {threads} -a {input.depths} && "
+        "touch {output}"
+
+rule checkm_lineage_wf:
+    input:
+        # We do not use the actual output here but need files from metabat2_run step: basename=BINS
+        rules.metabat2_run.output
+    params:
+        ftype="fa",
+        basename=BINS,
+        out=BINQC
+    threads: threads_per_job
+    output:
+        temp(BINQC + "lineage.ms")
+    shell:
+        "checkm lineage_wf --tab_table --nt --pplacer_threads {threads} "
+        "-t {threads} -x {params.ftype} {params.basename} {params.out}"
+
+rule checkm_qa:
+    input:
+        rules.checkm_lineage_wf.output
+    params:
+        binqc=BINQC
+    output:
+        bin_qc=temp(BINQC + "bin_QC.txt"),
+        bin_tax=temp(BINQC + "bin_TAX.txt")
+    shell:
+        "checkm qa -o 2 --tab_table -t 16 -f {output.bin_qc} -t 16 {input} {params.binqc} && "
+        "checkm tree_qa -o 2 --tab_table -f {output.bin_tax} {params.binqc}"
+
+rule binqc_summary:
+    input:
+        bin_tax=rules.checkm_qa.output.bin_tax,
+        bin_qc=rules.checkm_qa.output.bin_qc
+    output:
+        tmp1=temp(BINQC + "tmp1.txt"),
+        tmp2=temp(BINQC + "tmp2.txt"),
+        summary=BINQC + "bin_SUMMARY.txt"
+    shell:
+        """
+        cut {input.bin_tax} -f1,5 > {output.tmp1}
+        cut {input.bin_qc} -f1,6-11,13,15,17,19,23 > {output.tmp2}
+        paste {output.tmp1} {output.tmp2} > {output.summary}
+        """
+
+# Too much crap logs, using 2>/dev/null
+rule checkm_coverage:
+    input:
+        bam=rules.samtools_to_bam.output.final_bam,
+        fake=rules.metabat2_run.output # We do not use the actual output here but need files from metabat2_run step - BINS
+    params:
+        ftype="fa",
+        bins=BINS
+    threads: threads_per_job
+    output:
+        BINQC + "bin_coverage.txt"
+    shell:
+        "checkm coverage -x {params.ftype} -t {threads} {params.bins} {output} {input.bam} 2>/dev/null"
+
+rule checkm_profile:
+    input:
+        rules.checkm_coverage.output
+    output:
+        temp(BINQC + "bin_profiles.txt")
+    shell:
+        "checkm profile -q {input} --tab_table -f {output}"
+
+rule join_profiles_tax:
+    input:
+        profile=rules.checkm_profile.output,
+        bin_tax=rules.checkm_qa.output.bin_tax,
+        bin_summary=rules.binqc_summary.output.summary
+    params:
+        bin_summary_tmp=BINQC + "bin_SUMMARY1.txt"
+    output:
+        temp(BINQC + "{sample}_4krona.txt")
+    shell:
+        "join {input.profile} {input.bin_tax} -t $'\\t' | "
+        "cut -f6,10,11 | sed -e 's/..__/\\t/g' |sed -e 's/\\tunresolved//g' | sed -e '1 s/^/#/' "
+        "> {output} && "
+        "join {input.profile} {input.bin_summary} -t $'\\t' | cut -f 1,3,4,6,7-19 | sed 's/final.assembly: //g' > {params.bin_summary_tmp} && "
+        "mv {params.bin_summary_tmp} {input.bin_summary}"
+
+rule krona_import_text_bin_tax:
+    input:
+        expand(rules.join_profiles_tax.output, sample=samples)
+    output:
+        METASPADES + "binTAXplots_perSample.html"
+    shell:
+        "ktImportText {input} -o {output}"
+
+rule make_biom:
+    input:
+        profiles=expand(rules.checkm_profile.output, sample=samples),
+        bin_tax_files=expand(rules.checkm_qa.output.bin_tax, sample=samples)
+    params:
+        map_file=config["map_file"],
+        TAXCOL = "Taxonomy (contained)",
+        PROFCOL = "final.assembly: mapped reads"
+    output:
+        BIOM_FILE
+    message: """rule {rule}
+    Making biom file from '{params.TAXCOL}' column in output of checkm tree_qa (bin_TAX), 
+    '{params.PROFCOL}' column in checkm profiles, and metadata.
+    metadata: {params.map_file}
+    input: {input}
+    output: {output}
+    jobid: {jobid}"""
+    run:
+        make_biom_file(str(rules.checkm_profile.output),
+                       str(rules.checkm_qa.output.bin_tax),
+                       samples.keys(),
+                       params.map_file,
+                       str(output), params.TAXCOL, params.PROFCOL)
+        
+rule checkm_plots:
+    input:
+        bins=rules.metabat2_run.output, # need for BINS
+        binqc=rules.checkm_lineage_wf.output # need for BINQC
+    params:
+        ftype="fa",
+        binqc=BINQC,
+        bins=BINS,
+        out=QC_PLOTS
+    output:
+        # Something to signal this rule is completed
+        QC_PLOTS + "checkm_plots.done"
+    shell:
+        "{{ checkm coding_plot --image_type pdf  -x {params.ftype} {params.binqc} {params.bins} {params.out} 95 || true; }} && "
+        "{{ checkm marker_plot --image_type pdf  -x {params.ftype} --dpi 600 {params.binqc} {params.bins} {params.out} || true; }} && "
+        "{{ checkm nx_plot --image_type pdf  -x {params.ftype} {params.bins} {params.out} || true; }} && "
+        "touch {output}"
+
+onsuccess:
+    shell(clean_output() + handle_TED())
+
+onerror:
+    shell(clean_output() + handle_TED())

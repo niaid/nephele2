@@ -1,0 +1,5 @@
+PIPELINE_PATH = "/usr/local/src/nephele2/pipelines/wgsa/"
+SNAKEFILE_PATH = PIPELINE_PATH + "Snakefile"
+OUTPUT_DIAGRAM_PATH = PIPELINE_PATH + "WGSA_output_diagram.pdf"
+TED_FILE_NAME = "TED.tar.gz"
+BIOMFILE = "all_samples_mapped_reads.biom"

@@ -4,7 +4,7 @@
 \alias{checktrimfiles}
 \title{Check files after filterAndTrim}
 \source{
-\href{../R/computation.R#L207}{computation.R}
+\href{../R/computation.R#L83}{computation.R}
 }
 \usage{
 checktrimfiles(A, filt.dir, trimlist)

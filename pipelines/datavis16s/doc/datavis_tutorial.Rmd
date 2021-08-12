@@ -66,6 +66,6 @@ This will show a column with the taxonomic level annotations for the heatmap.
 
 ### Here are some example visualization files <span><a class="glyphicon glyphicon-download-alt" href="{{ download_url }}" target="_blank" rel="noopener noreferrer"></a></span> {#example-files}
 
-These data are from a 2018 publication in Journal of Experimental Medicine entitled "Contextual control of skin immunity and inflammation by Corynebacterium" ([http://jem.rupress.org/content/early/2018/01/30/jem.20171079.long](http://jem.rupress.org/content/early/2018/01/30/jem.20171079.long){target="_blank" rel="noopener noreferrer"}).
+These data are from a 2018 publication in Journal of Experimental Medicine entitled "Contextual control of skin immunity and inflammation by Corynebacterium" ([https://doi.org/10.1084/jem.20171079](https://doi.org/10.1084/jem.20171079){target="_blank" rel="noopener noreferrer"}).
 
 {% endif %}

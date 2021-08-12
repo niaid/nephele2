@@ -1,0 +1,80 @@
+include: "utils.smk"
+
+PICRUST2_PATH = "/usr/local/src/picrust2/"
+PICRUST2_PIPELINE_SCRIPT = "python3 " + PICRUST2_PATH + "scripts/picrust2_pipeline.py"
+PICRUST2_ADD_DESC_SCRIPT = "python3 " + PICRUST2_PATH + "scripts/add_descriptions.py"
+
+
+onstart:
+    shell(
+    """
+    set +o pipefail
+    echo "Dependencies:"
+    {PICRUST2_PIPELINE_SCRIPT} --version
+    {PICRUST2_ADD_DESC_SCRIPT} --version
+    Rscript -e 'packageDescription("morpheus", fields = c("Version"))' | awk '{{print "morpheus version:", $2}}'
+    """)
+
+
+rule all:
+    input:
+        config["output_dir"] + "heatmap.html"
+
+
+"""
+Need to rm the output_dir before running Picrust2 because Snakemake automatically create the output folder.
+However, Picrust2 does not work if output folder already exists.
+"""
+rule picrust2_pipeline:
+    input:
+        fasta=config["fasta_fp"],
+        biom=config["biom_fp"]
+    params:
+        max_nsti=config["max_nsti"],
+        min_reads=config["min_reads"],
+        min_samples=config["min_samples"],
+        script_path=PICRUST2_PIPELINE_SCRIPT
+    threads: config["num_cpus"]
+    output:
+        EC_metagenome_out=config["output_dir"] + "EC_metagenome_out/pred_metagenome_unstrat.tsv.gz",
+        KO_metagenome_out=config["output_dir"] + "KO_metagenome_out/pred_metagenome_unstrat.tsv.gz",
+        pathways_out=config["output_dir"] + "pathways_out/path_abun_unstrat.tsv.gz"
+    run:
+        shell(picrust2_pipeline_cmd())
+
+
+rule add_descriptions:
+    input:
+        EC_metagenome_out=rules.picrust2_pipeline.output.EC_metagenome_out,
+        KO_metagenome_out=rules.picrust2_pipeline.output.KO_metagenome_out,
+        pathways_out=rules.picrust2_pipeline.output.pathways_out
+    params:
+        script_path=PICRUST2_ADD_DESC_SCRIPT
+    output:
+        EC_metagenome_descrip_out=config["output_dir"] + "EC_metagenome_out/pred_metagenome_unstrat_descrip.tsv.gz",
+        KO_metagenome_descrip_out=config["output_dir"] + "KO_metagenome_out/pred_metagenome_unstrat_descrip.tsv.gz",
+        pathways_descrip_out=config["output_dir"] + "pathways_out/path_abun_unstrat_descrip.tsv.gz"
+    threads: config["num_cpus"]
+    shell:
+        "{params.script_path} -i {input.EC_metagenome_out} -m EC -o {output.EC_metagenome_descrip_out}; "
+        "{params.script_path} -i {input.KO_metagenome_out} -m KO -o {output.KO_metagenome_descrip_out}; "
+        "{params.script_path} -i {input.pathways_out} -m METACYC -o {output.pathways_descrip_out};"
+
+
+rule decompress_gz:
+    input:
+        rules.add_descriptions.output.pathways_descrip_out
+    output:
+        temp(config["output_dir"] + "pathways_out/path_abun_unstrat_descrip.tsv")
+    shell:
+        "gzip -dk {input}"
+
+
+rule create_heatmap:
+    input:
+        rules.decompress_gz.output,
+        config["map_file"]
+    output:
+        config["output_dir"] + "heatmap.html"
+    script:
+        "heatmap_generator.R"

@@ -33,7 +33,7 @@ Usage
 -  By default the pipeline runs in single end mode and does not run
    `StrainPhlAn <http://segatalab.cibio.unitn.it/tools/strainphlan/>`__
    .
--  User documentation [ `html for Nephele website <https://github.com/niaid/nephele2/tree/master/pipelines/bioBakery/biobakerywgs_pipeline.html>`__ ][
+-  User documentation [ `html for Nephele website <https://github.niaid.nih.gov/bcbb/nephele2/tree/master/pipelines/bioBakery/biobakerywgs_pipeline.html>`__ ][
    :doc:`sphinx <pipelines.biobakery.user_doc>` ] - contains language for the strainphlan
    user option
 
@@ -51,7 +51,7 @@ Paired end
 -  The SampleID can contain alphanumeric characters, dashes, and
    underscores. **No periods.**
 -  Test data set
-
+   s3://nephele-test-data/poorani_biobakery_datasets/paired_end.tar.gz
 
 Single End
 ~~~~~~~~~~
@@ -65,13 +65,16 @@ Single End
 -  The SampleID can contain alphanumeric characters, dashes, and
    underscores. **No periods.**
 -  Test data set
-
+   s3://nephele-test-data/poorani_biobakery_datasets/single_end.tar.gz
 
 Installation
 ------------
 
 -  Development was done using the `biobakery workflows docker
    image <https://bitbucket.org/biobakery/biobakery/wiki/biobakery_workflows#rst-header-install-with-docker>`__
+
+   -  There are some notes of how Poorani set things up
+      `here <https://github.niaid.nih.gov/bcbb/nephele2/blob/master/pipelines/bioBakery/bbdocker.md>`__
 
 -  The docker image environment can be replicated by installing the
    `biobakery workflows with
@@ -91,3 +94,4 @@ Installation
       ``$BIOBAKERY_WORKFLOWS_DATABASES`` env variable, see `Install
       databases <https://bitbucket.org/biobakery/biobakery_workflows/wiki/Home#!installation>`__
    -  The databases are quite large uncompressed ~30G
+
