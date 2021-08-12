@@ -74,4 +74,4 @@ Quality Trimming:
 --avg_qual int                   **Average quality**: Drop the read if the average quality across the entire read is below 
                                  the specified level. (default: 0)
 
-.. _qc_reads.sh: https://github.com/niaid/nephele2/blob/master/pipelines/QC_reads/qc_reads.sh
+.. _qc_reads.sh: https://github.niaid.nih.gov/bcbb/nephele2/blob/next_release/pipelines/QC_reads/qc_reads.sh

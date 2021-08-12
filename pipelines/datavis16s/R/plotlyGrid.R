@@ -12,7 +12,7 @@
 #' @param outlib (Optional) name of external lib directory for non-selfcontained html.
 #' Useful for multiple graphs sharing the same lib.
 #'
-#' @importFrom htmlwidgets prependContent saveWidget
+#' @importFrom htmlwidgets prependContent appendContent saveWidget
 #' @importFrom plotly plotly_data plotly_build ggplotly
 #'
 #' @return html plot is saved to filename. external libraries are saved to outlib in same directory as filename.
@@ -40,8 +40,7 @@ plotlyGrid <- function(pplot, filename, data=NULL, title=NULL, outlib="lib") {
   }
 
   list2env(gridCode(data), envir=environment())
-
-  pp <- htmlwidgets::appendContent(pp, html)
+  pp <- htmlwidgets::prependContent(pp, html)
   pp <- htmlwidgets::appendContent(pp,javascript)
 
   if (is.null(title)) {
@@ -52,56 +51,10 @@ plotlyGrid <- function(pplot, filename, data=NULL, title=NULL, outlib="lib") {
   outfile <- file.path(tools::file_path_as_absolute(dirname(filename)), basename(filename))
   outlib <- file.path(dirname(outfile), basename(outlib))
   logoutput(paste("Saving plot to", outfile))
-  plotlywidget <- plotly::config(pp,  cloud=T, edits = list(titleText=T, legendText=T, legendPosition=T, axisTitleText=T))
-  saveWidget(plotlywidget, file=outfile , selfcontained = FALSE, title=title, libdir=outlib)
-  invisible(plotlywidget)
-}
-
-#' @title Add Plotly data export to plain html
-#'
-#' @description \code{htmlGrid} takes in an html tag object.
-#'
-#' @param ht html tagList
-#' @param jquery should we load jquery
-#' @param styletags html object with style tags for the tagList.
-#'
-#' @importFrom htmltools tagList tags
-#' @importFrom rmarkdown html_dependency_jquery
-#'
-#' @details If jquery is needed, we use jquery-1.11.3 from the rmarkdown library.  We also use
-#'  shiny's bootstrap-3.3.7 css to style the text elements.
-#'
-#' @rdname plotlyGrid
-#'
-htmlGrid <- function(ht, filename, data, jquery = FALSE, title=NULL, outlib="lib", styletags=NULL) {
-
-  list2env(gridCode(data), envir=environment())
-  tl <- tagList(javascript, ht)
-
-  if (jquery) {
-    jq <- html_dependency_jquery()
-    tl <- htmltools::attachDependencies(tl, jq, append=TRUE)
-  }
-
-  mc <- shiny::bootstrapLib()
-  mc <- htmltools::htmlDependency("bootstrap-css", version=mc$version, src=mc$src, stylesheet = mc$stylesheet, all_files = F)
-#  mc <- htmltools::htmlDependency("bootstrap-css", "3.3.7", c(file=file.path(find.package("shiny"), "www/shared/bootstrap/css")), stylesheet = "bootstrap.min.css", all_files = F)
-  tl <- htmltools::attachDependencies(tl, mc, append=TRUE)
-  if (!is.null(title)) {
-    tl <- tags$div(class="container-fluid", style="max-width:1200px", tags$h2(title), tags$p(html), tl)
-  } else {
-    tl <- tags$div(class="container-fluid", tags$p(html), tl)
-  }
-
-  if (!is.null(styletags)) {
-    tl <- tagList(styletags, tl)
-  }
-
-  outfile <- file.path(tools::file_path_as_absolute(dirname(filename)), basename(filename))
-  outlib <- file.path(dirname(outfile), basename(outlib))
-
-  logoutput(paste("Saving plot to", outfile))
-  htmltools::save_html(tl, file= outfile, lib=outlib)
+  pp <- plotly::config(pp,  cloud=T, edits = list(titleText=T, legendText=T, legendPosition=T, axisTitleText=T))
+  pp$sizingPolicy$padding <- 40
+  saveWidget(pp, file=outfile , selfcontained = FALSE, title=title, libdir=outlib)
+  invisible(pp)
 }
 
 
@@ -130,7 +83,8 @@ gridCode <- function(data) {
   names(ll) <- nn
   ll <- jsonlite::toJSON(ll)
 
-  html <- HTML(text = '<a href=\"#\" id=\"plotly-data-export\" target=\"_blank\" style=\"font-family:\'Open Sans\',sans-serif;\">Export Data to Plotly</a>')
+  html <- HTML(text = '<div id=\"plotly-data-link\" style=\"width: 100%; height: 40px;\"> <a href=\"#\" id=\"plotly-data-export\" target=\"_blank\" style=\"font-family:\'Open Sans\',sans-serif;\">Export Data to Plotly</a> </div>')
+
 
   javascript <- HTML(paste('<script>',
                            'function getPlotlyGridData(){',
@@ -176,6 +130,7 @@ save_fillhtml <- function (html, file, background = "white", libdir = "lib", bod
   on.exit(setwd(oldwd), add = TRUE)
   rendered <- htmltools::renderTags(html)
   deps <- lapply(rendered$dependencies, function(dep) {
+    dep$all_files <- FALSE
     dep <- htmltools::copyDependencyToDir(dep, libdir, FALSE)
     dep <- htmltools::makeDependencyRelative(dep, dir, FALSE)
     dep

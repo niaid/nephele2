@@ -1,76 +1,3 @@
-#' dada2nephele: dada2 package for nephele2
-#'
-#'
-#' @docType package
-#' @name dada2nephele
-#'
-#' @import dada2
-#'
-NULL
-
-#' global constants
-#'
-#' @rdname onLoad
-#' @description Set global constants to programmatically write documentation.  See [user doc](user_doc.md)
-#' for more complete descriptions.  See examples for the actual values.
-#'
-#' @note The dparams option is set to be a list of the individual values as follows:
-#' \describe{
-#'   \item{maxEE}{parameter for dada2::filterAndTrim}
-#'   \item{truncQ}{parameter for dada2::filterAndTrim}
-#'   \item{trimLeft}{parameter for dada2::filterAndTrim}
-#'   \item{nbases}{parameter for dada2::learnErrors}
-#'   \item{minOverlap}{parameter for dada2::mergePairs}
-#'   \item{maxMismatch}{parameter for dada2::mergePairs}
-#'   \item{trimOverhang}{parameter for dada2::mergePairs}
-#'   \item{justConcatenate}{parameter for dada2::mergePairs}
-#'   \item{outputfasta}{filename for sequence variant FASTA file}
-#'   \item{minBoot}{parameter for dada2::assignTaxonomy}
-#'   \item{biomfile}{filename for biom file based on output of dada2::assignTaxonomy}
-#'   \item{speciesbiomfile}{filename for biom file based on output of dada2::addSpecies}
-#'   \item{otutable}{filename for tab delimited otu table based on output of dada2::addSpecies}
-#'   \item{biomsummary}{filename for text file containing summary of OTU table}
-#'   \item{refdb}{database filename}
-#'   \item{refdb_species}{species database filename}
-#'   \item{min_seq_length}{minimum length of denoised sequences to be used for taxonomic assignment.}
-#'   \item{taxmethod}{method of taxonomic assignment}
-#'   \item{taxtable}{filename for taxonomy table output}
-#' }
-#'
-#' @examples
-#' getOption("dparams")
-#'
-#' @source [onLoad:computation.R](../R/computation.R#L43)
-#'
-.onLoad <- function(libname, pkgname) {
-  ## left trim parameter
-  # trims <- data.frame(region=c("V1V3", "V4"), forward=c(20,19), reverse=c(17,20))
-  # options(trims=trims)
-  dparams <- list(nbases=1e8,
-                  #dparams <- list(nbases=10000,
-                  maxEE=5,
-                  truncQ=4,
-                  truncLen=0,
-                  minOverlap=12,
-                  maxMismatch=0,
-                  justConcatenate=FALSE,
-                  minBoot=80,
-                  trimLeft=20,
-                  trimOverhang=FALSE,
-                  outputfasta='seq.fasta',
-                  biomfile='taxa.biom',
-                  speciesbiomfile='taxa_species.biom',
-                  otutable='OTU_table.txt',
-                  biomsummary="otu_summary_table.txt",
-                  refdb='dada2_silva_v132/silva_nr_v132_train_set.fa',
-                  refdb_species='dada2_silva_v132/silva_species_assignment_v132.fa',
-                  min_seq_length=75,
-                  taxmethod='rdp',
-                  taxtable='taxonomy_table.txt')
-  options(dparams=dparams)
-}
-
-
 #' write log output
 #'
 #' @description Prints time along with log message.
@@ -80,7 +7,7 @@ NULL
 #' @param aline Number of blank lines to follow output.
 #' @param type  String.  Must be one of "WARNING", or "ERROR" or NULL.
 #'
-#' @source [computation.R](../R/computation.R#L83)
+#' @source [computation.R](../R/computation.R#L10)
 #'
 logoutput <- function(c, bline = 0, aline = 0, type=NULL) {
 
@@ -110,7 +37,7 @@ logoutput <- function(c, bline = 0, aline = 0, type=NULL) {
 #'
 #' @return cmd will be evaluated in the parent environment, so return values in cmd will be there.
 #'
-#' @source [computation.R](../R/computation.R#L113)
+#' @source [computation.R](../R/computation.R#L40)
 #'
 run_cmd <- function(cmd, step=NULL, bline=0, aline=0, w2e=NA, log=T) {
    error_function <- function(e, logstack=T) {
@@ -143,57 +70,6 @@ run_cmd <- function(cmd, step=NULL, bline=0, aline=0, w2e=NA, log=T) {
       })
 }
 
-#' dada2output
-#'
-#' @description Utilities to convert dada2 sequence tables to output files.
-#' @name dada2output
-#'
-#' @param otu OTU table.
-#' @param tax Taxonomy table
-#' @param metadata Metadata table (Optional).
-#' @param filename Output filename
-#'
-#' @source [computation.R](../R/computation.R#L156)
-#'
-NULL
-
-#' @description dada2biom makes valid biom object.
-#'
-#' @rdname dada2output
-#'
-#' @return dada2biom returns a biom object.
-#'
-#'
-dada2biom <- function(otu, tax, metadata=NULL) {
-  tax[is.na(tax)] <- "none"
-  colnames(otu) <- paste0("seq", 1:ncol(otu))
-  row.names(tax) <- paste0("seq", 1:nrow(tax))
-  return(make_biom(t(otu), sample_metadata = metadata, observation_metadata = tax))
-}
-
-
-#' @rdname dada2output
-#'
-#' @description dada2text writes tab separated OTU table to filename.
-#'
-dada2text <- function(otu, tax, filename) {
-  colnames(otu) <- paste0("seq", 1:ncol(otu))
-  row.names(tax) <- paste0("seq", 1:nrow(tax))
-  otutable <- cbind(t(otu), tax)
-  write.table(otutable, file = filename, sep = "\t", quote = FALSE, na = "", col.names = NA)
-}
-
-#' @rdname dada2output
-#'
-#' @description dada2output writes tab separated taxonomy file in format
-#' suitable for importing into qiime2
-#'
-dada2taxonomy <- function(tax, filename) {
-  tax[is.na(tax)] <- "none"
-  newtax <- data.frame(`Feature ID` = paste0("seq", 1:nrow(tax)), check.names = FALSE)
-  newtax$Taxon <- apply(tax, 1, function(x) paste(x, collapse="; "))
-  write.table(newtax, file=filename, sep = "\t", quote=FALSE, na="", row.names = F)
-}
 
 #' Check files after filterAndTrim
 #'
@@ -204,7 +80,7 @@ dada2taxonomy <- function(tax, filename) {
 #' @return list of `A`, `trimr1`, and maybe `trimr2` with missing files/rows removed.
 #' Stops on error if no trimmed files exist.
 #'
-#' @source [computation.R](../R/computation.R#L207)
+#' @source [computation.R](../R/computation.R#L83)
 #' @md
 #'
 checktrimfiles <- function(A, filt.dir, trimlist) {
@@ -355,6 +231,7 @@ decipher_assign <- function(refdb, seqtab, nthread) {
 #' @param band_size Integer.  Band size for [dada2::dada], [dada2::setDadaOpt]
 #' @param homopolymer_gap_penalty Integer. for [dada2::dada] & [dada2::setDadaOpt]. cost of gaps in homopolymer
 #' regions (>=3 repeated bases)
+#' @param plotquality Logical.  Should quality plots be made?
 #'
 #' @importFrom foreach foreach "%do%"
 #' @importFrom ggplot2 ggsave
@@ -363,7 +240,7 @@ decipher_assign <- function(refdb, seqtab, nthread) {
 #' @importFrom stringr str_match
 #' @importFrom methods show
 #'
-#' @source [dada2compute: computation.R](../R/computation.R#L366)
+#' @source [computation.R](../R/computation.R#L243)
 #'
 #' @export
 #'
@@ -385,7 +262,8 @@ dada2compute <- function(datadir,
                          justConcatenate=getOption('dparams')$justConcatenate,
                          taxmethod = getOption('dparams')$taxmethod,
                          band_size = NULL,
-                         homopolymer_gap_penalty = NULL) {
+                         homopolymer_gap_penalty = NULL,
+                         plotquality=T) {
 
 
   ## Output session Info
@@ -407,8 +285,7 @@ dada2compute <- function(datadir,
   # dada options ------------------------------------------------------------
   ## Set dada parameters for Ion Torrent data
   if (!is.null(band_size)) setDadaOpt(BAND_SIZE = as.numeric(band_size))
-  ## setDadaOpt fixed in newer version of dada2 but not what we are using
-  if (!is.null(homopolymer_gap_penalty)) assign("HOMOPOLYMER_GAP_PENALTY", as.numeric(homopolymer_gap_penalty), envir = dada2:::dada_opts)
+  if (!is.null(homopolymer_gap_penalty)) setDadaOpt(HOMOPOLYMER_GAP_PENALTY = as.numeric(homopolymer_gap_penalty))
   ## print default dada2 options
   logoutput("Printing dada algorithm options.")
   print(format(getDadaOpt(), scientific = 0), quote = F)
@@ -433,33 +310,35 @@ dada2compute <- function(datadir,
 
 
 # Plot quality profile ----------------------------------------------------
-  if (length(readslist$R1) >= 100) {
-    logoutput("Number of samples is >= 100, so we will plot the quality profiles in aggregate", 1)
-    cmd <- "pqp <- lapply(readslist, FUN = function(x) { ppp <- plotQualityProfile(file.path(datadir, x), aggregate=T); ppp$facet$params$ncol <- 4; ppp })"
-    qplotheight <- 8
-  } else {
-    writeLines("")
-    cmd <- "pqp <- lapply(readslist, FUN = function(x) { ppp <- plotQualityProfile(file.path(datadir, x)); ppp$facet$params$ncol <- 4; ppp })"
-    qplotheight <- min(2.5*ceiling(length(readslist[[1]])/4), 49)
+  if (plotquality) {
+      if (length(readslist$R1) >= 100) {
+          logoutput("Number of samples is >= 100, so we will plot the quality profiles in aggregate", 1)
+          cmd <- "pqp <- lapply(readslist, FUN = function(x) { ppp <- plotQualityProfile(file.path(datadir, x), aggregate=T); ppp$facet$params$ncol <- 4; ppp })"
+          qplotheight <- 8
+      } else {
+          writeLines("")
+          cmd <- "pqp <- lapply(readslist, FUN = function(x) { ppp <- plotQualityProfile(file.path(datadir, x)); ppp$facet$params$ncol <- 4; ppp })"
+          qplotheight <- min(2.5*ceiling(length(readslist[[1]])/4), 49)
+      }
+      logoutput(cmd)
+
+
+      ## Wrap quality profile plotting in try statement, so entire pipeline does not fail, if this step fails
+      checkpqploterror <- try( {
+          eval(parse(text=cmd))
+          logoutput("Saving quality profile plots to quality_Profile_R*.pdf")
+
+          lapply(nameslist, function(x) ggsave(filename=file.path(outdir, paste0("qualityProfile_", x, ".pdf")), plot = pqp[[x]], width=8, height=qplotheight, units="in"))
+
+      })
   }
-  logoutput(cmd)
-
-
-  ## Wrap quality profile plotting in try statement, so entire pipeline does not fail, if this step fails
-  checkpqploterror <- try( {
-    eval(parse(text=cmd))
-    logoutput("Saving quality profile plots to quality_Profile_R*.pdf")
-
-    lapply(nameslist, function(x) ggsave(filename=file.path(outdir, paste0("qualityProfile_", x, ".pdf")), plot = pqp[[x]], width=8, height=qplotheight, units="in"))
-
-  })
 
 
 # Filter and trim ---------------------------------------------------------
   trimlist <- lapply(readslist, function(y) sapply(y, FUN = function(x) gsub(paste0(".", tools::file_ext(x)), "_trim.fastq.gz", x), USE.NAMES = FALSE))
 
   if (data_type == "PE") {
-    cmd <- paste0("out <- filterAndTrim(fwd=file.path(datadir,readslist$R1), filt=file.path(filt.dir,trimlist$R1),rev=file.path(datadir,readslist$R2), filt.rev=file.path(filt.dir,trimlist$R2),  maxEE=",maxEE,", trimLeft=",deparse(trimLeft),", truncQ=", truncQ, ", truncLen = ",deparse(truncLen) ,", rm.phix=TRUE, compress=TRUE, verbose=TRUE, multithread=nthread, minLen=50)")
+    cmd <- paste0("out <- filterAndTrim(fwd=file.path(datadir,readslist$R1), filt=file.path(filt.dir,trimlist$R1),rev=file.path(datadir,readslist$R2), filt.rev=file.path(filt.dir,trimlist$R2),  maxEE=", deparse(maxEE),", trimLeft=",deparse(trimLeft),", truncQ=", truncQ, ", truncLen = ",deparse(truncLen) ,", rm.phix=TRUE, compress=TRUE, verbose=TRUE, multithread=nthread, minLen=50)")
   } else {
     cmd <- paste0("out <- filterAndTrim(fwd=file.path(datadir,readslist$R1), filt=file.path(filt.dir,trimlist$R1), maxEE=",maxEE,", trimLeft=",deparse(trimLeft),", truncQ=",truncQ,", truncLen=", deparse(truncLen),", rm.phix=TRUE, compress=TRUE, verbose=TRUE, multithread=nthread, minLen=50)")
   }
@@ -481,7 +360,7 @@ dada2compute <- function(datadir,
 
   lapply(nameslist, function(x)   ggsave(filename=file.path(outdir, paste0("errorRate_", x, ".pdf")), pe[[x]]))
 
-  run_cmd("lapply(nameslist, function(x) paste(x, dada2:::checkConvergence(err[[x]])) )", "dada2:::checkConvergence", bline=1)
+#  run_cmd("lapply(nameslist, function(x) paste(c(x, dada2:::checkConvergence(err[[x]])), collapse =' ') )", "dada2:::checkConvergence", bline=1)
 
   trimlist <- lapply(trimlist, function(x) {
     names(x) <- A$SampleID
@@ -506,7 +385,7 @@ dada2compute <- function(datadir,
 
     if (data_type == "PE") {
       cmd <- paste0("mergePairs(dd$R1, derep$R1, dd$R2, derep$R2, verbose=TRUE, minOverlap=",dparams$minOverlap,", trimOverhang=", trimOverhang,", maxMismatch=", maxMismatch, ", justConcatenate=", justConcatenate, ")")
-      sv <- run_cmd(cmd, "dada2::mergePairs")
+      sv <- run_cmd(cmd, "dada2::mergePairs", bline=1)
       list(sv=sv, denoisedF=getN(dd$R1), denoisedR=getN(dd$R2), merged=getN(sv))
     } else {
       list(sv=dd$R1, denoisedF=getN(dd$R1), denoisedR=NA, merged=NA)
@@ -545,15 +424,16 @@ dada2compute <- function(datadir,
 
 
   ## Write sequence fasta file
+  run_cmd('rep_seq_names <- make_seq_names(seqtab)')
   seqs <- dimnames(seqtab)[[2]]
-  names(seqs) <- paste0("seq", 1:length(seqs))
+  names(seqs) <- replace_names(seqs, rep_seq_names)
   cmd <- paste0('writeFasta(seqs, file=file.path(outdir, "', dparams$outputfasta,'"))')
   run_cmd(cmd)
 
 
 # Taxonomic assignment ----------------------------------------------------
   logoutput(paste('Taxonomic assignment with', taxmethod), 1)
-  otutab <- 'taxa'
+  taxtab <- 'taxa'
   if (tolower(taxmethod) == 'idtaxa') {
     taxa <- decipher_assign(refdb = refdb, seqtab = seqtab, nthread=nthread)
     ## OTU table will only go up to genus
@@ -565,7 +445,7 @@ dada2compute <- function(datadir,
 
     if (!is.null(refdb_species)) {
       ## OTU table will have species info
-      otutab <- 'taxa.species'
+      taxtab <- 'taxa.species'
 
       if (!justConcatenate | data_type == "SE") {
         run_cmd("taxa.species <- addSpecies(taxa, refdb_species, verbose=TRUE, tryRC=TRUE, n=4000)", "dada2::addSpecies", bline=1)
@@ -585,22 +465,20 @@ dada2compute <- function(datadir,
     }
   }
 
-  ## Write biom file
-  cmd <- paste0('write_biom(dada2biom(seqtab, taxa), file.path(outdir, "',dparams$biomfile,'"))')
-  run_cmd(cmd, bline=1)
 
-  ## Write species biom file
-  if (otutab == "taxa.species") {
-    cmd <- paste0('write_biom(dada2biom(seqtab, taxa.species), file.path(outdir, "',dparams$speciesbiomfile,'"))')
-    run_cmd(cmd, bline=1)
-  }
+# Write output files ------------------------------------------------------
+  ## Write biom file
+  run_cmd('otu_tab <- seqtab; colnames(otu_tab) <- replace_names(colnames(otu_tab), rep_seq_names)', bline=1)
+  run_cmd(paste0('row.names(', taxtab, ') <- replace_names(row.names(', taxtab, '), rep_seq_names)'))
+  cmd <- paste0('write_biom(dada2biom(otu_tab,' ,taxtab,', metadata = A), file.path(outdir, "',dparams$biomfile,'"))')
+  run_cmd(cmd)
 
   ## Write OTU table
-  cmd <- paste0('dada2text(seqtab, ', otutab,', file.path(outdir, "', dparams$otutable, '"))')
+  cmd <- paste0('dada2text(otu_tab, ', taxtab,', file.path(outdir, "', dparams$otutable, '"))')
   run_cmd(cmd)
 
   ## Write taxonomy table
-  cmd <-  paste0('dada2taxonomy(', otutab,', file.path(outdir, "', dparams$taxtable, '"))')
+  cmd <-  paste0('dada2taxonomy(', taxtab,', file.path(outdir, "', dparams$taxtable, '"))')
   run_cmd(cmd)
 
   ## run garbage collection just in case
@@ -632,13 +510,13 @@ dada2compute <- function(datadir,
 #' @return \code{trycomputewrapper} returns 0 if \code{dada2compute} succeeds and stops on error.
 #' In rpy2, it will throw \code{rpy2.rinterface.RRuntimeError}.
 #'
-#' @source [trycomputewrapper: computation.R](../R/computation.R#L635)
+#' @source [computation.R](../R/computation.R#L513)
 #'
 #' @export
 #'
 trycomputewrapper <- function(datadir, outdir, mapfile, logfilename="logfile.txt", ...) {
   oldopts <- options()
-  options(stringsAsFactors = FALSE, scipen = 999, warn=1, showErrorCalls=TRUE, showNCalls=500, digits.secs = 3)
+  options(stringsAsFactors = FALSE, scipen = 999, warn=1, showErrorCalls=TRUE, showNCalls=500, digits.secs = 3, echo=F)
 
   # dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
   logfile <- file(logfilename, open = "at")

@@ -1,5 +1,8 @@
 Package 'dada2nephele'
-=======================
+================
+Poorani Subramanian
+
+July 28, 2021
 
 
 ```
@@ -8,11 +11,12 @@ Package: dada2nephele
 Title: dada2 package for nephele2
 Version: 0.1.1
 Authors@R (parsed):
-    * OCICB NIAID/NIH <nephelesupport@nih.gov> [aut, cre]
+    * Poorani Subramanian <poorani.subramanian@nih.gov> [aut, cre]
 Description: Implements the DADA2 pipeline for use in the Nephele 2.x
     environment with the python library rpy2.
+License: file LICENSE
 URL:
-    https://github.com/niaid/nephele2/tree/master/pipelines/DADA2/dada2nephele
+    https://github.niaid.nih.gov/bcbb/nephele2/tree/master/pipelines/DADA2/dada2nephele
 Depends:
     methods
 Imports:
@@ -20,6 +24,7 @@ Imports:
     Biostrings,
     dada2,
     DECIPHER,
+    digest,
     foreach,
     ggplot2,
     jsonlite,
@@ -28,26 +33,34 @@ Imports:
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
-Roxygen: list(old_usage = FALSE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 ```
 
 
 ##  R topics documented:
-  - [Exported](#exported)
-      - [dada2compute](#dada2compute)
-  - [Internal](#internal)
-      - [checktrimfiles](#checktrimfiles)
-      - [comb](#comb)
-      - [dada2nephele-package](#dada2nephele-package)
-      - [dada2output](#dada2output)
-      - [decipher\_assign](#decipher_assign)
-      - [getN](#getn)
-      - [logoutput](#logoutput)
-      - [make\_biom](#make_biom)
-      - [.onLoad](#onload)
-      - [run\_cmd](#run_cmd)
-      - [write\_biom](#write_biom)
+-   [dada2nephele-package](#dada2nephele-package)
+-   [Exported](#exported)
+    -   [dada2compute](#dada2compute)
+-   [Internal](#internal)
+    -   [checktrimfiles](#checktrimfiles)
+    -   [comb](#comb)
+    -   [dada2output](#dada2output)
+    -   [decipher_assign](#decipher_assign)
+    -   [getN](#getn)
+    -   [logoutput](#logoutput)
+    -   [make_biom](#make_biom)
+    -   [make_seq_names](#make_seq_names)
+    -   [.onLoad](#onload)
+    -   [run_cmd](#run_cmd)
+    -   [write_biom](#write_biom)
+
+## dada2nephele-package
+
+dada2 pipeline for nephele2
+
+**Description**
+
+This package implements Nephele 2.x DADA2 pipeline.
 
 ## Exported
 
@@ -87,7 +100,8 @@ dada2compute(
   justConcatenate = getOption("dparams")$justConcatenate,
   taxmethod = getOption("dparams")$taxmethod,
   band_size = NULL,
-  homopolymer_gap_penalty = NULL
+  homopolymer_gap_penalty = NULL,
+  plotquality = T
 )
 trycomputewrapper(datadir, outdir, mapfile, logfilename = "logfile.txt", ...)
 ```
@@ -95,7 +109,7 @@ trycomputewrapper(datadir, outdir, mapfile, logfilename = "logfile.txt", ...)
 **Arguments**
 
 | Argument                  | Description                                                                                                                                                                                                                                                                                       |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|---------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `datadir`                 | Directory containing FASTQ files.                                                                                                                                                                                                                                                                 |
 | `outdir`                  | Output directory.                                                                                                                                                                                                                                                                                 |
 | `mapfile`                 | Mapping filename - needs to be tab separated and have, at minimum, SampleID, ForwardFastqFile, and ReverseFastqFile columns.                                                                                                                                                                      |
@@ -114,7 +128,8 @@ trycomputewrapper(datadir, outdir, mapfile, logfilename = "logfile.txt", ...)
 | `justConcatenate`         | Logical. Should PE reads be concatenated instead of overlapped and merged.                                                                                                                                                                                                                        |
 | `taxmethod`               | method for taxonomic assignment. either idtaxa or rdp.                                                                                                                                                                                                                                            |
 | `band_size`               | Integer. Band size for [dada2::dada](#dada2::dada) , [dada2::setDadaOpt](#dada2::setdadaopt)                                                                                                                                                                                                      |
-| `homopolymer_gap_penalty` | Integer. for [dada2::dada](#dada2::dada) & [dada2::setDadaOpt](#dada2::setdadaopt) . cost of gaps in homopolymer regions (\>=3 repeated bases)                                                                                                                                                    |
+| `homopolymer_gap_penalty` | Integer. for [dada2::dada](#dada2::dada) & [dada2::setDadaOpt](#dada2::setdadaopt) . cost of gaps in homopolymer regions (>=3 repeated bases)                                                                                                                                                     |
+| `plotquality`             | Logical. Should quality plots be made?                                                                                                                                                                                                                                                            |
 | `logfilename`             | Log file name (full path).                                                                                                                                                                                                                                                                        |
 | `...`                     | parameters to pass to `dada2compute`                                                                                                                                                                                                                                                              |
 
@@ -125,9 +140,9 @@ error. In rpy2, it will throw `rpy2.rinterface.RRuntimeError` .
 
 **Source**
 
-[dada2compute: computation.R](../R/computation.R#L366)
+[computation.R](../R/computation.R#L243)
 
-[trycomputewrapper: computation.R](../R/computation.R#L635)
+[computation.R](../R/computation.R#L513)
 
 ## Internal
 
@@ -144,7 +159,7 @@ checktrimfiles(A, filt.dir, trimlist)
 **Arguments**
 
 | Argument   | Description                                 |
-| ---------- | ------------------------------------------- |
+|------------|---------------------------------------------|
 | `A`        | mapping data.frame                          |
 | `filt.dir` | filtered data directory                     |
 | `trimlist` | list of vectors, R1 and R2 of trimmed files |
@@ -156,7 +171,7 @@ removed. Stops on error if no trimmed files exist.
 
 **Source**
 
-[computation.R](../R/computation.R#L207)
+[computation.R](../R/computation.R#L83)
 
 ### comb
 
@@ -177,7 +192,7 @@ comb(x, ...)
 **Arguments**
 
 | Argument | Description                                             |
-| -------- | ------------------------------------------------------- |
+|----------|---------------------------------------------------------|
 | `x`      | list of n items to append onto                          |
 | `...`    | individual lists of n items to append onto n lists in x |
 
@@ -201,13 +216,9 @@ oper <- foreach::foreach(i=1:5, .combine='comb', .multicombine=TRUE,
 list(i*2, i*3)
 }
 
-oper[[1]]
+oper[[1]] 
 ## End(Not run)
 ```
-
-### dada2nephele-package
-
-dada2nephele: dada2 package for nephele2
 
 ### dada2output
 
@@ -235,7 +246,7 @@ dada2taxonomy(tax, filename)
 **Arguments**
 
 | Argument   | Description                |
-| ---------- | -------------------------- |
+|------------|----------------------------|
 | `otu`      | OTU table.                 |
 | `tax`      | Taxonomy table             |
 | `metadata` | Metadata table (Optional). |
@@ -247,9 +258,9 @@ dada2biom returns a biom object.
 
 **Source**
 
-[computation.R](../R/computation.R#L156)
+[ioutils.R](../R/ioutils.R#L60)
 
-### decipher\_assign
+### decipher_assign
 
 Assign taxonomy using DECIPHER
 
@@ -262,7 +273,7 @@ decipher_assign(refdb, seqtab, nthread)
 **Arguments**
 
 | Argument  | Description                    |
-| --------- | ------------------------------ |
+|-----------|--------------------------------|
 | `refdb`   | reference database .RData file |
 | `seqtab`  | sequence table made by DADA2   |
 | `nthread` | number of processors to use    |
@@ -289,7 +300,7 @@ getN(x)
 **Arguments**
 
 | Argument | Description  |
-| -------- | ------------ |
+|----------|--------------|
 | `x`      | dada2 object |
 
 **Value**
@@ -313,7 +324,7 @@ logoutput(c, bline = 0, aline = 0, type = NULL)
 **Arguments**
 
 | Argument | Description                                           |
-| -------- | ----------------------------------------------------- |
+|----------|-------------------------------------------------------|
 | `c`      | String. Log message/command to print.                 |
 | `bline`  | Number of blank lines to precede output.              |
 | `aline`  | Number of blank lines to follow output.               |
@@ -321,9 +332,9 @@ logoutput(c, bline = 0, aline = 0, type = NULL)
 
 **Source**
 
-[computation.R](../R/computation.R#L83)
+[computation.R](../R/computation.R#L10)
 
-### make\_biom
+### make_biom
 
 Create a [biom-class](#biom-class) from [matrix-class](#matrix-class) or
 [data.frame](#dataframe) .
@@ -334,7 +345,7 @@ This function creates a valid instance of the [biom-class](#biom-class)
 from standard base-R objects like [matrix-class](#matrix-class) or
 [data.frame](#dataframe) . The object returned by this function is
 appropriate for writing to a `.biom` file using the
-[write\_biom](#writebiom) function. The sparse biom-format is not (yet)
+[write_biom](#writebiom) function. The sparse biom-format is not (yet)
 supported.
 
 **Usage**
@@ -353,10 +364,10 @@ make_biom(
 **Arguments**
 
 | Argument               | Description                                                                                                                                                                                                                                                                                                                                          |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `data`                 | (Required). [matrix-class](#matrix-class) or [data.frame](#dataframe) . A contingency table. Observations / features / OTUs / species are rows, samples / sites / libraries are columns.                                                                                                                                                             |
-| `sample_metadata`      | (Optional). A [matrix-class](#matrix-class) or [data.frame](#dataframe) with the number of rows equal to the number of samples in `data` . Sample covariates associated with the count data. This should look like the table returned by [sample\_metadata](#samplemetadata) on a valid instance of the [biom-class](#biom-class) .                  |
-| `observation_metadata` | (Optional). A [matrix-class](#matrix-class) or [data.frame](#dataframe) with the number of rows equal to the number of features / species / OTUs / genes in `data` . This should look like the table returned by [observation\_metadata](#observationmetadata) on a valid instance of the [biom-class](#biom-class) .                                |
+| `sample_metadata`      | (Optional). A [matrix-class](#matrix-class) or [data.frame](#dataframe) with the number of rows equal to the number of samples in `data` . Sample covariates associated with the count data. This should look like the table returned by [sample_metadata](#samplemetadata) on a valid instance of the [biom-class](#biom-class) .                   |
+| `observation_metadata` | (Optional). A [matrix-class](#matrix-class) or [data.frame](#dataframe) with the number of rows equal to the number of features / species / OTUs / genes in `data` . This should look like the table returned by [observation_metadata](#observationmetadata) on a valid instance of the [biom-class](#biom-class) .                                 |
 | `id`                   | (Optional). Character string. Identifier for the project.                                                                                                                                                                                                                                                                                            |
 | `matrix_element_type`  | (Optional). Character string. Either 'int' or 'float'                                                                                                                                                                                                                                                                                                |
 | `qiime_format`         | (Optional). Logical. biom-format requires that observation metadata be key, value pairs (or group, dataset for hd5). For QIIME, there is only one pair with key be set to "taxonomy," and the value must be the entire taxonomy table. If FALSE, each column of observation metadata will be a separate key (to be consistent with sample metadata). |
@@ -367,9 +378,53 @@ An object of [biom-class](#biom-class) .
 
 **Note**
 
-This code is forked from version 1.4 of the [biomformat R
-library](https://github.com/joey711/biomformat-oldfork) released under
-[GPL-2](https://www.r-project.org/Licenses/GPL-2) .
+This code is forked from version 1.5 of the [biomformat R
+library](https://github.com/joey711/biomformat-oldfork) .
+
+**Source**
+
+[make_biom in biomformat.R](../R/biomformat.R#L53)
+
+### make_seq_names
+
+ASV sequence names
+
+**Description**
+
+DADA2 uses the actual ASV sequences as names for sequence and taxonomy
+tables which is unwieldy for the output. We make simpler new names seq1,
+seq2, ...
+
+*make_seq_names* makes the new names
+
+*replace_names* takes in old names and returns new ones.
+
+**Usage**
+
+``` r
+make_seq_names(seqtab, type = "simple")
+replace_names(tabnames, seq_names)
+```
+
+**Arguments**
+
+| Argument    | Description                                                                                            |
+|-------------|--------------------------------------------------------------------------------------------------------|
+| `seqtab`    | OTU/DADA2 Sequence table                                                                               |
+| `type`      | one of: "simple" renaming seq1, seq2, ... or "md5" for hash like in QIIME 2                            |
+| `tabnames`  | character of original names                                                                            |
+| `seq_names` | named vector with elements being new names and names from `tabnames` , e.g. output of *make_seq_names* |
+
+**Value**
+
+*make_seq_names* returns named vector where elements are names and the
+names are the sequences
+
+*replace_names* returns (unnamed) vector of new names
+
+**Source**
+
+[ioutils.R](../R/ioutils.R#L18)
 
 ### .onLoad
 
@@ -392,30 +447,30 @@ actual values.
 The dparams option is set to be a list of the individual values as
 follows:
 
-  - `maxEE` parameter for dada2::filterAndTrim
-  - `truncQ` parameter for dada2::filterAndTrim
-  - `trimLeft` parameter for dada2::filterAndTrim
-  - `nbases` parameter for dada2::learnErrors
-  - `minOverlap` parameter for dada2::mergePairs
-  - `maxMismatch` parameter for dada2::mergePairs
-  - `trimOverhang` parameter for dada2::mergePairs
-  - `justConcatenate` parameter for dada2::mergePairs
-  - `outputfasta` filename for sequence variant FASTA file
-  - `minBoot` parameter for dada2::assignTaxonomy
-  - `biomfile` filename for biom file based on output of
-    dada2::assignTaxonomy
-  - `speciesbiomfile` filename for biom file based on output of
-    dada2::addSpecies
-  - `otutable` filename for tab delimited otu table based on output of
-    dada2::addSpecies
-  - `biomsummary` filename for text file containing summary of OTU
-    table
-  - `refdb` database filename
-  - `refdb_species` species database filename
-  - `min_seq_length` minimum length of denoised sequences to be used for
-    taxonomic assignment.
-  - `taxmethod` method of taxonomic assignment
-  - `taxtable` filename for taxonomy table output
+-   `maxEE` parameter for dada2::filterAndTrim  
+-   `truncQ` parameter for dada2::filterAndTrim  
+-   `trimLeft` parameter for dada2::filterAndTrim  
+-   `nbases` parameter for dada2::learnErrors  
+-   `minOverlap` parameter for dada2::mergePairs  
+-   `maxMismatch` parameter for dada2::mergePairs  
+-   `trimOverhang` parameter for dada2::mergePairs  
+-   `justConcatenate` parameter for dada2::mergePairs  
+-   `outputfasta` filename for sequence variant FASTA file  
+-   `minBoot` parameter for dada2::assignTaxonomy  
+-   `biomfile` filename for biom file based on output of
+    dada2::assignTaxonomy  
+-   `speciesbiomfile` filename for biom file based on output of
+    dada2::addSpecies  
+-   `otutable` filename for tab delimited otu table based on output of
+    dada2::addSpecies  
+-   `biomsummary` filename for text file containing summary of OTU
+    table  
+-   `refdb` database filename  
+-   `refdb_species` species database filename  
+-   `min_seq_length` minimum length of denoised sequences to be used for
+    taxonomic assignment.  
+-   `taxmethod` method of taxonomic assignment  
+-   `taxtable` filename for taxonomy table output
 
 **Examples**
 
@@ -425,69 +480,66 @@ getOption("dparams")
 
     ## $nbases
     ## [1] 100000000
-    ##
+    ## 
     ## $maxEE
     ## [1] 5
-    ##
+    ## 
     ## $truncQ
     ## [1] 4
-    ##
+    ## 
     ## $truncLen
     ## [1] 0
-    ##
+    ## 
     ## $minOverlap
     ## [1] 12
-    ##
+    ## 
     ## $maxMismatch
     ## [1] 0
-    ##
+    ## 
     ## $justConcatenate
     ## [1] FALSE
-    ##
+    ## 
     ## $minBoot
     ## [1] 80
-    ##
+    ## 
     ## $trimLeft
-    ## [1] 20
-    ##
+    ## [1] 0
+    ## 
     ## $trimOverhang
     ## [1] FALSE
-    ##
+    ## 
     ## $outputfasta
     ## [1] "seq.fasta"
-    ##
+    ## 
     ## $biomfile
     ## [1] "taxa.biom"
-    ##
-    ## $speciesbiomfile
-    ## [1] "taxa_species.biom"
-    ##
+    ## 
     ## $otutable
     ## [1] "OTU_table.txt"
-    ##
+    ## 
     ## $biomsummary
     ## [1] "otu_summary_table.txt"
-    ##
+    ## 
     ## $refdb
     ## [1] "dada2_silva_v132/silva_nr_v132_train_set.fa"
-    ##
+    ## 
     ## $refdb_species
     ## [1] "dada2_silva_v132/silva_species_assignment_v132.fa"
-    ##
+    ## 
     ## $min_seq_length
     ## [1] 75
-    ##
+    ## 
     ## $taxmethod
     ## [1] "rdp"
-    ##
+    ## 
     ## $taxtable
     ## [1] "taxonomy_table.txt"
 
 **Source**
 
-[onLoad:computation.R](../R/computation.R#L43)
+[onLoad:zzz.R](../R/zzz.R#L45)
 
-### run\_cmd
+### run_cmd
 
 wrap command in tryCatch
 
@@ -505,7 +557,7 @@ run_cmd(cmd, step = NULL, bline = 0, aline = 0, w2e = NA, log = T)
 **Arguments**
 
 | Argument | Description                                                                        |
-| -------- | ---------------------------------------------------------------------------------- |
+|----------|------------------------------------------------------------------------------------|
 | `cmd`    | Character. Command string.                                                         |
 | `step`   | (Optional). Step name to pass to error. Default will use cmd.                      |
 | `bline`  | Number of blank lines to precede log output; parameter for [logoutput](#logoutput) |
@@ -520,9 +572,9 @@ will be there.
 
 **Source**
 
-[computation.R](../R/computation.R#L113)
+[computation.R](../R/computation.R#L40)
 
-### write\_biom
+### write_biom
 
 Write a biom-format v1 file, returning a [biom-class](#biom-class) .
 
@@ -535,7 +587,7 @@ write_biom(biom, biom_file, pretty = FALSE)
 **Arguments**
 
 | Argument    | Description                                                                                                                                                                                                                                                                  |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `biom`      | (Required). A biom object.                                                                                                                                                                                                                                                   |
 | `biom_file` | (Required). A character string indicating the file location of the biom formatted file. This is a JSON formatted file specific to biological datasets. The format is formally defined at [the biom-format definition](http://biom-format.org/documentation/biom_format.html) |
 | `pretty`    | logical; Should biom output be pretty printed?                                                                                                                                                                                                                               |
@@ -546,6 +598,9 @@ Nothing. The first argument, `x` , is written to a file.
 
 **Note**
 
-This code is forked from version 1.4 of the [biomformat R
-library](https://github.com/joey711/biomformat-oldfork) released under
-[GPL-2](https://www.r-project.org/Licenses/GPL-2) .
+This code is forked from version 1.5 of the [biomformat R
+library](https://github.com/joey711/biomformat-oldfork) .
+
+**Source**
+
+[write_biom in biomformat.R](../R/biomformat.R#L123)

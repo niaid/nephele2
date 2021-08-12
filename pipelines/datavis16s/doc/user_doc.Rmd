@@ -1,6 +1,6 @@
 ---
 title: "16S Visualization Pipeline"
-panflute-path: '../../resources/Rdocs'
+panflute-path: '../../../resources/Rdocs'
 panflute-filters: [addlinkattr]
 output:
   html_document:
@@ -10,7 +10,7 @@ output:
     section_divs: false
     highlight: tango
     theme: null
-    template: ../../resources/Rdocs/user_guide_template.html
+    template: ../../../resources/Rdocs/user_guide_template.html
     self_contained: false 
     toc: true
     toc_depth: 2
@@ -21,7 +21,6 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-#knitr::opts_chunk$set(echo = TRUE, eval = FALSE, tidy=FALSE)
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE, tidy=TRUE)
 ```
 
@@ -29,7 +28,7 @@ The 16S visualization pipeline runs automatically at the end of Nephele's 16S am
 
 ::::: {.mt-5 .mb-5}
 ## ampvis2 and Plotly
-Nephele uses the [ampvis2 R package](https://madsalbertsen.github.io/ampvis2/) v2.3.2 for statistical computation.  We also make use of the [Plotly R interface](https://plot.ly/r/) for the [plotly.js](https://plot.ly) charting library.  The plots can be minimally edited interactively.  However, they also have a link to export the data to the [Plotly Chart Studio](https://plot.ly/online-chart-maker/) which allows for [making a variety of charts](https://help.plot.ly/tutorials/).  We have a tutorial for <a href="{{ url_for('show_tutorials') }}">making simple edits to the plots here</a>.
+Nephele uses the [ampvis2 R package](https://madsalbertsen.github.io/ampvis2/) for statistical computation.  We also make use of the [Plotly R interface](https://plot.ly/r/) for the [plotly.js](https://plot.ly) charting library.  The plots can be minimally edited interactively.  However, they also have a link to export the data to the [Plotly Chart Studio](https://plotly.com/chart-studio/) which allows for [making a variety of charts](https://plotly.com/chart-studio-help/tutorials/).  We have a tutorial for <a href="{{ url_for('show_tutorials') }}">making simple edits to the plots here</a>.
 :::::
 
 ::::: {.mt-5 .mb-5}
@@ -99,12 +98,10 @@ Complete descriptions of the output files can be found in the [Plots section abo
 
 ::::: {.mt-5 .mb-5}
 ## Tools and References
-<p>Andersen KS, Kirkegaard RH, Karst SM, Albertsen M (2018). "ampvis2: an R package to analyse and visualise 16S rRNA amplicon data."  <em>bioRxiv</em>. doi:<a href="http://dx.plos.org/10.1371/journal.pone.0132783">10.1371/journal.pone.0132783</a>.</p>
+Andersen KS, Kirkegaard RH, Karst SM, Albertsen M (2018). "ampvis2: an R package to\nanalyse and visualise 16S rRNA amplicon data." _bioRxiv_. https://doi.org/10.1101/299537.
 <p>Gould J (2019). <em>morpheus: Interactive heat maps using 'morpheus.js' and 'htmlwidgets'</em>. R package version 0.1.1.1, <a href="https://github.com/cmap/morpheus.R">https://github.com/cmap/morpheus.R</a>.</p>
 <p>McMurdie PJ and Paulson JN (2016). <em>biomformat: An interface package for the BIOM file format</em>. <a href="https://github.com/joey711/biomformat/" target="_blank" rel="noopener noreferrer">https://github.com/joey711/biomformat/</a>.</p>
 <p>Oksanen J, Blanchet FG, Friendly M, Kindt R, Legendre P, McGlinn D, Minchin PR, O'Hara RB, Simpson GL, Solymos P, Stevens MHH, Szoecs E, Wagner H (2019).  <em>vegan: Community Ecology Package</em>.
 R package version 2.5-4, <a href="https://CRAN.R-project.org/package=vegan" target="_blank" rel="noopener noreferrer">https://CRAN.R-project.org/package=vegan</a>.</p>
-<p>Sievert C (2018). <em>plotly for R</em>. <a href="https://plotly-r.com">https://plotly-r.com</a>.</p>
-<p>White H (2018). <em>bpexploder: Because Everybody Likes an Exploding Boxplot Now and Then</em>.
-R package version 0.1, <a href="https://github.com/homerhanumat/bpexploder">https://github.com/homerhanumat/bpexploder</a>.</p>
+Sievert C (2020). _Interactive Web-Based Data Visualization with R, plotly, and shiny_. Chapman and Hall/CRC. ISBN 9781138331457, https://plotly-r.com.
 :::::

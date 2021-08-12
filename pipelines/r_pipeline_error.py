@@ -4,6 +4,8 @@ import re
 
 class RPipelineError(pipeline_error.PipelineError):
     """| Handle errors from R pipelines.
+    | **Written by:**
+    | Poorani Subramanian
 
     Parameters:
         rerr (rpy2.rinterface.RRuntimeError) object

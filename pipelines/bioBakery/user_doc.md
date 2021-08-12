@@ -9,10 +9,10 @@ bioBakery WGS Pipeline
 bioBakery Workflows
 -------------------
 
--   [bioBakery](https://bitbucket.org/biobakery/biobakery/wiki/Home) is developed by the [Huttenhower Lab](http://huttenhower.sph.harvard.edu).
--   Nephele runs the [Whole Metagenome Shotgun (wmgx)](https://bitbucket.org/biobakery/biobakery_workflows/wiki/Home#!whole-metagenome-shotgun-wmgx) and [Visualization for Whole Metagenome Shotgun (wmgx\_vis)](https://bitbucket.org/biobakery/biobakery_workflows/wiki/Home#!visualization-for-whole-metagenome-shotgun-wmgx_vis) bioBakery workflows. The workflows are run using the default parameters.
+-   [bioBakery](http://huttenhower.sph.harvard.edu/biobakery_workflows) is developed by the [Huttenhower Lab](http://huttenhower.sph.harvard.edu).
+-   Nephele runs the [Whole Metagenome Shotgun (wmgx)](https://github.com/biobakery/biobakery_workflows#whole-metagenome-shotgun-wmgx) and [Visualization for Whole Metagenome Shotgun (wmgx\_vis)](https://github.com/biobakery/biobakery_workflows#visualization-for-whole-metagenome-shotgun-wmgx_vis) bioBakery workflows. The workflows are run using the default parameters.
 -   The visualization pipeline is only run for datasets with **at least 3 samples**.
--   More information about the individual tools that make up the pipelines can be found on the [bioBakery wiki](https://bitbucket.org/biobakery/biobakery/wiki/Home).
+-   More information about the individual tools that make up the pipelines can be found on the [bioBakery wiki](http://huttenhower.sph.harvard.edu/biobakery_workflows).
 
 User Options
 ------------
@@ -54,7 +54,7 @@ Tools and References
 --------------------
 
 -   McIver, L. J., Abu-Ali, G., Franzosa, E. A., Schwager, R., Morgan, X. C., Waldron, L., ... Huttenhower, C. (n.d.). "bioBakery: a meta'omic analysis environment." Bioinformatics. <https://doi.org/10.1093/bioinformatics/btx754>
--   Nephele runs the [biobakery/workflows docker image](https://hub.docker.com/r/biobakery/workflows/) from September 2017, which lists the following software versions:
-    -   kneaddata v0.6.1
-    -   MetaPhlAn version 2.6.0 (19 August 2016)
-    -   humann2 v0.11.1
+-   Nephele runs the [biobakery/workflows docker image](https://hub.docker.com/r/biobakery/workflows/) v0.13.2, which lists the following software versions:
+    -   kneaddata v0.7.2
+    -   MetaPhlAn version 2.7.7 (31 May 2018)
+    -   humann2 v2.8.1

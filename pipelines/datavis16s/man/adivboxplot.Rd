@@ -34,7 +34,7 @@ all columns starting with TreatmentGroup to (but not including) Description}
 Save alpha diversity boxplots to outdir.
 }
 \description{
-Plots exploding boxplot of shannon diversity and Chao species richness.  If sampling depth is NULL,
+Plots plotly boxplot of shannon diversity and Chao species richness.  If sampling depth is NULL,
 rarefies OTU table to the minimum readcount of any sample.  If this is low, then the plot will fail.
 }
 \details{

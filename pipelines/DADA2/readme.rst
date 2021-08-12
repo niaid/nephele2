@@ -3,12 +3,19 @@ DADA2 Pipeline Documentation
 
 Setup
 -----
--  Requires `rpy2 <https://rpy2.bitbucket.io>`__ python library
+-  Requires `rpy2 <https://rpy2.bitbucket.io>`__ python library and qiime2
 -  This pipeline runs the dada2nephele R package.  That `README <dada2nephele/README.md>`_ (`sphinx link <pipelines.DADA2.dada2nephele.readme>`) has the information about R deps and databases.
 - it also runs the datavis16s R package for viz, so see `datavis16s README <pipelines.datavis16s.readme>` .
 
 Notes
 -----
+
+-  Activate qiime2 environment in Nephele AMI before running script
+   (taken from `packer install
+   <https://github.niaid.nih.gov/bcbb/nephele2-amis/blob/master/dada2_qiime2_2020_11/install.sh>`__)::
+
+     . /usr/local/bin/miniconda3/etc/profile.d/conda.sh
+     conda activate qiime2-2020.11
 
 -  See script usage ↓↓↓ for parameter data type.
 -  See `user details page <dada2nephele/doc/user_doc.md>`_ (`sphinx link <pipelines.DADA2.dada2nephele.user_doc>`) for the help text, defaults and expected output.
@@ -23,7 +30,7 @@ Usage
                        [--data_type {SE,PE}] [--trimleft_fwd int] [--trimleft_rev int]
                        [--maxee int] [--trunclen_fwd int] [--trunclen_rev int]
                        [--truncq int] [--ion_torrent] [--just_concatenate] [--maxmismatch int]
-                       [--trim_overhang] [--chimera] [--ref_db {sv99,homd,gg97}]
+                       [--trim_overhang] [--chimera] [--ref_db {sv132,homd_15_22,homd_15_1,gg97}]
                        [--taxmethod {rdp,idtaxa}] [--sampling_depth int]
 
 
@@ -40,8 +47,8 @@ user options:
 ~~~~~~~~~~~~~
 Filter and Trim
 ###############
---trimleft_fwd int         dada2::filterAndTrim trimLeft bp of fwd read. (default: 20)
---trimleft_rev int         dada2::filterAndTrim trimLeft bp of rev read. (default: 20)
+--trimleft_fwd int         dada2::filterAndTrim trimLeft bp of fwd read. (default: 0)
+--trimleft_rev int         dada2::filterAndTrim trimLeft bp of rev read. (default: 0)
 --maxee int                dada2::filterAndTrim discard reads with EE higher than this value.
                            (default: 5)
 --trunclen_fwd int         dada2::filterAndTrim truncate fwd reads at this length. (default: 0)
@@ -63,6 +70,6 @@ Merge Pairs *paired-end only*
 Analysis
 ########
 --chimera                  run dada2::removeBimeraDenovo. (default: False)
---ref_db                   {sv99,homd,gg97} reference database (default: sv99)
+--ref_db                   {sv132,homd_15_22,homd_15_1,gg97} reference database (default: sv132)
 --taxmethod                {rdp,idtaxa} taxonomic assignment method (default: rdp)
 --sampling_depth int       sampling depth for downstream analysis. optional

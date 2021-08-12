@@ -113,7 +113,7 @@ file as well as a ``rabund`` file for each group.
 - ``dist.seqs(fasta=current, output=lt)``: calculate uncorrected pairwise distances between aligned sequences. The ``lt``
 option will output a phylip formatted lower triangle matrix, or to <q>square</q> for a phylip formatted square matrix. The
 phylip output is required for the subsequent ``clearcut`` command.
-- ``clearcut(phylip=current)``: run the [clearcut algorithm](http://bioinformatics.hungry.com/clearcut/). The algorithm was
+- ``clearcut(phylip=current)``: run the [clearcut algorithm](https://github.com/ibest/clearcut/). The algorithm was
 developed by the [Institute of Bioinformatics and Evolutionary Studies](https://www.ibest.uidaho.edu/) at the University of
 Idaho. The clearcut program implements the relaxed neighbor joining algorithm and achieves speedup with a significant
 reduction in the quality of the inferred trees. Relaxed neighbor joining algorithm was developed by Jason Evans, Luke
@@ -151,7 +151,6 @@ gene sequences. *Nature Biotechnology*. [doi: 10.1038/nbt.2676](https://www.natu
 * J Evans, L Sheneman, and JA Foster. Relaxed neighbor-joining: a fast distance-based phylogenetic tree construction method,
 *Journal of Molecular Evolution*, 62(6): 785-792.
 [doi: 10.1007/s00239-005-0176-2](https://link.springer.com/article/10.1007/s00239-005-0176-2).
-
 
 
 *Last updated on February 6, 2020*.

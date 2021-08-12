@@ -51,7 +51,7 @@ subsetamp <- function(amp, sampdepth = NULL, rarefy=FALSE, printsummary=T, outdi
 
   ## print ampvis summary
   if (printsummary) {
-    print(amp)
+    print_ampvis2(amp)
     writeLines('')
   }
 
@@ -160,12 +160,13 @@ readindata <- function(datafile, mapfile, tsvfile=FALSE, mincount=10) {
   cmnd <- 'amp <- amp_load(otu, map)'
   logoutput(cmnd)
   eval(parse(text = cmnd))
-  print(amp)
+  print_ampvis2(amp)
   writeLines('')
 
   if (sum(amp$abund) < mincount) {
     stop(paste0("Not enough counts in OTU table to make any graphs. At least ", mincount, " are needed."))
   }
+  #  Sys.setlocale('LC_ALL',locale)
   return(amp)
 
 }
@@ -327,6 +328,7 @@ pcoaplot <- function(datafile, outdir, mapfile, amp=NULL, sampdepth = NULL, dist
 #'
 #' @importFrom morpheus morpheus
 #' @importFrom grDevices colorRampPalette
+#' @importFrom htmltools tags
 #'
 #' @source [graphs.R](../R/graphs.R)
 #'
@@ -452,7 +454,7 @@ morphheatmap <- function(datafile, outdir, mapfile, amp = NULL, sampdepth = NULL
 
 #' Alpha diversity boxplot
 #'
-#' Plots exploding boxplot of shannon diversity and Chao species richness.  If sampling depth is NULL,
+#' Plots plotly boxplot of shannon diversity and Chao species richness.  If sampling depth is NULL,
 #' rarefies OTU table to the minimum readcount of any sample.  If this is low, then the plot will fail.
 #'
 #' @param datafile full path to input OTU file
@@ -474,8 +476,8 @@ morphheatmap <- function(datafile, outdir, mapfile, amp = NULL, sampdepth = NULL
 #'
 #' @source [graphs.R](../R/graphs.R)
 #'
-#' @importFrom bpexploder bpexploder
-#' @importFrom htmltools HTML
+#' @importFrom plotly subplot ggplotly
+#' @importFrom ggplot2 scale_color_manual element_text
 #'
 adivboxplot <- function(datafile, outdir, mapfile, amp=NULL, sampdepth = NULL, colors = NULL, cats = NULL, filesuffix=NULL, ...) {
 
@@ -510,9 +512,14 @@ adivboxplot <- function(datafile, outdir, mapfile, amp=NULL, sampdepth = NULL, c
       lc <- NULL
     }
 
-    shannon <- bpexploder(adiv, settings = list(groupVar = col, yVar = "Shannon", tipText = list(SampleID = "SampleID", Shannon = "Shannon Index", Description = "Desc"), levelColors = lc))
+    gshan <- ggplot2::ggplot(adiv, ggplot2::aes_string(x=col, y="Shannon", color = col, text = "SampleID")) + ggplot2::geom_boxplot(outlier.shape = NA) + ggplot2::geom_jitter(width = 0.2, height = 0, size=1) + ggplot2::theme_bw() + ggplot2::theme(legend.position = "none", axis.text.x = element_text(angle=60)) + ggtitle("species alpha diversity")
+    if (!is.null(lc)) gshan <- gshan + scale_color_manual(values=lc)
+    shannon <- ggplotly(gshan, tooltip = c("text", "x", "y"))
 
-    chao1 <- bpexploder(adiv, settings = list(groupVar = col, yVar = "Chao1", tipText = list(SampleID = "SampleID", Chao1 = "Species Richness", Description = "Desc"), levelColors = lc))
+    gchao1 <- ggplot2::ggplot(adiv, ggplot2::aes_string(x=col, y="Chao1", color = col, text = "SampleID")) + ggplot2::geom_boxplot(outlier.shape = NA) + ggplot2::geom_jitter(width = 0.2, height = 0, size=1) + ggplot2::theme_bw() + ggplot2::theme(legend.position = "none", axis.text.x = element_text(angle=60))
+    if (!is.null(lc)) gchao1 <- gchao1 + scale_color_manual(values=lc)
+    chao1 <- ggplotly(gchao1, tooltip = c("text", "x", "y"))
+
     return(list(shannon, chao1))
   }
 
@@ -524,35 +531,19 @@ adivboxplot <- function(datafile, outdir, mapfile, amp=NULL, sampdepth = NULL, c
   }
 
   ## style widgets 2 across
-  divwidget <- unlist(lapply(cats, function(x) divplots(alphadiv, x, colors)), recursive = FALSE)
-  tt <- tags$div(
-    style = "display: grid; grid-template-columns: 1fr 1fr; grid-row-gap: 5em;",
-    lapply(divwidget, function(x) { x$width = '90%'; x$height = '100%'; tags$div(x) })
-  )
+  plotlyplots <- unlist(lapply(cats, function(x) divplots(alphadiv, x, colors)), recursive = FALSE)
 
-  ## Make the axis text a little bigger and style the tooltip
-  axisstyle <- HTML(paste(
-    '<style type="text/css">',
-    '.x.axis {',
-    'font-size: 0.9em !important;',
-    '}',
-    'text.axislabel {',
-    'font-size: 1.1em !important;',
-    '}',
-    '.d3-exploding-boxplot.tip {',
-    'background: rgba(51, 51, 51, 0.8);',
-    '}',
-    '</style>'
-  , sep='\n'))
+  ### manually remove outliers https://community.plotly.com/t/ggplotly-ignoring-geom-boxplot-outlier-parameters/2247
+  plotlyplots <- lapply(plotlyplots, function(p) {
+    p$x$data[1:length(p$x$data)/2] <- lapply(p$x$data[1:length(p$x$data)/2],FUN=function(y){y$marker=list(opacity=0); return(y)})
+    return(p)
+  })
 
+  divwidget <- plotly::subplot(plotlyplots, nrows = length(plotlyplots)/2, titleX=TRUE, titleY = TRUE, margin = 0.06)
+  if (length(cats) > 2) divwidget$height <- paste0(400*(length(cats)), "px")
 
   ## save html file
-  htmlGrid(tt, filename = file.path(outdir, "alphadiv.html"),  data = alphadiv, title = "species diversity", jquery = TRUE, styletags=axisstyle)
-  ## Remove later
-  bpjsfile <- file.path(outdir, "lib", "bpexplode-0.2.1", "bpexplode.js")
-  if (file.exists(bpjsfile)) {
-    file.copy(file.path(find.package("datavis16s"), "htmlwidgets", "bpexplode.js"), bpjsfile, overwrite = T)
-  }
+  plotlyGrid(divwidget, file.path(outdir, "alphadiv.html"), data = alphadiv)
   return(as.integer(0))
 
 }

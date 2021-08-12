@@ -3,10 +3,12 @@
 """
 Pipeline for performing quality control on fastq reads.
 
+.. codeauthor:: Poorani Subramanian & Philip MacMenamin
+
 - See spec and usage here: :doc:`nephele2.pipelines.QC_reads_readme`
 - You can't call this script directly due to qiime2 dependency; instead use qc_reads.sh_ , but the arguments and usage are otherwise the same.
 
-.. _qc_reads.sh: https://github.com/niaid/nephele2/blob/master/pipelines/QC_reads/qc_reads.sh
+.. _qc_reads.sh: https://github.niaid.nih.gov/bcbb/nephele2/blob/next_release/pipelines/QC_reads/qc_reads.sh
 """
 
 import argparse
@@ -158,6 +160,14 @@ class QCReads(PipeBase):
         | 'anywhere_f':args.anywhere_f,
         | 'anywhere_r':args.anywhere_r}, with the above logic
         | (eg if args.front_r is None, don't add it to the dict)
+
+
+        .. note::
+
+            I think this works now, though we always pass the booleans bc otherwise some are set default
+            to true by q2-cutadapt which messes with our logic from the front end.
+            And we don't set any defaults in argparse for the non-bool variables, as those are set by q2 cutadapt
+            ~Poorani
 
         """
         cutadapt_args = dict()

@@ -309,7 +309,7 @@ class PipeBase(utils.PipeUtils):
             raise
 
     @staticmethod
-    def gen_docker_cmnd(cmd, mnt_pt, cntr_name, db_loc='/mnt/EFS/dbs'):
+    def gen_docker_cmnd(cmd, mnt_pt, cntr_name, db_loc='/mnt/EFS/dbs', db_target='/opt'):
         """Accepts a cmd, ie a (str) command which would work if you were
         running inside an interactive docker session, and a fully pathed input
         dir and output dir (output dir is created if not exists).  This command
@@ -341,11 +341,11 @@ class PipeBase(utils.PipeUtils):
         if not isinstance(cmd, str):
             raise pipeline_error.NepheleBadArgumentException(
                 msg='gen_docker_cmnd() only accepts strings as commands')
-        pre = 'run --mount type=bind,source={db_loc},target=/opt '\
+        pre = 'run --mount type=bind,source={db_loc},target={db_target} '\
               '--mount type=bind,source={mnt_pt},target={mnt_pt} '\
               '--user www-data '\
               '{cntr_name} '\
-              .format(db_loc=db_loc, mnt_pt=mnt_pt, cntr_name=cntr_name)
+              .format(db_loc=db_loc, db_target=db_target, mnt_pt=mnt_pt, cntr_name=cntr_name)
         return pre + cmd
 
     @staticmethod
@@ -432,6 +432,7 @@ class PipeBase(utils.PipeUtils):
 
     def get_depth(self, biomfile, sampling_depth, mincount=10000):
         """Calculates sampling depth for 16S pipelines
+        Poorani Subramanian & Conrad Shyu
 
         Args:
             biomfile (str):  path of biom file

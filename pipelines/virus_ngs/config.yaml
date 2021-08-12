@@ -1,0 +1,60 @@
+# Notes:
+
+# tables for full
+samples: samples_dev10.csv
+samples_QC: samples_dev10_QC.csv
+
+ref:
+  name: NC_045512.2
+  genome: data/reference/NC_045512.2.fasta
+  chrom: NC_045512.2
+  bedtools_genome: data/reference/NC_045512.2.genome
+
+params:
+  trimmomatic:
+    pe:
+      trimmer:
+        # See trimmomatic manual for adding additional options, e.g. for adapter trimming.
+        - "LEADING:3"
+        - "TRAILING:3"
+        - "SLIDINGWINDOW:4:15"
+        - "MINLEN:36"
+    se:
+      trimmer:
+        # See trimmomatic manual for adding additional options, e.g. for adapter trimming.
+        - "LEADING:3"
+        - "TRAILING:3"
+        - "SLIDINGWINDOW:4:15"
+        - "MINLEN:36"
+    illumina_clip: data/external/TruSeq3-PE.fa:2:30:10
+
+  gatk:
+    HaplotypeCaller:
+      ploidy: 1
+
+  coverage:
+    at_depth: "genome_cov_50X"
+    percent_genome_cov: 0.95
+
+filtering:
+  # Set to true in order to apply machine learning based recalibration of
+  # quality scores instead of hard filtering.
+  vqsr: false
+  hard:
+    # hard filtering as outlined in GATK docs
+    # (https://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set)
+    snvs:
+      info: "DP < 50 || QD < 5.0 || FS > 60.0 || MQ < 40.0 || ReadPosRankSum < -8.0 || SOR > 4.0"
+      genotype: "DP < 50"
+    indels:
+      info: "DP < 50 || QD < 5.0 || FS > 200.0 || SOR > 10.0"
+      genotype: "DP < 50"
+
+
+
+
+
+
+
+
+      

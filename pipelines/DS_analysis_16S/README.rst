@@ -65,5 +65,5 @@ optional arguments:
 
 User doc
 --------
-- `github <https://github.com/niaid/nephele2/tree/master/pipelines/DS_analysis_16S/user_doc.md>`__,
-- `html <https://github.com/niaid/nephele2/tree/master/pipelines/DS_analysis_16S/amplicon_da_pipeline.html>`__
+- `github <https://github.niaid.nih.gov/bcbb/nephele2/tree/next_release/pipelines/DS_analysis_16S/user_doc.md>`__,
+- `html <https://github.niaid.nih.gov/bcbb/nephele2/tree/next_release/pipelines/DS_analysis_16S/amplicon_da_pipeline.html>`__

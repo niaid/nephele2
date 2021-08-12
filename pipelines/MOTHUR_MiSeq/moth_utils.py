@@ -184,5 +184,3 @@ def get_median_start_end(fname):
                         raise pipeline_error.SummarySeqsError()
     except Exception as e:
         raise pipeline_error.PipelineError(msg='Error occurred in getting median start and end.') from e
-
-

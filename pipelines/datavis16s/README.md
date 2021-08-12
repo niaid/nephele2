@@ -11,7 +11,7 @@ R package for graphs for Nephele 16S pipelines.
 
 - **Function reference:** [datavis16s R package manual](doc/Reference_Manual_datavis16s.md) (:ref:`pipelines.datavis16s.readme:R package manual`)
 
-- **Nephele User docs:** [GitHub](doc/user_doc.md), [html for Nephele2 website](https://github.com/niaid/nephele2/blob/master/pipelines/datavis16s/doc/datavis16s_pipeline.html), (:ref:`sphinx <pipelines.datavis16s.readme:User docs>`)
+- **Nephele User docs:** [GitHub](doc/user_doc.md), [html for Nephele2 website](https://github.niaid.nih.gov/bcbb/nephele2/blob/master/pipelines/datavis16s/doc/datavis16s_pipeline.html), (:ref:`sphinx <pipelines.datavis16s.readme:User docs>`)
 
 - There are 4 main functions for making graphs: `adivboxplot`, `morphheatmap`, `pcoaplot`, and `rarefactioncurve`, as well as `allgraphs` which makes all 4. See the [manual](doc/Reference_Manual_datavis16s.md) for the arguments for these functions.
 
@@ -35,9 +35,9 @@ R package for graphs for Nephele 16S pipelines.
 
   - ```python
     datavis16s = importr('datavis16s')
-    exit_code = datavis16s.trygraphwrapper(datafile="/path/to/outputs/out.biom",
-                                           outdir="/path/to/outputs/",
-                                           mapfile = "/path/to/inputs/mapfile.txt",
+    exit_code = datavis16s.trygraphwrapper(datafile="/path/to/outputs/out.biom", 
+                                           outdir="/path/to/outputs/", 
+                                           mapfile = "/path/to/inputs/mapfile.txt", 
                                            FUN = functionname, otherarguments_for_functionname)
     ```
 
@@ -55,7 +55,7 @@ R package for graphs for Nephele 16S pipelines.
 
 ### Outputs
 
--   `trygraphwrapper` creates a subdirectory “graphs” in output directory, and passes that as the output directory to the individual functions. The individual graph functions just use the specified output directory passed to them. - Creates html files in outdir as well as subdirectory “lib” which contains the external js,css,etc files for the graphs. See [user doc](https://github.com/niaid/nephele2/blob/master/pipelines/datavis16s/doc/user_doc.md) for more info.
+-   `trygraphwrapper` creates a subdirectory “graphs” in output directory, and passes that as the output directory to the individual functions. The individual graph functions just use the specified output directory passed to them. - Creates html files in outdir as well as subdirectory “lib” which contains the external js,css,etc files for the graphs. See [user doc](https://github.niaid.nih.gov/bcbb/nephele2/blob/master/pipelines/datavis16s/doc/user_doc.md) for more info.
 
 ## Dependencies
 
@@ -65,6 +65,11 @@ R package for graphs for Nephele 16S pipelines.
 
 -   To install all R dependencies, run the commands in [dependencies.R](scripts/datavis16s_dependencies.R). You may need to change the path to the datavis16s directory.
 
+-   To build the package along with the user and package documentation, run the commands in [build.R](scripts/build.R). This will produce the standard man files for within-R help, as well as the [package manual](doc/Reference_Manual_datavis16s.md) and the [user docs](doc/user_doc.md)
+
+    ``` r
+    source("scripts/build.R")
+    ```
 - See [Tools and References](doc/user_doc.md#tools-and-references) in the user doc for dependency citations.
 
 ## Installation
@@ -72,7 +77,7 @@ R package for graphs for Nephele 16S pipelines.
 -   You can install this package, datavis16s, with devtools within R from a locally cloned repository (may need to change directory):
 
     ``` r
-    devtools::install_local("/path/to/nephele2/pipelines/datavis16s",
+    devtools::install_local("/path/to/nephele2/pipelines/datavis16s", 
         dependencies = TRUE, force = TRUE)
     ```
 
@@ -82,4 +87,13 @@ R package for graphs for Nephele 16S pipelines.
     R CMD INSTALL --no-help /path/to/nephele2/pipelines/datavis16s
     ```
 
--   or to use devtools to install datavis16s from the NIAID github, you will need to generate a [GitHub personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
+-   or to use devtools to install datavis16s from the NIAID github, you will need to generate a [GitHub personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/). In R:
+
+    ``` r
+    # change token to token string
+    Sys.setenv(GITHUB_PAT = "token")
+    # change ref to whichever branch
+    devtools::install_github("bcbb/nephele2/pipelines/datavis16s", 
+        host = "https://github.niaid.nih.gov/api/v3", ref = "datavis16s", 
+        dependencies = TRUE)
+    ```

@@ -1,0 +1,11 @@
+pwymap: /mnt/EFS/dbs/wgsa/minpath_db/MetaCyc-ec2path-me.txt
+pwyhrr: /mnt/EFS/dbs/wgsa/minpath_db/MetaCyc-hierarchy-me.txt
+kegg: /mnt/EFS/dbs/wgsa/minpath_db/KEGG-ec2keggpath.txt
+minpath_script: /usr/local/src/MinPath/MinPath.py
+krona_script: /usr/local/src/nephele2/pipelines/wgsa/genes2KronaTable.py
+prokkagff2gtf_script: /usr/local/src/nephele2/pipelines/wgsa/prokkagff2gtf.sh
+metaspades_script: /usr/local/src/SPAdes/bin/metaspades.py
+bbtools_bbmap: /usr/local/src/bbmap/bbmap.sh
+bbtools_stats: /usr/local/src/bbmap/stats.sh
+prokka_db: /usr/local/src/prokka/db
+wgsa_db: /mnt/EFS/dbs/wgsa/
