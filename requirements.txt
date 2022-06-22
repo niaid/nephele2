@@ -5,7 +5,7 @@ boto3
 Flask-WTF
 Flask-bootstrap4
 sh
-numpy==1.16.1
+numpy==1.22.0
 pandas==0.24.1
 xlrd
 sqlalchemy
